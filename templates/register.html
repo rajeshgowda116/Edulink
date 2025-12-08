@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" contentwidth=device-width, initial-scale=1.0">
+  <title>EduLink - Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+    }
+
+    /* HEADER (same as homepage style) */
+    header {
+      background: white;
+      padding: 18px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 600;
+      color: #4A90E2;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #444;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      color: #4A90E2;
+    }
+
+    /* MAIN FORM CONTAINER */
+    .register-container {
+      width: 430px;
+      background: white;
+      padding: 35px;
+      margin: 50px auto;
+      border-radius: 12px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .register-container h2 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .register-container p {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 15px;
+    }
+
+    /* ROLE BUTTONS */
+    .role-btn {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      background: #4A90E2;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
+
+    .role-btn:hover {
+      background: #357ABD;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      margin-top: 40px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">EduLink</div>
+
+    <nav>
+      <a href="/">Home</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </nav>
+  </header>
+
+  <!-- REGISTER FORM BOX -->
+  <div class="register-container">
+    <h2>Create Your Account</h2>
+    <p>Select your role to continue registration</p>
+
+    <!-- ROLE BUTTONS -->
+    <button class="role-btn" onclick="location.href='/register/hod'">Register as HOD</button>
+    <button class="role-btn" onclick="location.href='/register/advisor'">Register as Advisor</button>
+    <button class="role-btn" onclick="location.href='/register/faculty'">Register as Faculty</button>
+    <button class="role-btn" onclick="location.href='/register/student'">Register as Student</button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 EduLink. All Rights Reserved.
+  </footer>
+
+</body>
+
+</html>

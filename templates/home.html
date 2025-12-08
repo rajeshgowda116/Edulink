@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" contentwidth=device-width, initial-scale=1.0">
+    <title>EduLink - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #333;
+        }
+
+        /* HEADER */
+        header {
+            background: white;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* LOGO */
+        .logo {
+            font-size: 26px;
+            font-weight: 600;
+            color: #4A90E2;
+        }
+
+        /* NAVBAR */
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #4A90E2;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(to right, #4A90E2, #6BB4FF);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            background: white;
+            color: #4A90E2;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            text-decoration: none;
+            margin: 0 10px;
+            display: inline-block;
+            transition: 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #eaf4ff;
+        }
+
+        /* FEATURES SECTION */
+        .features {
+            display: flex;
+            gap: 30px;
+            padding: 60px 50px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .feature-box {
+            background: white;
+            width: 300px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: 0.3s ease;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .feature-box h3 {
+            color: #4A90E2;
+            margin-bottom: 12px;
+        }
+
+        .feature-box p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #222;
+            color: #aaa;
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">EduLink</div>
+
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <h1>Welcome to EduLink</h1>
+        <p>Your complete college learning & management system.</p>
+
+        <a href="/login" class="btn">Login</a>
+        <a href="/register" class="btn">Register</a>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features">
+        <div class="feature-box">
+            <h3>Smart Attendance</h3>
+            <p>Track and manage attendance with real-time updates.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>Assignments</h3>
+            <p>Upload, submit, and check assignments easily.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>Notes & Study Materials</h3>
+            <p>Access all subject notes in one centralized place.</p>
+        </div>
+
+        <div class="feature-box">
+            <h3>Internal Marks</h3>
+            <p>View internal marks and academic performance.</p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 EduLink. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
