@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" contentwidth=device-width, initial-scale=1.0">
+  <title>HOD Registration - EduLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+    }
+
+    /* HEADER */
+    header {
+      background: white;
+      padding: 18px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 600;
+      color: #4A90E2;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #444;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: #4A90E2;
+    }
+
+    /* MAIN FORM CONTAINER */
+    .form-box {
+      width: 450px;
+      background: white;
+      margin: 40px auto;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-box h2 {
+      text-align: center;
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-box p {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    /* INPUT */
+    .input-group {
+      margin-bottom: 18px;
+    }
+
+    .input-group label {
+      display: block;
+      color: #444;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d2d2d2;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #4A90E2;
+    }
+
+    /* GENERATE CODE BUTTON */
+    .gen-btn {
+      width: 100%;
+      padding: 12px;
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 12px;
+      transition: 0.3s;
+    }
+
+    .gen-btn:hover {
+      background: #357ABD;
+    }
+
+    /* CODE DISPLAY BOX */
+    .code-box {
+      width: 100%;
+      background: #eef5ff;
+      border: 1px dashed #4A90E2;
+      padding: 12px;
+      border-radius: 8px;
+      color: #4A90E2;
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    /* SUBMIT BUTTON */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #4A90E2;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #357ABD;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
+
+  <script>
+    function generateAdvisorCode() {
+      const code = "ADV-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+      document.getElementById("advisorCode").innerText = code;
+      document.getElementById("advisorCodeBox").style.display = "block";
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">EduLink</div>
+
+    <nav>
+      <a href="/">Home</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </nav>
+  </header>
+
+  <!-- FORM CONTAINER -->
+  <div class="form-box">
+    <h2>HOD Registration</h2>
+    <p>Fill the details to create HOD account</p>
+
+    <form action="/api/register/hod" method="POST">
+
+      <div class="input-group">
+        <label>Department Name</label>
+        <input type="text" name="department" required placeholder="Enter department">
+      </div>
+
+      <div class="input-group">
+        <label>HOD Name</label>
+        <input type="text" name="hod_name" required placeholder="Enter HOD name">
+      </div>
+
+      <div class="input-group">
+        <label>Mobile Number</label>
+        <input type="tel" name="mobile" maxlength="10" required placeholder="Enter mobile number">
+      </div>
+
+      <!-- GENERATE ADVISOR CODE -->
+      <button type="button" class="gen-btn" onclick="generateAdvisorCode()">
+        Generate Advisor Code
+      </button>
+
+      <div id="advisorCodeBox" class="code-box">
+        Advisor Code: <span id="advisorCode"></span>
+      </div>
+
+      <input type="hidden" name="advisor_code" id="hiddenCode">
+
+      <script>
+        function generateAdvisorCode() {
+          const code = "ADV-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+          document.getElementById("advisorCode").innerText = code;
+          document.getElementById("advisorCodeBox").style.display = "block";
+          document.getElementById("hiddenCode").value = code;
+        }
+      </script>
+
+      <div class="input-group">
+        <label>Create Password</label>
+        <input type="password" name="password" required placeholder="Enter password">
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required placeholder="Confirm password">
+      </div>
+
+      <button type="submit" class="submit-btn">Register HOD</button>
+    </form>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 EduLink. All Rights Reserved.
+  </footer>
+
+</body>
+
+</html>
