@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EduLink – Streamline Your College Management</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --blue: #2563eb;
@@ -36,7 +45,9 @@
       padding: 18px 60px;
       background: var(--white);
       box-shadow: 0 1px 0 #e2e8f0;
-      position: sticky; top: 0; z-index: 100;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo {
@@ -51,13 +62,20 @@
     }
 
     .logo-icon {
-      width: 38px; height: 38px;
+      width: 38px;
+      height: 38px;
       background: var(--blue);
       border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .logo-icon svg { width: 22px; height: 22px; fill: white; }
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
 
     .nav-links {
       display: flex;
@@ -73,23 +91,39 @@
       font-weight: 500;
       transition: color .2s;
     }
-    .nav-links a:hover { color: var(--blue); }
 
-    .nav-actions { display: flex; gap: 12px; align-items: center; }
+    .nav-links a:hover {
+      color: var(--blue);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
     .btn-ghost {
-      background: none; border: none;
-      color: var(--text-dark); font-size: 0.95rem;
-      font-weight: 600; cursor: pointer;
-      padding: 8px 16px; border-radius: 8px;
+      background: none;
+      border: none;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
       transition: background .2s;
     }
-    .btn-ghost:hover { background: var(--blue-light); color: var(--blue); }
+
+    .btn-ghost:hover {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
 
     .btn-primary {
       background: var(--blue);
       color: white;
-      border: none; cursor: pointer;
+      border: none;
+      cursor: pointer;
       padding: 10px 22px;
       border-radius: 10px;
       font-size: 0.95rem;
@@ -97,7 +131,11 @@
       font-family: 'Nunito', sans-serif;
       transition: background .2s, transform .15s;
     }
-    .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+    }
 
     /* ─── HERO ─── */
     .hero {
@@ -111,10 +149,13 @@
     .hero::before {
       content: '';
       position: absolute;
-      width: 700px; height: 700px;
+      width: 700px;
+      height: 700px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(37,99,235,.07) 0%, transparent 70%);
-      top: -200px; left: 50%; transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(37, 99, 235, .07) 0%, transparent 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
       pointer-events: none;
     }
 
@@ -157,7 +198,11 @@
       cursor: pointer;
       transition: border-color .2s, box-shadow .2s;
     }
-    .btn-outline:hover { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+
+    .btn-outline:hover {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    }
 
     /* ─── HERO ILLUSTRATION ─── */
     .hero-illustration {
@@ -172,24 +217,55 @@
       background: white;
       border-radius: 12px;
       padding: 10px 14px;
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.78rem; font-weight: 600;
-      box-shadow: 0 4px 20px rgba(0,0,0,.08);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
       color: var(--text-mid);
       animation: floaty 3s ease-in-out infinite;
     }
-    .float-icon svg { width: 18px; height: 18px; }
-    .float-icon:nth-child(2) { animation-delay: .8s; }
-    .float-icon:nth-child(3) { animation-delay: 1.6s; }
 
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+    .float-icon svg {
+      width: 18px;
+      height: 18px;
     }
 
-    .fi-1 { top: 30px; left: 30px; }
-    .fi-2 { top: 10px; right: 60px; }
-    .fi-3 { top: 80px; right: 10px; }
+    .float-icon:nth-child(2) {
+      animation-delay: .8s;
+    }
+
+    .float-icon:nth-child(3) {
+      animation-delay: 1.6s;
+    }
+
+    @keyframes floaty {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .fi-1 {
+      top: 30px;
+      left: 30px;
+    }
+
+    .fi-2 {
+      top: 10px;
+      right: 60px;
+    }
+
+    .fi-3 {
+      top: 80px;
+      right: 10px;
+    }
 
     /* Campus SVG scene */
     .campus-scene {
@@ -222,21 +298,27 @@
     }
 
     .feature-card:hover {
-      box-shadow: 0 8px 30px rgba(37,99,235,.12);
+      box-shadow: 0 8px 30px rgba(37, 99, 235, .12);
       border-color: var(--blue);
       transform: translateY(-4px);
     }
 
     .feature-icon {
-      width: 72px; height: 72px;
+      width: 72px;
+      height: 72px;
       margin: 0 auto 16px;
       border-radius: 50%;
       background: #f0f4ff;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
 
-    .feature-icon svg { width: 40px; height: 40px; }
+    .feature-icon svg {
+      width: 40px;
+      height: 40px;
+    }
 
     .feature-card h3 {
       font-family: 'Nunito', sans-serif;
@@ -247,319 +329,347 @@
 
     /* ─── Responsive ─── */
     @media (max-width: 900px) {
-      nav { padding: 16px 24px; }
-      .features { padding: 20px 20px 40px; }
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      nav {
+        padding: 16px 24px;
+      }
+
+      .features {
+        padding: 20px 20px 40px;
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
+
     @media (max-width: 560px) {
-      .nav-links { display: none; }
-      .feature-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links {
+        display: none;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- ── NAV ── -->
-<nav>
-  <a href="#" class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-    </div>
-    EduLink
-  </a>
-
-  <ul class="nav-links">
-    <li><a href="#">Home</a></li>
-    <li><a href="#">About</a></li>
-    <li><a href="#">Contact</a></li>
-    <li><a href="#">Énatioe</a></li>
-  </ul>
-
-  <div class="nav-actions">
-    <button class="btn-ghost">Login</button>
-    <button class="btn-primary">Register</button>
-  </div>
-</nav>
-
-<!-- ── HERO ── -->
-<section class="hero">
-  <h1>Welcome to EduLink</h1>
-  <p>Streamline Your College Management</p>
-
-  <div class="hero-btns">
-    <button class="btn-primary">Get Started</button>
-    <button class="btn-outline">Learn More</button>
-  </div>
-
-  <!-- Illustration -->
-  <div class="hero-illustration">
-    <!-- Floating envelope icons -->
-    <div class="float-icon fi-1">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
-    </div>
-    <div class="float-icon fi-2">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
-    </div>
-    <div class="float-icon fi-3">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
-    </div>
-
-    <!-- Campus SVG Scene -->
-    <svg class="campus-scene" viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg">
-      <!-- Sky / background -->
-      <rect width="860" height="340" fill="none"/>
-
-      <!-- Background trees left -->
-      <ellipse cx="80" cy="230" rx="55" ry="45" fill="#b8d4a8" opacity=".7"/>
-      <rect x="76" y="245" width="8" height="40" fill="#8fa87d"/>
-      <!-- bare tree -->
-      <line x1="140" y1="285" x2="140" y2="200" stroke="#b0b8c4" stroke-width="3"/>
-      <line x1="140" y1="220" x2="120" y2="205" stroke="#b0b8c4" stroke-width="2"/>
-      <line x1="140" y1="235" x2="158" y2="222" stroke="#b0b8c4" stroke-width="2"/>
-
-      <!-- Background trees right -->
-      <ellipse cx="760" cy="235" rx="50" ry="42" fill="#b8d4a8" opacity=".7"/>
-      <rect x="756" y="248" width="8" height="38" fill="#8fa87d"/>
-      <ellipse cx="810" cy="240" rx="38" ry="32" fill="#c8e0ba" opacity=".6"/>
-      <rect x="806" y="252" width="7" height="34" fill="#8fa87d"/>
-
-      <!-- Autumn bushes center-left -->
-      <ellipse cx="210" cy="272" rx="34" ry="22" fill="#e0a84a" opacity=".8"/>
-      <!-- Autumn bushes center-right -->
-      <ellipse cx="640" cy="272" rx="30" ry="20" fill="#d4944a" opacity=".7"/>
-      <ellipse cx="680" cy="268" rx="22" ry="16" fill="#e8b44a" opacity=".65"/>
-
-      <!-- Green bushes foreground -->
-      <ellipse cx="160" cy="285" rx="28" ry="18" fill="#7ec87e" opacity=".75"/>
-      <ellipse cx="695" cy="282" rx="25" ry="16" fill="#7ec87e" opacity=".7"/>
-
-      <!-- ── BUILDING ── -->
-      <!-- Main body -->
-      <rect x="310" y="120" width="240" height="180" rx="4" fill="#c8d8f0"/>
-      <!-- Roof / pediment -->
-      <polygon points="310,120 430,60 550,120" fill="#b0c4e4"/>
-      <!-- Clock tower -->
-      <rect x="396" y="40" width="68" height="90" rx="3" fill="#b8cce8"/>
-      <!-- Tower top -->
-      <polygon points="396,40 430,10 464,40" fill="#d4a844"/>
-      <!-- Clock face -->
-      <circle cx="430" cy="82" r="18" fill="white" stroke="#a0b4d0" stroke-width="1.5"/>
-      <line x1="430" y1="72" x2="430" y2="82" stroke="#475569" stroke-width="1.5"/>
-      <line x1="430" y1="82" x2="438" y2="87" stroke="#475569" stroke-width="1.5"/>
-      <!-- Windows main building -->
-      <rect x="330" y="145" width="36" height="50" rx="12" fill="#8aaed4"/>
-      <rect x="392" y="145" width="76" height="50" rx="12" fill="#8aaed4"/><!-- main arch -->
-      <rect x="494" y="145" width="36" height="50" rx="12" fill="#8aaed4"/>
-      <!-- Second floor windows -->
-      <rect x="330" y="210" width="28" height="32" rx="4" fill="#9bbce0"/>
-      <rect x="370" y="210" width="28" height="32" rx="4" fill="#9bbce0"/>
-      <rect x="462" y="210" width="28" height="32" rx="4" fill="#9bbce0"/>
-      <rect x="502" y="210" width="28" height="32" rx="4" fill="#9bbce0"/>
-      <!-- Ground level door -->
-      <rect x="408" y="252" width="44" height="48" rx="6" fill="#7aaad0"/>
-
-      <!-- Ground -->
-      <rect x="0" y="292" width="860" height="48" fill="#dde8f4" rx="4"/>
-
-      <!-- ── PERSON 1 – Female student left ── -->
-      <g transform="translate(200,160)">
-        <!-- Body -->
-        <rect x="-14" y="30" width="28" height="50" rx="6" fill="#3b5b9a"/>
-        <!-- Skirt/legs -->
-        <rect x="-12" y="76" width="10" height="55" rx="4" fill="#2a4178"/>
-        <rect x="2" y="76" width="10" height="55" rx="4" fill="#2a4178"/>
-        <!-- Shoes -->
-        <ellipse cx="-7" cy="132" rx="8" ry="4" fill="#1e293b"/>
-        <ellipse cx="7" cy="132" rx="8" ry="4" fill="#1e293b"/>
-        <!-- Head -->
-        <circle cx="0" cy="16" r="18" fill="#f4c498"/>
-        <!-- Hair bun -->
-        <ellipse cx="0" cy="0" rx="12" ry="8" fill="#3d2314"/>
-        <circle cx="0" cy="-2" r="6" fill="#3d2314"/>
-        <!-- Bag strap -->
-        <line x1="12" y1="30" x2="20" y2="70" stroke="#c9742a" stroke-width="4" stroke-linecap="round"/>
-        <!-- Bag -->
-        <rect x="16" y="62" width="18" height="20" rx="4" fill="#d4833a"/>
-        <!-- Arm holding folder -->
-        <rect x="-24" y="38" width="12" height="35" rx="5" fill="#3b5b9a"/>
-        <rect x="-34" y="58" width="18" height="24" rx="3" fill="#2563eb"/>
-      </g>
-
-      <!-- ── PERSON 2 – Male professional center-left ── -->
-      <g transform="translate(290,140)">
-        <!-- Legs -->
-        <rect x="-12" y="76" width="11" height="65" rx="4" fill="#1e3a5f"/>
-        <rect x="2" y="76" width="11" height="65" rx="4" fill="#1e3a5f"/>
-        <!-- Shoes -->
-        <ellipse cx="-7" cy="142" rx="9" ry="5" fill="#0f172a"/>
-        <ellipse cx="7" cy="142" rx="9" ry="5" fill="#0f172a"/>
-        <!-- Suit body -->
-        <rect x="-18" y="30" width="36" height="50" rx="6" fill="#1e3a5f"/>
-        <!-- Shirt / tie -->
-        <rect x="-6" y="32" width="12" height="40" rx="2" fill="#e2e8f0"/>
-        <polygon points="0,36 -3,52 0,56 3,52" fill="#2563eb"/>
-        <!-- Head -->
-        <circle cx="0" cy="14" r="19" fill="#c8956a"/>
-        <!-- Hair -->
-        <ellipse cx="0" cy="-2" rx="14" ry="9" fill="#2d1a0e"/>
-        <!-- Beard -->
-        <ellipse cx="0" cy="26" rx="10" ry="5" fill="#2d1a0e" opacity=".5"/>
-        <!-- Arm holding laptop -->
-        <rect x="14" y="38" width="12" height="38" rx="5" fill="#1e3a5f"/>
-        <!-- Laptop -->
-        <rect x="18" y="60" width="30" height="22" rx="3" fill="#334155"/>
-        <rect x="20" y="62" width="26" height="16" rx="2" fill="#60a5fa"/>
-      </g>
-
-      <!-- ── PERSON 3 – Male student right of building ── -->
-      <g transform="translate(560,155)">
-        <!-- Legs -->
-        <rect x="-12" y="72" width="11" height="60" rx="4" fill="#4a2d7a"/>
-        <rect x="2" y="72" width="11" height="60" rx="4" fill="#4a2d7a"/>
-        <ellipse cx="-7" cy="134" rx="9" ry="5" fill="#1e293b"/>
-        <ellipse cx="7" cy="134" rx="9" ry="5" fill="#1e293b"/>
-        <!-- Body / hoodie -->
-        <rect x="-18" y="28" width="36" height="47" rx="7" fill="#5b3a8a"/>
-        <!-- Backpack -->
-        <rect x="14" y="30" width="20" height="36" rx="5" fill="#7c5ab8"/>
-        <rect x="14" y="36" width="4" height="24" rx="2" fill="#6344a0"/>
-        <!-- Folder held -->
-        <rect x="-30" y="50" width="20" height="28" rx="3" fill="#f0b429"/>
-        <!-- Head -->
-        <circle cx="0" cy="14" r="18" fill="#8d5524"/>
-        <!-- Hair / beard -->
-        <ellipse cx="0" cy="-1" rx="13" ry="9" fill="#1a0a00"/>
-        <ellipse cx="0" cy="24" rx="9" ry="5" fill="#1a0a00" opacity=".45"/>
-      </g>
-
-      <!-- ── PERSON 4 – Female red hair ── -->
-      <g transform="translate(635,158)">
-        <!-- Legs -->
-        <rect x="-11" y="70" width="10" height="60" rx="4" fill="#e2e8f0"/>
-        <rect x="3" y="70" width="10" height="60" rx="4" fill="#e2e8f0"/>
-        <ellipse cx="-6" cy="132" rx="9" ry="5" fill="#1e293b"/>
-        <ellipse cx="7" cy="132" rx="9" ry="5" fill="#1e293b"/>
-        <!-- Dress / top -->
-        <rect x="-17" y="27" width="34" height="46" rx="6" fill="#0ea5e9"/>
-        <!-- Bag -->
-        <rect x="14" y="48" width="16" height="22" rx="4" fill="#7dd3fc"/>
-        <!-- Head -->
-        <circle cx="0" cy="13" r="18" fill="#f4c498"/>
-        <!-- Long red hair -->
-        <ellipse cx="0" cy="0" rx="16" ry="10" fill="#b03030"/>
-        <rect x="-16" y="8" width="6" height="40" rx="3" fill="#b03030"/>
-        <rect x="10" y="8" width="6" height="38" rx="3" fill="#b03030"/>
-        <!-- Notebook -->
-        <rect x="-28" y="42" width="18" height="24" rx="3" fill="#334155"/>
-        <rect x="-26" y="44" width="14" height="20" rx="2" fill="#60a5fa"/>
-      </g>
-
-      <!-- ── PERSON 5 – Male student far right ── -->
-      <g transform="translate(705,155)">
-        <!-- Legs -->
-        <rect x="-11" y="72" width="10" height="62" rx="4" fill="#334155"/>
-        <rect x="3" y="72" width="10" height="62" rx="4" fill="#334155"/>
-        <ellipse cx="-6" cy="136" rx="9" ry="5" fill="#0f172a"/>
-        <ellipse cx="7" cy="136" rx="9" ry="5" fill="#0f172a"/>
-        <!-- Hoodie -->
-        <rect x="-17" y="28" width="34" height="47" rx="7" fill="#475569"/>
-        <!-- Backpack -->
-        <rect x="-32" y="30" width="18" height="34" rx="5" fill="#2563eb"/>
-        <rect x="-30" y="36" width="4" height="22" rx="2" fill="#1d4ed8"/>
-        <!-- Head -->
-        <circle cx="0" cy="14" r="18" fill="#c8956a"/>
-        <!-- Hair -->
-        <ellipse cx="0" cy="0" rx="13" ry="8" fill="#1a0a00"/>
-        <!-- Book in arm -->
-        <rect x="14" y="50" width="22" height="28" rx="3" fill="#2563eb"/>
-      </g>
-
-    </svg>
-  </div>
-</section>
-
-<!-- ── FEATURE CARDS ── -->
-<section class="features">
-  <div class="feature-grid">
-
-    <!-- HOD Dashboard -->
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="8" y="10" width="32" height="28" rx="3" fill="#dbeafe"/>
-          <rect x="8" y="10" width="32" height="8" rx="3" fill="#93c5fd"/>
-          <rect x="14" y="24" width="8" height="10" rx="2" fill="#2563eb"/>
-          <rect x="26" y="20" width="8" height="14" rx="2" fill="#60a5fa"/>
-          <!-- clipboard clip -->
-          <rect x="20" y="6" width="8" height="8" rx="2" fill="#f59e0b"/>
-          <rect x="22" y="4" width="4" height="6" rx="1" fill="#d97706"/>
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
         </svg>
       </div>
-      <h3>HOD Dashboard</h3>
+      EduLink
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">Énatioe</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="{% url 'login' %}"><button class="btn-ghost">Login</button></a>
+      <a href=""><button class="btn-primary">Register</button></a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <h1>Welcome to EduLink</h1>
+    <p>Streamline Your College Management</p>
+
+    <div class="hero-btns">
+      <button class="btn-primary">Get Started</button>
+      <button class="btn-outline">Learn More</button>
     </div>
 
-    <!-- Advisor Management -->
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- person -->
-          <circle cx="24" cy="16" r="8" fill="#bfdbfe"/>
-          <path d="M10 38c0-7.732 6.268-14 14-14s14 6.268 14 14" fill="#93c5fd"/>
-          <!-- gear -->
-          <circle cx="36" cy="12" r="5" fill="#2563eb"/>
-          <circle cx="36" cy="12" r="2.5" fill="white"/>
-          <rect x="34.5" y="7" width="3" height="2" rx="1" fill="#2563eb"/>
-          <rect x="34.5" y="15" width="3" height="2" rx="1" fill="#2563eb"/>
-          <rect x="31" y="10.5" width="2" height="3" rx="1" fill="#2563eb"/>
-          <rect x="39" y="10.5" width="2" height="3" rx="1" fill="#2563eb"/>
+    <!-- Illustration -->
+    <div class="hero-illustration">
+      <!-- Floating envelope icons -->
+      <div class="float-icon fi-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 7l10 7 10-7" />
         </svg>
       </div>
-      <h3>Advisor Management</h3>
-    </div>
-
-    <!-- Faculty & Classes -->
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- blackboard -->
-          <rect x="6" y="10" width="36" height="26" rx="3" fill="#166534"/>
-          <rect x="8" y="12" width="32" height="22" rx="2" fill="#15803d"/>
-          <!-- chart lines on board -->
-          <polyline points="12,30 20,22 28,26 36,16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- person/teacher -->
-          <circle cx="40" cy="22" r="6" fill="#bfdbfe"/>
-          <rect x="36" y="30" width="8" height="10" rx="3" fill="#2563eb"/>
-          <!-- pointer -->
-          <line x1="36" y1="25" x2="28" y2="30" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
-          <!-- desk -->
-          <rect x="6" y="38" width="36" height="3" rx="1.5" fill="#94a3b8"/>
+      <div class="float-icon fi-2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 7l10 7 10-7" />
         </svg>
       </div>
-      <h3>Faculty &amp; Classes</h3>
-    </div>
-
-    <!-- Student Portal -->
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- person reading -->
-          <circle cx="24" cy="14" r="8" fill="#fcd34d"/>
-          <path d="M12 38c0-6.627 5.373-12 12-12s12 5.373 12 12" fill="#fef08a"/>
-          <!-- open book -->
-          <rect x="10" y="28" width="13" height="10" rx="2" fill="#fbbf24"/>
-          <rect x="25" y="28" width="13" height="10" rx="2" fill="#f59e0b"/>
-          <line x1="23" y1="28" x2="23" y2="38" stroke="#d97706" stroke-width="1.5"/>
-          <!-- sparkles -->
-          <circle cx="38" cy="14" r="2" fill="#fcd34d"/>
-          <circle cx="42" cy="20" r="1.5" fill="#f59e0b"/>
-          <circle cx="10" cy="20" r="1.5" fill="#fcd34d"/>
+      <div class="float-icon fi-3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 7l10 7 10-7" />
         </svg>
       </div>
-      <h3>Student Portal</h3>
-    </div>
 
-  </div>
-</section>
+      <!-- Campus SVG Scene -->
+      <svg class="campus-scene" viewBox="0 0 860 340" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky / background -->
+        <rect width="860" height="340" fill="none" />
+
+        <!-- Background trees left -->
+        <ellipse cx="80" cy="230" rx="55" ry="45" fill="#b8d4a8" opacity=".7" />
+        <rect x="76" y="245" width="8" height="40" fill="#8fa87d" />
+        <!-- bare tree -->
+        <line x1="140" y1="285" x2="140" y2="200" stroke="#b0b8c4" stroke-width="3" />
+        <line x1="140" y1="220" x2="120" y2="205" stroke="#b0b8c4" stroke-width="2" />
+        <line x1="140" y1="235" x2="158" y2="222" stroke="#b0b8c4" stroke-width="2" />
+
+        <!-- Background trees right -->
+        <ellipse cx="760" cy="235" rx="50" ry="42" fill="#b8d4a8" opacity=".7" />
+        <rect x="756" y="248" width="8" height="38" fill="#8fa87d" />
+        <ellipse cx="810" cy="240" rx="38" ry="32" fill="#c8e0ba" opacity=".6" />
+        <rect x="806" y="252" width="7" height="34" fill="#8fa87d" />
+
+        <!-- Autumn bushes center-left -->
+        <ellipse cx="210" cy="272" rx="34" ry="22" fill="#e0a84a" opacity=".8" />
+        <!-- Autumn bushes center-right -->
+        <ellipse cx="640" cy="272" rx="30" ry="20" fill="#d4944a" opacity=".7" />
+        <ellipse cx="680" cy="268" rx="22" ry="16" fill="#e8b44a" opacity=".65" />
+
+        <!-- Green bushes foreground -->
+        <ellipse cx="160" cy="285" rx="28" ry="18" fill="#7ec87e" opacity=".75" />
+        <ellipse cx="695" cy="282" rx="25" ry="16" fill="#7ec87e" opacity=".7" />
+
+        <!-- ── BUILDING ── -->
+        <!-- Main body -->
+        <rect x="310" y="120" width="240" height="180" rx="4" fill="#c8d8f0" />
+        <!-- Roof / pediment -->
+        <polygon points="310,120 430,60 550,120" fill="#b0c4e4" />
+        <!-- Clock tower -->
+        <rect x="396" y="40" width="68" height="90" rx="3" fill="#b8cce8" />
+        <!-- Tower top -->
+        <polygon points="396,40 430,10 464,40" fill="#d4a844" />
+        <!-- Clock face -->
+        <circle cx="430" cy="82" r="18" fill="white" stroke="#a0b4d0" stroke-width="1.5" />
+        <line x1="430" y1="72" x2="430" y2="82" stroke="#475569" stroke-width="1.5" />
+        <line x1="430" y1="82" x2="438" y2="87" stroke="#475569" stroke-width="1.5" />
+        <!-- Windows main building -->
+        <rect x="330" y="145" width="36" height="50" rx="12" fill="#8aaed4" />
+        <rect x="392" y="145" width="76" height="50" rx="12" fill="#8aaed4" /><!-- main arch -->
+        <rect x="494" y="145" width="36" height="50" rx="12" fill="#8aaed4" />
+        <!-- Second floor windows -->
+        <rect x="330" y="210" width="28" height="32" rx="4" fill="#9bbce0" />
+        <rect x="370" y="210" width="28" height="32" rx="4" fill="#9bbce0" />
+        <rect x="462" y="210" width="28" height="32" rx="4" fill="#9bbce0" />
+        <rect x="502" y="210" width="28" height="32" rx="4" fill="#9bbce0" />
+        <!-- Ground level door -->
+        <rect x="408" y="252" width="44" height="48" rx="6" fill="#7aaad0" />
+
+        <!-- Ground -->
+        <rect x="0" y="292" width="860" height="48" fill="#dde8f4" rx="4" />
+
+        <!-- ── PERSON 1 – Female student left ── -->
+        <g transform="translate(200,160)">
+          <!-- Body -->
+          <rect x="-14" y="30" width="28" height="50" rx="6" fill="#3b5b9a" />
+          <!-- Skirt/legs -->
+          <rect x="-12" y="76" width="10" height="55" rx="4" fill="#2a4178" />
+          <rect x="2" y="76" width="10" height="55" rx="4" fill="#2a4178" />
+          <!-- Shoes -->
+          <ellipse cx="-7" cy="132" rx="8" ry="4" fill="#1e293b" />
+          <ellipse cx="7" cy="132" rx="8" ry="4" fill="#1e293b" />
+          <!-- Head -->
+          <circle cx="0" cy="16" r="18" fill="#f4c498" />
+          <!-- Hair bun -->
+          <ellipse cx="0" cy="0" rx="12" ry="8" fill="#3d2314" />
+          <circle cx="0" cy="-2" r="6" fill="#3d2314" />
+          <!-- Bag strap -->
+          <line x1="12" y1="30" x2="20" y2="70" stroke="#c9742a" stroke-width="4" stroke-linecap="round" />
+          <!-- Bag -->
+          <rect x="16" y="62" width="18" height="20" rx="4" fill="#d4833a" />
+          <!-- Arm holding folder -->
+          <rect x="-24" y="38" width="12" height="35" rx="5" fill="#3b5b9a" />
+          <rect x="-34" y="58" width="18" height="24" rx="3" fill="#2563eb" />
+        </g>
+
+        <!-- ── PERSON 2 – Male professional center-left ── -->
+        <g transform="translate(290,140)">
+          <!-- Legs -->
+          <rect x="-12" y="76" width="11" height="65" rx="4" fill="#1e3a5f" />
+          <rect x="2" y="76" width="11" height="65" rx="4" fill="#1e3a5f" />
+          <!-- Shoes -->
+          <ellipse cx="-7" cy="142" rx="9" ry="5" fill="#0f172a" />
+          <ellipse cx="7" cy="142" rx="9" ry="5" fill="#0f172a" />
+          <!-- Suit body -->
+          <rect x="-18" y="30" width="36" height="50" rx="6" fill="#1e3a5f" />
+          <!-- Shirt / tie -->
+          <rect x="-6" y="32" width="12" height="40" rx="2" fill="#e2e8f0" />
+          <polygon points="0,36 -3,52 0,56 3,52" fill="#2563eb" />
+          <!-- Head -->
+          <circle cx="0" cy="14" r="19" fill="#c8956a" />
+          <!-- Hair -->
+          <ellipse cx="0" cy="-2" rx="14" ry="9" fill="#2d1a0e" />
+          <!-- Beard -->
+          <ellipse cx="0" cy="26" rx="10" ry="5" fill="#2d1a0e" opacity=".5" />
+          <!-- Arm holding laptop -->
+          <rect x="14" y="38" width="12" height="38" rx="5" fill="#1e3a5f" />
+          <!-- Laptop -->
+          <rect x="18" y="60" width="30" height="22" rx="3" fill="#334155" />
+          <rect x="20" y="62" width="26" height="16" rx="2" fill="#60a5fa" />
+        </g>
+
+        <!-- ── PERSON 3 – Male student right of building ── -->
+        <g transform="translate(560,155)">
+          <!-- Legs -->
+          <rect x="-12" y="72" width="11" height="60" rx="4" fill="#4a2d7a" />
+          <rect x="2" y="72" width="11" height="60" rx="4" fill="#4a2d7a" />
+          <ellipse cx="-7" cy="134" rx="9" ry="5" fill="#1e293b" />
+          <ellipse cx="7" cy="134" rx="9" ry="5" fill="#1e293b" />
+          <!-- Body / hoodie -->
+          <rect x="-18" y="28" width="36" height="47" rx="7" fill="#5b3a8a" />
+          <!-- Backpack -->
+          <rect x="14" y="30" width="20" height="36" rx="5" fill="#7c5ab8" />
+          <rect x="14" y="36" width="4" height="24" rx="2" fill="#6344a0" />
+          <!-- Folder held -->
+          <rect x="-30" y="50" width="20" height="28" rx="3" fill="#f0b429" />
+          <!-- Head -->
+          <circle cx="0" cy="14" r="18" fill="#8d5524" />
+          <!-- Hair / beard -->
+          <ellipse cx="0" cy="-1" rx="13" ry="9" fill="#1a0a00" />
+          <ellipse cx="0" cy="24" rx="9" ry="5" fill="#1a0a00" opacity=".45" />
+        </g>
+
+        <!-- ── PERSON 4 – Female red hair ── -->
+        <g transform="translate(635,158)">
+          <!-- Legs -->
+          <rect x="-11" y="70" width="10" height="60" rx="4" fill="#e2e8f0" />
+          <rect x="3" y="70" width="10" height="60" rx="4" fill="#e2e8f0" />
+          <ellipse cx="-6" cy="132" rx="9" ry="5" fill="#1e293b" />
+          <ellipse cx="7" cy="132" rx="9" ry="5" fill="#1e293b" />
+          <!-- Dress / top -->
+          <rect x="-17" y="27" width="34" height="46" rx="6" fill="#0ea5e9" />
+          <!-- Bag -->
+          <rect x="14" y="48" width="16" height="22" rx="4" fill="#7dd3fc" />
+          <!-- Head -->
+          <circle cx="0" cy="13" r="18" fill="#f4c498" />
+          <!-- Long red hair -->
+          <ellipse cx="0" cy="0" rx="16" ry="10" fill="#b03030" />
+          <rect x="-16" y="8" width="6" height="40" rx="3" fill="#b03030" />
+          <rect x="10" y="8" width="6" height="38" rx="3" fill="#b03030" />
+          <!-- Notebook -->
+          <rect x="-28" y="42" width="18" height="24" rx="3" fill="#334155" />
+          <rect x="-26" y="44" width="14" height="20" rx="2" fill="#60a5fa" />
+        </g>
+
+        <!-- ── PERSON 5 – Male student far right ── -->
+        <g transform="translate(705,155)">
+          <!-- Legs -->
+          <rect x="-11" y="72" width="10" height="62" rx="4" fill="#334155" />
+          <rect x="3" y="72" width="10" height="62" rx="4" fill="#334155" />
+          <ellipse cx="-6" cy="136" rx="9" ry="5" fill="#0f172a" />
+          <ellipse cx="7" cy="136" rx="9" ry="5" fill="#0f172a" />
+          <!-- Hoodie -->
+          <rect x="-17" y="28" width="34" height="47" rx="7" fill="#475569" />
+          <!-- Backpack -->
+          <rect x="-32" y="30" width="18" height="34" rx="5" fill="#2563eb" />
+          <rect x="-30" y="36" width="4" height="22" rx="2" fill="#1d4ed8" />
+          <!-- Head -->
+          <circle cx="0" cy="14" r="18" fill="#c8956a" />
+          <!-- Hair -->
+          <ellipse cx="0" cy="0" rx="13" ry="8" fill="#1a0a00" />
+          <!-- Book in arm -->
+          <rect x="14" y="50" width="22" height="28" rx="3" fill="#2563eb" />
+        </g>
+
+      </svg>
+    </div>
+  </section>
+
+  <!-- ── FEATURE CARDS ── -->
+  <section class="features">
+    <div class="feature-grid">
+
+      <!-- HOD Dashboard -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="32" height="28" rx="3" fill="#dbeafe" />
+            <rect x="8" y="10" width="32" height="8" rx="3" fill="#93c5fd" />
+            <rect x="14" y="24" width="8" height="10" rx="2" fill="#2563eb" />
+            <rect x="26" y="20" width="8" height="14" rx="2" fill="#60a5fa" />
+            <!-- clipboard clip -->
+            <rect x="20" y="6" width="8" height="8" rx="2" fill="#f59e0b" />
+            <rect x="22" y="4" width="4" height="6" rx="1" fill="#d97706" />
+          </svg>
+        </div>
+        <h3>HOD Dashboard</h3>
+      </div>
+
+      <!-- Advisor Management -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- person -->
+            <circle cx="24" cy="16" r="8" fill="#bfdbfe" />
+            <path d="M10 38c0-7.732 6.268-14 14-14s14 6.268 14 14" fill="#93c5fd" />
+            <!-- gear -->
+            <circle cx="36" cy="12" r="5" fill="#2563eb" />
+            <circle cx="36" cy="12" r="2.5" fill="white" />
+            <rect x="34.5" y="7" width="3" height="2" rx="1" fill="#2563eb" />
+            <rect x="34.5" y="15" width="3" height="2" rx="1" fill="#2563eb" />
+            <rect x="31" y="10.5" width="2" height="3" rx="1" fill="#2563eb" />
+            <rect x="39" y="10.5" width="2" height="3" rx="1" fill="#2563eb" />
+          </svg>
+        </div>
+        <h3>Advisor Management</h3>
+      </div>
+
+      <!-- Faculty & Classes -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- blackboard -->
+            <rect x="6" y="10" width="36" height="26" rx="3" fill="#166534" />
+            <rect x="8" y="12" width="32" height="22" rx="2" fill="#15803d" />
+            <!-- chart lines on board -->
+            <polyline points="12,30 20,22 28,26 36,16" stroke="white" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <!-- person/teacher -->
+            <circle cx="40" cy="22" r="6" fill="#bfdbfe" />
+            <rect x="36" y="30" width="8" height="10" rx="3" fill="#2563eb" />
+            <!-- pointer -->
+            <line x1="36" y1="25" x2="28" y2="30" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" />
+            <!-- desk -->
+            <rect x="6" y="38" width="36" height="3" rx="1.5" fill="#94a3b8" />
+          </svg>
+        </div>
+        <h3>Faculty &amp; Classes</h3>
+      </div>
+
+      <!-- Student Portal -->
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- person reading -->
+            <circle cx="24" cy="14" r="8" fill="#fcd34d" />
+            <path d="M12 38c0-6.627 5.373-12 12-12s12 5.373 12 12" fill="#fef08a" />
+            <!-- open book -->
+            <rect x="10" y="28" width="13" height="10" rx="2" fill="#fbbf24" />
+            <rect x="25" y="28" width="13" height="10" rx="2" fill="#f59e0b" />
+            <line x1="23" y1="28" x2="23" y2="38" stroke="#d97706" stroke-width="1.5" />
+            <!-- sparkles -->
+            <circle cx="38" cy="14" r="2" fill="#fcd34d" />
+            <circle cx="42" cy="20" r="1.5" fill="#f59e0b" />
+            <circle cx="10" cy="20" r="1.5" fill="#fcd34d" />
+          </svg>
+        </div>
+        <h3>Student Portal</h3>
+      </div>
+
+    </div>
+  </section>
 
 </body>
+
 </html>
