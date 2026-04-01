@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}EduLink{% endblock %}</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  {% block extra_css %}{% endblock %}
+  <style>
+    /* ══════════════════════════════════════════
+       BASE STYLES — shared across all pages
+    ══════════════════════════════════════════ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --sidebar-width: 230px;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #dbeafe;
+      --purple: #7c3aed;
+      --purple-dark: #5b21b6;
+      --white: #ffffff;
+      --text-dark: #1e1040;
+      --text-mid: #4b5563;
+      --text-light: #9ca3af;
+      --card-bg: rgba(255, 255, 255, 0.84);
+      --card-border: rgba(255, 255, 255, 0.60);
+      --border: #e2e8f0;
+      --radius: 16px;
+      --green: #16a34a;
+      --red: #dc2626;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #2d1060;
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 30%, rgba(120, 60, 220, .55) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(80, 40, 180, .40) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 75%, rgba(200, 100, 50, .22) 0%, transparent 60%),
+        linear-gradient(135deg, #1a0640 0%, #2d1060 40%, #3a1580 70%, #1e0850 100%);
+    }
+
+    .bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at 12% 18%, rgba(255, 255, 255, .55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 28% 58%, rgba(255, 255, 255, .40) 0%, transparent 100%),
+        radial-gradient(2px 2px at 52% 12%, rgba(255, 255, 255, .50) 0%, transparent 100%),
+        radial-gradient(1px 1px at 68% 42%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 83% 22%, rgba(255, 255, 255, .50) 0%, transparent 100%),
+        radial-gradient(1px 1px at 38% 78%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+        radial-gradient(2px 2px at 88% 68%, rgba(255, 255, 255, .40) 0%, transparent 100%),
+        radial-gradient(1px 1px at 8% 88%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 62% 86%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 48% 48%, rgba(255, 255, 255, .25) 0%, transparent 100%);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: rgba(14, 4, 38, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, .08);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 24px;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 0 24px 32px;
+      text-decoration: none;
+    }
+
+    .logo-shield {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(234, 88, 12, .40);
+      flex-shrink: 0;
+    }
+
+    .logo-shield svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    .sidebar-logo-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: white;
+    }
+
+    /* Nav items */
+    .nav-section {
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 24px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, .62);
+      font-size: 0.96rem;
+      font-weight: 600;
+      text-decoration: none;
+      position: relative;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, .07);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(99, 60, 200, .65) 0%, rgba(99, 60, 200, .20) 100%);
+      color: white;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #f59e0b, #ea580c);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Sidebar footer / logout */
+    .sidebar-footer {
+      padding: 20px 24px 0;
+      border-top: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, .50);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 8px 0;
+      transition: color .2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .logout-btn:hover {
+      color: #f87171;
+    }
+
+    .logout-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ── MAIN CONTENT AREA ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 36px 48px;
+      position: relative;
+      z-index: 5;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, .18) transparent;
+    }
+
+    .main::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .main::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .18);
+      border-radius: 3px;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.95rem;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 22px;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, .35);
+    }
+
+    /* ── GLASSMORPHISM CARD ── */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .12);
+    }
+
+    /* ── PANEL CARD (titled section) ── */
+    .panel-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .12);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .panel-header h3 {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--text-dark);
+    }
+
+    /* ── VIEW ALL LINK ── */
+    .view-all {
+      font-size: 0.82rem;
+      color: var(--purple);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+    }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 7px 10px;
+      border-bottom: 1.5px solid rgba(0, 0, 0, .07);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(0, 0, 0, .05);
+      transition: background .15s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: rgba(124, 58, 237, .05);
+    }
+
+    tbody td {
+      padding: 12px 10px;
+      font-size: 0.88rem;
+      color: var(--text-dark);
+    }
+
+    /* ── BADGES ── */
+    .code-badge {
+      background: rgba(124, 58, 237, .10);
+      color: var(--purple);
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .pending-badge {
+      background: rgba(234, 179, 8, .15);
+      color: #b45309;
+      font-size: 0.77rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .role-tag {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+    }
+
+    .date-tag {
+      font-size: 0.80rem;
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .btn-approve {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 5px 11px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-approve:hover {
+      background: #15803d;
+      transform: scale(1.06);
+    }
+
+    .btn-reject {
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 5px 11px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      margin-left: 5px;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-reject:hover {
+      background: #b91c1c;
+      transform: scale(1.06);
+    }
+
+    /* ── NOTIFICATION ITEMS ── */
+    .notif-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .notif-item {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .09);
+      cursor: pointer;
+      transition: box-shadow .2s, transform .15s;
+    }
+
+    .notif-item:hover {
+      box-shadow: 0 6px 22px rgba(0, 0, 0, .17);
+      transform: translateY(-1px);
+    }
+
+    .notif-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-avatar svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .notif-avatar.teal {
+      background: linear-gradient(135deg, #0891b2, #06b6d4);
+    }
+
+    .notif-avatar.orange {
+      background: linear-gradient(135deg, #c2410c, #f97316);
+    }
+
+    .notif-avatar.green {
+      background: linear-gradient(135deg, #15803d, #22c55e);
+    }
+
+    .notif-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notif-content p {
+      font-size: 0.86rem;
+      color: var(--text-dark);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .notif-content p strong {
+      font-weight: 800;
+    }
+
+    .notif-content .time {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 3px;
+      display: block;
+    }
+
+    .notif-arrow {
+      color: var(--text-light);
+      flex-shrink: 0;
+    }
+
+    .notif-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── SECTION HEADER (white text for dark bg) ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-header h3 {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.08rem;
+      color: white;
+    }
+
+    .section-header .view-all {
+      color: rgba(255, 255, 255, .70);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 22px 16px 36px;
+      }
+
+      .notif-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-layer"></div>
+
+  <!-- ════════════ SIDEBAR ════════════ -->
+  <aside class="sidebar">
+    <a href="" class="sidebar-logo">
+      <div class="logo-shield">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+        </svg>
+      </div>
+      <span class="sidebar-logo-text">EduLink</span>
+    </a>
+
+    <nav class="nav-section">
+      <a href="" class="nav-item {% block nav_dashboard %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        Dashboard
+      </a>
+      <a href="" class="nav-item {% block nav_advisors %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+        </svg>
+        Advisors
+      </a>
+      <a href="" class="nav-item {% block nav_faculty %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+        </svg>
+        Faculty
+      </a>
+      <a href="" class="nav-item {% block nav_students %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+        </svg>
+        Students
+      </a>
+      <a href="" class="nav-item {% block nav_settings %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+        </svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <form method="POST" action="">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+          </svg>
+          Logout
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- ════════════ MAIN CONTENT ════════════ -->
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>
