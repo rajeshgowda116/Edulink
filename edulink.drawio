@@ -439,8 +439,29 @@
             <mxPoint x="670" y="598" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dnMbKFVqxHBmCVjoKyDU-62" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
-          <mxGeometry height="60" width="120" x="320" y="760" as="geometry" />
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-63" edge="1" parent="1" source="dnMbKFVqxHBmCVjoKyDU-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="Y8K9-Gvo-hso4ERNGsnQ-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-72" edge="1" parent="1" source="dnMbKFVqxHBmCVjoKyDU-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dnMbKFVqxHBmCVjoKyDU-70">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-73" edge="1" parent="1" source="dnMbKFVqxHBmCVjoKyDU-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="dnMbKFVqxHBmCVjoKyDU-68">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-62" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Attendence" vertex="1">
+          <mxGeometry height="60" width="120" x="340" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-68" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="usn" vertex="1">
+          <mxGeometry height="40" width="80" x="640" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-69" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="660" y="750" as="sourcePoint" />
+            <mxPoint x="700" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dnMbKFVqxHBmCVjoKyDU-70" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="is_prest" vertex="1">
+          <mxGeometry height="40" width="80" x="640" y="810" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
