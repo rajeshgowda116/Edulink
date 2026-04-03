@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}EduLink – Generate Class Code{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Generate Class Code Page ── */
+  .gen-wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* Page heading */
+  .gen-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, .30);
+  }
+
+  .gen-subtitle {
+    font-size: 0.97rem;
+    color: rgba(255, 255, 255, 0.70);
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+
+  /* ── Main Card ── */
+  .gen-card {
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .20);
+  }
+
+  /* Top section – form */
+  .gen-form-section {
+    padding: 32px 36px 28px;
+  }
+
+  .field-label {
+    display: block;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+  }
+
+  /* Input */
+  .dept-input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1.5px solid rgba(255, 255, 255, 0.50);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  }
+
+  .dept-input:focus {
+    border-color: rgba(124, 58, 237, .6);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, .18);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .dept-input::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Generate button */
+  .btn-generate {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #6d28d9, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: .03em;
+    box-shadow: 0 4px 20px rgba(109, 40, 217, .40);
+    transition: background .2s, transform .15s, box-shadow .2s;
+  }
+
+  .btn-generate:hover {
+    background: linear-gradient(135deg, #5b21b6, #4338ca);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(109, 40, 217, .50);
+  }
+
+  .btn-generate:active {
+    transform: translateY(0);
+  }
+
+  /* ── Result Section ── */
+  .gen-result-section {
+    background: rgba(255, 255, 255, 0.10);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 30px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 110px;
+  }
+
+  /* Code display box */
+  .code-display {
+    display: none;
+    /* shown via JS after generation */
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1.5px solid rgba(255, 255, 255, 0.60);
+    border-radius: 14px;
+    padding: 18px 36px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .10);
+    animation: popIn .35s cubic-bezier(.34, 1.56, .64, 1) both;
+  }
+
+  .code-display.visible {
+    display: flex;
+  }
+
+  @keyframes popIn {
+    from {
+      opacity: 0;
+      transform: scale(.88);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Green check circle */
+  .check-circle {
+    width: 36px;
+    height: 36px;
+    background: #22c55e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 12px rgba(34, 197, 94, .40);
+  }
+
+  .check-circle svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+
+  .generated-code {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: #1e1040;
+    letter-spacing: .06em;
+  }
+
+  /* Copy button */
+  .btn-copy {
+    background: none;
+    border: 1.5px solid rgba(124, 58, 237, .30);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7c3aed;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .2s, border-color .2s;
+    flex-shrink: 0;
+  }
+
+  .btn-copy:hover {
+    background: rgba(124, 58, 237, .08);
+    border-color: rgba(124, 58, 237, .55);
+  }
+
+  /* Placeholder text shown before generation */
+  .result-placeholder {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.90rem;
+    font-style: italic;
+  }
+
+  /* Django flash messages */
+  .msg-success,
+  .msg-error {
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    text-align: left;
+  }
+
+  .msg-success {
+    background: rgba(34, 197, 94, .15);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, .30);
+  }
+
+  .msg-error {
+    background: rgba(239, 68, 68, .15);
+    color: #fecaca;
+    border: 1px solid rgba(239, 68, 68, .30);
+  }
+
+  @media (max-width: 560px) {
+    .gen-form-section {
+      padding: 22px 18px 20px;
+    }
+
+    .gen-result-section {
+      padding: 22px 18px;
+    }
+
+    .generated-code {
+      font-size: 1.5rem;
+    }
+
+    .gen-title {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="gen-wrapper">
+
+  <h1 class="gen-title">Generate Department Code</h1>
+  <p class="gen-subtitle">Enter the department name to generate a unique class code</p>
+
+  <div class="gen-card">
+
+    <!-- Form Section -->
+    <div class="gen-form-section">
+
+      {% if messages %}
+      {% for message in messages %}
+      <div class="{% if message.tags == 'error' %}msg-error{% else %}msg-success{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <form method="POST" action="{% url 'generate_dept_code' %}" id="codeForm">
+        {% csrf_token %}
+
+        <label class="field-label" for="department_name">Department Name</label>
+        <input type="text" id="department_name" name="department_name" class="dept-input"
+          placeholder="e.g. Computer Science" value="{{ department_name|default:'' }}" required autocomplete="off" />
+
+        <button type="submit" class="btn-generate">Generate Code</button>
+      </form>
+    </div>
+
+    <!-- Result Section -->
+    <div class="gen-result-section">
+
+      {% if generated_code %}
+      {# Django passed the generated code back in context #}
+      <div class="code-display visible" id="codeDisplay">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+          </svg>
+        </div>
+        <span class="generated-code" id="generatedCode">{{ generated_code }}</span>
+        <button class="btn-copy" onclick="copyCode()">Copy</button>
+      </div>
+      {% else %}
+      <div class="code-display" id="codeDisplay">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+          </svg>
+        </div>
+        <span class="generated-code" id="generatedCode"></span>
+        <button class="btn-copy" onclick="copyCode()">Copy</button>
+      </div>
+      <span class="result-placeholder" id="resultPlaceholder">Your class code will appear here…</span>
+      {% endif %}
+
+    </div>
+
+  </div><!-- /gen-card -->
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  function copyCode() {
+    const code = document.getElementById('generatedCode').textContent.trim();
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+
+  /* Optional: client-side preview (generates same format as Django util) */
+  function generatePreview(dept) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = 'CLS-';
+    for (let i = 0; i < 6; i++) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  }
+</script>
+{% endblock %}

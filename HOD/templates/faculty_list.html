@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block title %}EduLink – Faculty List{% endblock %}
+{% block nav_advisors %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Advisors List Page ── */
+  .advisors-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Main Card ── */
+  .advisors-card {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .22);
+    padding: 32px 36px 10px;
+  }
+
+  /* ── Card Header ── */
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .card-header h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+  }
+
+  /* Search Box */
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.80);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.60);
+    border-radius: 50px;
+    padding: 10px 20px;
+    min-width: 220px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .10);
+    transition: box-shadow .2s, border-color .2s;
+  }
+
+  .search-box:focus-within {
+    border-color: rgba(124, 58, 237, .5);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, .15), 0 2px 12px rgba(0, 0, 0, .10);
+  }
+
+  .search-box svg {
+    width: 17px;
+    height: 17px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.90rem;
+    color: #374151;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    padding: 0;
+  }
+
+  .search-box input::placeholder {
+    color: #94a3b8;
+  }
+
+  /* ── Table ── */
+  .adv-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Table header */
+  .adv-table thead tr {
+    background: rgba(100, 90, 200, 0.45);
+    border-radius: 10px;
+  }
+
+  .adv-table thead th {
+    padding: 15px 20px;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.90);
+    letter-spacing: .03em;
+  }
+
+  .adv-table thead th:first-child {
+    border-radius: 10px 0 0 10px;
+  }
+
+  .adv-table thead th:last-child {
+    border-radius: 0 10px 10px 0;
+  }
+
+  .th-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .th-icon svg {
+    width: 14px;
+    height: 14px;
+    opacity: .8;
+  }
+
+  /* Body rows */
+  .adv-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    transition: background .18s;
+  }
+
+  .adv-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .adv-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.09);
+  }
+
+  .adv-table tbody td {
+    padding: 18px 20px;
+    vertical-align: middle;
+  }
+
+  /* Name cell with avatar */
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .advisor-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2.5px solid rgba(255, 255, 255, 0.60);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: white;
+  }
+
+  .advisor-avatar.v2 {
+    background: linear-gradient(135deg, #0891b2, #2563eb);
+  }
+
+  .advisor-avatar.v3 {
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+  }
+
+  .advisor-avatar.v4 {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+  }
+
+  .advisor-avatar.v5 {
+    background: linear-gradient(135deg, #c2410c, #f59e0b);
+  }
+
+  .advisor-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+  }
+
+  /* Department cell */
+  .dept-text {
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.80);
+    font-weight: 500;
+  }
+
+  /* Class badge */
+  .class-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: .04em;
+    backdrop-filter: blur(8px);
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.50);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 640px) {
+    .advisors-card {
+      padding: 20px 16px 10px;
+    }
+
+    .card-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .adv-table tbody td {
+      padding: 14px 12px;
+    }
+
+    .search-box {
+      min-width: 160px;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="advisors-wrapper">
+
+  <div class="advisors-card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <h2>Faculty List</h2>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="advisorSearch" placeholder="Search" oninput="filterAdvisors(this.value)"
+          autocomplete="off" />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <table class="adv-table" id="advisorTable">
+      <thead>
+        <tr>
+          <th>
+            <span class="th-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Name
+            </span>
+          </th>
+          <th>Department</th>
+          <th>Class</th>
+        </tr>
+      </thead>
+      <tbody id="advisorBody">
+
+        {% for advisor in advisors %}
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar v{{ forloop.counter }}">
+                {{ advisor.first_name|first }}{{ advisor.last_name|first }}
+              </div>
+              <span class="advisor-name">Dr. {{ advisor.first_name }} {{ advisor.last_name }}</span>
+            </div>
+          </td>
+          <td><span class="dept-text">{{ advisor.department }}</span></td>
+          <td><span class="class-badge">{{ advisor.class_code }}</span></td>
+        </tr>
+        {% empty %}
+        {# ── Fallback static rows for preview ── #}
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar">NS</div>
+              <span class="advisor-name">Dr. Neha Sharma</span>
+            </div>
+          </td>
+          <td><span class="dept-text">Computer Science</span></td>
+          <td><span class="class-badge">AIML-3A</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar v2">AV</div>
+              <span class="advisor-name">Dr. Ankit Verma</span>
+            </div>
+          </td>
+          <td><span class="dept-text">Mechanical</span></td>
+          <td><span class="class-badge">MECH-5B</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar v3">PK</div>
+              <span class="advisor-name">Dr. Priya Kapoor</span>
+            </div>
+          </td>
+          <td><span class="dept-text">Electrical</span></td>
+          <td><span class="class-badge">ECE-2A</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar v4">RI</div>
+              <span class="advisor-name">Dr. Ramesh Iyer</span>
+            </div>
+          </td>
+          <td><span class="dept-text">Civil</span></td>
+          <td><span class="class-badge">CIVIL-4C</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="advisor-avatar v5">SS</div>
+              <span class="advisor-name">Dr. Sonali Singh</span>
+            </div>
+          </td>
+          <td><span class="dept-text">Electronics</span></td>
+          <td><span class="class-badge">EEE-1B</span></td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+  </div><!-- /advisors-card -->
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  function filterAdvisors(query) {
+    const rows = document.querySelectorAll('#advisorBody tr');
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const match = text.includes(q);
+      row.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+
+    // Show no-results message
+    let noRes = document.getElementById('noResults');
+    if (!noRes) {
+      noRes = document.createElement('tr');
+      noRes.id = 'noResults';
+      noRes.innerHTML = '<td colspan="3" class="no-results">No advisors found.</td>';
+      document.getElementById('advisorBody').appendChild(noRes);
+    }
+    noRes.style.display = (visible === 0 && q !== '') ? '' : 'none';
+  }
+</script>
+{% endblock %}
