@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}EduLink{% endblock %}</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  {% block extra_css %}{% endblock %}
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --sidebar-width: 240px;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #dbeafe;
+      --purple: #7c3aed;
+      --white: #ffffff;
+      --bg: #f0f4ff;
+      --text-dark: #1e293b;
+      --text-mid: #475569;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --radius: 14px;
+      --green: #16a34a;
+      --red: #dc2626;
+      --orange: #f59e0b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: linear-gradient(180deg, #3b5bdb 0%, #4c6ef5 40%, #748ffc 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 24px;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+      box-shadow: 4px 0 20px rgba(59, 91, 219, .25);
+    }
+
+    /* sparkle overlay */
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at 20% 25%, rgba(255, 255, 255, .45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 15%, rgba(255, 255, 255, .35) 0%, transparent 100%),
+        radial-gradient(2px 2px at 40% 60%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 70%, rgba(255, 255, 255, .25) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 15% 80%, rgba(255, 255, 255, .30) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 90%, rgba(255, 255, 255, .20) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 22px 32px;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 12px rgba(234, 88, 12, .40);
+    }
+
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      color: white;
+    }
+
+    .nav-section {
+      flex: 1;
+      position: relative;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 22px;
+      color: rgba(255, 255, 255, .72);
+      font-size: 0.97rem;
+      font-weight: 600;
+      text-decoration: none;
+      position: relative;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-item svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, .12);
+      color: white;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, .18);
+      color: white;
+      border-bottom: 2px solid rgba(255, 255, 255, .60);
+    }
+
+    .sidebar-footer {
+      padding: 20px 22px 0;
+      border-top: 1px solid rgba(255, 255, 255, .18);
+      position: relative;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, .60);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      padding: 8px 0;
+      transition: color .2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .logout-btn:hover {
+      color: #fca5a5;
+    }
+
+    .logout-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 36px 48px;
+      background: var(--bg);
+    }
+
+    .main::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .main::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.95rem;
+      font-weight: 900;
+      color: var(--text-dark);
+      margin-bottom: 22px;
+    }
+
+    /* ── SHARED CARD ── */
+    .white-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 16px rgba(37, 99, 235, .07);
+    }
+
+    /* ── TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background .15s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #f8faff;
+    }
+
+    tbody td {
+      padding: 14px 16px;
+      font-size: 0.90rem;
+      color: var(--text-dark);
+    }
+
+    /* ── BADGES ── */
+    .badge-active {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(22, 163, 74, .10);
+      color: #16a34a;
+      font-size: 0.80rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .badge-inactive {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(245, 158, 11, .12);
+      color: #b45309;
+      font-size: 0.80rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .btn-view {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-view:hover {
+      background: #15803d;
+      transform: scale(1.05);
+    }
+
+    .btn-remove {
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      margin-left: 6px;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-remove:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pg-btn {
+      min-width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-mid);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      transition: all .15s;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .pg-btn:hover {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .pg-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .pg-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    /* ── SEARCH ── */
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 14px;
+      transition: border-color .2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--blue);
+    }
+
+    .search-box svg {
+      width: 15px;
+      height: 15px;
+      color: var(--text-light);
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.87rem;
+      color: var(--text-dark);
+      font-family: 'Inter', sans-serif;
+      width: 160px;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-light);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 22px 16px 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <a href="{% url 'advisor_dashboard' %}" class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z" />
+        </svg>
+      </div>
+      <span class="logo-text">EduLink</span>
+    </a>
+
+    <nav class="nav-section">
+      <a href="{% url 'advisor_dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+        Dashboard
+      </a>
+      <a href="" class="nav-item {% block nav_students %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+        </svg>
+        Students
+      </a>
+      <a href="" class="nav-item {% block nav_attendance %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-7-2a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-8v3l2.5 2.5-1 1L11 12.7V8h1z" />
+        </svg>
+        Attendance
+      </a>
+      <a href="" class="nav-item {% block nav_announcements %}{% endblock %}">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.39.4.53.8 1.07 1.2 1.61.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z" />
+        </svg>
+        Announcements
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <form method="POST" action="">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+          </svg>
+          Logout
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- ════ MAIN ════ -->
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>

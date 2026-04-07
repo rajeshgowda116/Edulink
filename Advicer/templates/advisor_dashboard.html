@@ -1,0 +1,289 @@
+{% extends "advisor_base.html" %}
+
+{% block title %}EduLink – Advisor Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Welcome Card ── */
+  .welcome-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 14px rgba(37,99,235,.07);
+  }
+  .welcome-text h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.55rem; font-weight: 700;
+    color: var(--text-dark); margin-bottom: 5px;
+  }
+  .welcome-text h2 strong { font-weight: 900; color: var(--text-dark); }
+  .welcome-text p { color: var(--text-mid); font-size: 0.90rem; }
+  .welcome-text p strong { color: var(--blue); font-weight: 700; }
+
+  .welcome-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #3b5bdb, #748ffc);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 3px solid #dbeafe;
+    box-shadow: 0 4px 18px rgba(59,91,219,.25);
+    font-family: 'Nunito', sans-serif; font-weight: 900;
+    font-size: 1.5rem; color: white;
+  }
+
+  /* ── Stat Cards ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px; margin-bottom: 26px;
+  }
+  .stat-card {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.10);
+    cursor: pointer; position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    min-height: 90px;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.16); }
+
+  .stat-card.blue   { background: linear-gradient(135deg, #4c6ef5, #748ffc); }
+  .stat-card.teal   { background: linear-gradient(135deg, #0e9488, #14b8a6); }
+  .stat-card.orange { background: linear-gradient(135deg, #d97706, #fbbf24); }
+
+  .stat-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,.06); pointer-events: none;
+  }
+
+  .stat-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: rgba(255,255,255,.22);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-size: 1.6rem;
+  }
+
+  .stat-info .num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.9rem; font-weight: 900; color: white; line-height: 1;
+  }
+  .stat-info .lbl {
+    font-size: 0.85rem; color: rgba(255,255,255,.82); font-weight: 600; margin-top: 3px;
+  }
+
+  /* ── Students Table Card ── */
+  .students-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(37,99,235,.07);
+  }
+
+  .students-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .students-card-header h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 1.1rem; color: var(--text-dark);
+  }
+
+  .students-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .footer-info { font-size: 0.82rem; color: var(--text-light); }
+
+  @media (max-width: 760px) {
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <h1 class="page-title">Advisor Dashboard</h1>
+
+  <!-- Welcome Card -->
+  <div class="welcome-card">
+    <div class="welcome-text">
+      <h2>Welcome Back, <strong>Mr. {{ user.first_name }} {{ user.last_name }}</strong></h2>
+      <p>Class Code: <strong>{{ user.class_code|default:"CLS-9GHD6A" }}</strong></p>
+    </div>
+    <div class="welcome-avatar">
+      {{ user.first_name|first }}{{ user.last_name|first }}
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-grid">
+
+    <div class="stat-card blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <div class="num">{{ assigned_students_count|default:"25" }}</div>
+        <div class="lbl">Assigned Students</div>
+      </div>
+    </div>
+
+    <div class="stat-card teal">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info">
+        <div class="num">{{ attendance_rate|default:"45" }}%</div>
+        <div class="lbl">Attendance Rate</div>
+      </div>
+    </div>
+
+    <div class="stat-card orange">
+      <div class="stat-icon">✉️</div>
+      <div class="stat-info">
+        <div class="num">{{ pending_requests|default:"5" }}</div>
+        <div class="lbl">Pending Requests</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Assigned Students Table -->
+  <div class="students-card">
+
+    <div class="students-card-header">
+      <h3>Assigned Students</h3>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="Search" id="stuSearch" oninput="filterStudents(this.value)" autocomplete="off"/>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Last Login</th>
+          <th style="text-align:center;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="stuBody">
+
+        {% for student in students %}
+        <tr>
+          <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+          <td style="color:var(--text-mid);">{{ student.student_id }}</td>
+          <td>
+            <span class="{% if student.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+              {% if student.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+          </td>
+          <td style="color:var(--text-mid);">
+            {% if student.last_login %}{{ student.last_login|timesince }} ago{% else %}—{% endif %}
+          </td>
+          <td style="text-align:center;">
+            <a href="{% url 'student_detail' student.id %}">
+              <button class="btn-view">View</button>
+            </a>
+            <form method="POST" action="" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-remove"
+                      onclick="return confirm('Remove this student?')">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <!-- Fallback static rows -->
+        {% for row in "12345" %}
+        <tr>
+          {% if forloop.counter == 1 %}
+            <td><strong>Mark Allen</strong></td><td style="color:var(--text-mid);">6612-34210</td>
+            <td><span class="badge-active">Active</span></td>
+            <td style="color:var(--text-mid);">5 days ago</td>
+          {% elif forloop.counter == 2 %}
+            <td><strong>Lisa Wong</strong></td><td style="color:var(--text-mid);">6612-34221</td>
+            <td><span class="badge-active">Active</span></td>
+            <td style="color:var(--text-mid);">7 days ago</td>
+          {% elif forloop.counter == 3 %}
+            <td><strong>Adam Patel</strong></td><td style="color:var(--text-mid);">6612-34210</td>
+            <td><span class="badge-inactive">Inactive</span></td>
+            <td style="color:var(--text-mid);">7 days ago</td>
+          {% elif forloop.counter == 4 %}
+            <td><strong>Emily Torres</strong></td><td style="color:var(--text-mid);">6612-34213</td>
+            <td><span class="badge-inactive">Inactive</span></td>
+            <td style="color:var(--text-mid);">—</td>
+          {% else %}
+            <td><strong>Daniel Kim</strong></td><td style="color:var(--text-mid);">6612-34214</td>
+            <td><span class="badge-inactive">Inactive</span></td>
+            <td style="color:var(--text-mid);">—</td>
+          {% endif %}
+          <td style="text-align:center;">
+            <button class="btn-view">View</button>
+            <button class="btn-remove">Remove</button>
+          </td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="students-footer">
+      <div class="footer-info">
+        Showing {{ students|length|default:"5" }} of {{ assigned_students_count|default:"25" }} students
+      </div>
+      <div class="pagination">
+        <button class="pg-btn" onclick="changePage(-1)" id="prevBtn" disabled>‹</button>
+        <button class="pg-btn" onclick="setPage(1)" id="pg1">1</button>
+        <button class="pg-btn active" onclick="setPage(2)" id="pg2">2</button>
+        <button class="pg-btn" onclick="setPage(3)" id="pg3">3</button>
+        <button class="pg-btn" onclick="setPage(3)">3</button>
+        <button class="pg-btn" onclick="changePage(1)" id="nextBtn">Next ›</button>
+      </div>
+    </div>
+
+  </div><!-- /students-card -->
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  let currentPage = 2;
+  const totalPages = {{ total_pages|default:"3" }};
+
+  function filterStudents(q) {
+    document.querySelectorAll('#stuBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1','pg2','pg3'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    const active = document.getElementById('pg' + p);
+    if (active) active.classList.add('active');
+    // For real Django: window.location = `?page=${p}`;
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+</script>
+{% endblock %}

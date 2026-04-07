@@ -620,6 +620,13 @@
         <form method="POST" action="{% url 'register'%}">
           {% csrf_token %}
           <!-- Role -->
+          {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+          <div style="color:var(--red);font-size:.85rem;margin-bottom:12px;">
+            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+          </div>
+          {% endfor %}
+          {% endif %}
           <div class="form-group">
             <label for="role">Select Role <span class="req">*</span></label>
             <div class="input-wrap select-wrap">

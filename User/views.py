@@ -1,18 +1,42 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .forms import ResgistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import auth
 # Create your views here.
 def register(request):
-  if request.method=="POST":
-    form=ResgistrationForm(request.POST)
-    if form.is_valid():
-      form.save()
-      return HttpResponse("HI BVC ITS dashbord")
-  else:
-    form=ResgistrationForm()
-  return render(request,'registration.html',{'form':form})
+    if request.method == "POST":
+        form = ResgistrationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+
+            # 🔐 hash password
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+
+            # 🔥 auto login
+            auth.login(request, user)
+
+            role = user.role
+
+            # 🔥 role-based redirect
+            if role == 'advisor':
+                return redirect('advicer_info')
+
+            elif role == 'hod':
+                return redirect('hod_info')
+
+            elif role == 'faculty':
+                return redirect('faculty_dashboard')
+
+            elif role == 'student':
+                return redirect('student_dashboard')
+
+    else:
+        form = ResgistrationForm()
+
+    return render(request, 'registration.html', {'form': form})
 
 
 def login(requset):
