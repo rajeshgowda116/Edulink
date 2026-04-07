@@ -28,7 +28,7 @@ def register(request):
                 return redirect('hod_info')
 
             elif role == 'faculty':
-                return redirect('faculty_dashboard')
+                return redirect('faculty_info')
 
             elif role == 'student':
                 return redirect('student_dashboard')

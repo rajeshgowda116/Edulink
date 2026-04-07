@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduLink - Faculty Form</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #312e81, #4f46e5 45%, #7c3aed);
+      font-family: Arial, sans-serif;
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+    }
+
+    .form-page-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 32px;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.30);
+    }
+
+    .advisor-form-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.20);
+    }
+
+    .form-body {
+      padding: 36px 36px 28px;
+    }
+
+    .field-group {
+      margin-bottom: 22px;
+      text-align: left;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.20);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: rgba(255, 255, 255, 0.60);
+      pointer-events: none;
+    }
+
+    .form-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 15px 18px 15px 46px;
+      background: rgba(255, 255, 255, 0.70);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 12px;
+      font-size: 1rem;
+      color: #374151;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    }
+
+    .form-input:focus {
+      border-color: rgba(124, 58, 237, 0.65);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .form-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-footer {
+      background: rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 24px 36px;
+      text-align: center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      max-width: 320px;
+      padding: 15px;
+      background: linear-gradient(135deg, #6d28d9, #4f46e5);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .04em;
+      box-shadow: 0 4px 20px rgba(109, 40, 217, 0.45);
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #5b21b6, #4338ca);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(109, 40, 217, 0.55);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .msg-success,
+    .msg-error {
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .msg-success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.30);
+    }
+
+    .msg-error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fecaca;
+      border: 1px solid rgba(239, 68, 68, 0.30);
+    }
+
+    @media (max-width: 540px) {
+      body {
+        padding: 16px;
+      }
+
+      .form-body {
+        padding: 24px 18px 18px;
+      }
+
+      .form-footer {
+        padding: 18px;
+      }
+
+      .form-page-title {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-wrapper">
+    <h1 class="form-page-title">Faculty Form</h1>
+    <div class="advisor-form-card">
+      <form id="advisorForm" method="POST" action="{% url 'faculty_info' %}">
+        {% csrf_token %}
+        <div class="form-body">
+          {% if messages %}
+          {% for message in messages %}
+          <div class="{% if message.tags == 'error' %}msg-error{% else %}msg-success{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
+
+          <div class="field-group">
+            <label class="field-label" for="faculty_id">Faculty ID</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <polyline points="9 11 12 14 22 4" />
+              </svg>
+              <input type="text" id="faculty_id" name="faculty_id" class="form-input" placeholder="AV12345"
+                value="{{ form.advicer_id.value|default:'' }}" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="mobile_num">Mobile Number</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+              </svg>
+              <input type="tel" id="mobile_num" name="mobile_num" class="form-input" placeholder="9876543210"
+                value="{{ form.mobile_num.value|default:'' }}" required maxlength="15">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="class_code">Class Code</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input type="number" id="class_code" name="class_code" class="form-input" placeholder="56778"
+                value="{{ form.hod_code.value|default:'' }}" required autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn-submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

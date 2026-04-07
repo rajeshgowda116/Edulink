@@ -260,7 +260,7 @@
 {% block extra_js %}
 <script>
   let currentPage = 2;
-  const totalPages = {{ total_pages|default:"3" }};
+   const totalPages = Number('{{ total_pages|default:"3" }}');
 
   function filterStudents(q) {
     document.querySelectorAll('#stuBody tr').forEach(row => {
