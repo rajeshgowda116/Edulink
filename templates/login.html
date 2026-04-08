@@ -441,6 +441,18 @@
     }
     .register-link a:hover { text-decoration: underline; }
 
+    .error-text {
+      color: var(--error);
+      font-size: 0.85rem;
+      margin-top: 6px;
+    }
+
+    .input-error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .12);
+      background: #fff5f5;
+    }
+
     /* ─── Responsive ─── */
     @media (max-width: 900px) {
       nav { padding: 16px 24px; }
@@ -568,8 +580,8 @@
         <!-- Role selector -->
         {% if form.non_field_errors %}
           {% for error in form.non_field_errors %}
-            <div style="color:var(--red);font-size:.85rem;margin-bottom:12px;">
-              <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+            <div class="error-text" style="margin-bottom:12px;">
+              {{ error }}
             </div>
           {% endfor %}
         {% endif %}
@@ -584,10 +596,10 @@
             </svg>
             <select id="role" name="role" required>
               <option value="" disabled selected>Select your role…</option>
-              <option value="hod">HOD</option>
-              <option value="advisor">Advisor</option>
-              <option value="faculty">Faculty</option>
-              <option value="student">Student</option>
+              <option value="hod" {% if request.POST.role == 'hod' %}selected{% endif %}>HOD</option>
+              <option value="advisor" {% if request.POST.role == 'advisor' %}selected{% endif %}>Advisor</option>
+              <option value="faculty" {% if request.POST.role == 'faculty' %}selected{% endif %}>Faculty</option>
+              <option value="student" {% if request.POST.role == 'student' %}selected{% endif %}>Student</option>
             </select>
           </div>
         </div>
@@ -600,8 +612,11 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
             </svg>
-            <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username"/>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="username" value="{{ form.username.value|default:'' }}" class="{% if form.username.errors %}input-error{% endif %}"/>
           </div>
+          {% for error in form.username.errors %}
+            <div class="error-text">{{ error }}</div>
+          {% endfor %}
         </div>
 
         <!-- Password -->
@@ -612,7 +627,7 @@
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password"/>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password" class="{% if form.password.errors %}input-error{% endif %}"/>
             <button type="button" class="toggle-pw" onclick="togglePw('password', this)" title="Show/hide password">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -620,6 +635,9 @@
               </svg>
             </button>
           </div>
+          {% for error in form.password.errors %}
+            <div class="error-text">{{ error }}</div>
+          {% endfor %}
         </div>
 
         <!-- Forgot password -->

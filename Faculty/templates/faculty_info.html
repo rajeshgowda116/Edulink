@@ -197,7 +197,7 @@
                 <polyline points="9 11 12 14 22 4" />
               </svg>
               <input type="text" id="faculty_id" name="faculty_id" class="form-input" placeholder="AV12345"
-                value="{{ form.advicer_id.value|default:'' }}" required autocomplete="off">
+                value="{{ form.faculty_id.value|default:'' }}" required autocomplete="off">
             </div>
           </div>
 
@@ -223,9 +223,34 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
               <input type="number" id="class_code" name="class_code" class="form-input" placeholder="56778"
-                value="{{ form.hod_code.value|default:'' }}" required autocomplete="off">
+                value="{{ form.class_code.value|default:'' }}" required autocomplete="off">
             </div>
           </div>
+          <div class="field-group">
+            <label class="field-label" for="subject_name">Subject name</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <polyline points="9 11 12 14 22 4" />
+              </svg>
+              <input type="text" id="subject_name" name="subject_name" class="form-input" placeholder="maths"
+                value="{{ form.faculty_id.value|default:'' }}" required autocomplete="off">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="subject_code">Subject code</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <polyline points="9 11 12 14 22 4" />
+              </svg>
+              <input type="text" id="subject_code" name="subject_code" class="form-input" placeholder="AV12345"
+                value="{{ form.faculty_id.value|default:'' }}" required autocomplete="off">
+            </div>
+          </div>
+
         </div>
 
         <div class="form-footer">

@@ -1,0 +1,386 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}EduLink – Faculty Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Welcome Card ── */
+  .welcome-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 14px rgba(37, 99, 235, .06);
+  }
+
+  .welcome-left h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+  }
+
+  .welcome-left h2 strong {
+    font-weight: 900;
+    color: var(--text-dark);
+  }
+
+  .welcome-left p {
+    font-size: 0.90rem;
+    color: var(--text-mid);
+  }
+
+  .faculty-avatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4c6ef5, #748ffc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 3px solid #dbeafe;
+    box-shadow: 0 4px 18px rgba(76, 110, 245, .28);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  /* ── Stat Cards ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    border-radius: var(--radius);
+    padding: 20px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .10);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    min-height: 88px;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .16);
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, .07);
+    pointer-events: none;
+  }
+
+  .stat-card.blue-grad {
+    background: linear-gradient(135deg, #4c6ef5, #748ffc);
+  }
+
+  .stat-card.purple-grad {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  }
+
+  .stat-card.teal-grad {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+  }
+
+  .stat-card.orange-grad {
+    background: linear-gradient(135deg, #d97706, #fbbf24);
+  }
+
+  .stat-emoji {
+    font-size: 2rem;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, .20);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-info .num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+  }
+
+  .stat-info .lbl {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, .82);
+    font-weight: 600;
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+
+  /* ── Classes Table Card ── */
+  .classes-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(37, 99, 235, .06);
+  }
+
+  .classes-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .classes-header h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.12rem;
+    color: var(--text-dark);
+  }
+
+  /* Code badge */
+  .code-text {
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    font-weight: 500;
+  }
+
+  .days-text {
+    font-size: 0.88rem;
+    color: var(--text-mid);
+  }
+
+  .classes-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-info {
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+
+  @media (max-width: 1000px) {
+    .stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 580px) {
+    .stat-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .welcome-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="page-title">Faculty Dashboard</h1>
+
+<!-- Welcome Card -->
+<div class="welcome-card">
+  <div class="welcome-left">
+    <h2>Welcome Back, <strong>Ms.{{ user.first_name }} {{ user.last_name }}</strong></h2>
+    <p>{{ user.department|default:"Computer Science" }}</p>
+  </div>
+  <div class="faculty-avatar">
+    {{ user.first_name|first }}{{ user.last_name|first }}
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="stat-grid">
+
+  <div class="stat-card blue-grad">
+    <div class="stat-emoji">👫</div>
+    <div class="stat-info">
+      <div class="num">{{ total_classes|default:"8" }}</div>
+      <div class="lbl">My Classes</div>
+    </div>
+  </div>
+
+  <div class="stat-card purple-grad">
+    <div class="stat-emoji">👥</div>
+    <div class="stat-info">
+      <div class="num">{{ total_students|default:"120" }}</div>
+      <div class="lbl">Students</div>
+    </div>
+  </div>
+
+  <div class="stat-card teal-grad">
+    <div class="stat-emoji">📅</div>
+    <div class="stat-info">
+      <div class="num">Today: {{ today_present|default:"4" }} / {{ today_total|default:"5" }}</div>
+      <div class="lbl">Today's Attendance</div>
+    </div>
+  </div>
+
+  <div class="stat-card orange-grad">
+    <div class="stat-emoji">📣</div>
+    <div class="stat-info">
+      <div class="num">{{ new_announcements|default:"1" }}</div>
+      <div class="lbl">New Announcement</div>
+    </div>
+  </div>
+
+</div><!-- /stat-grid -->
+
+<!-- My Classes Table -->
+<div class="classes-card">
+
+  <div class="classes-header">
+    <h3>My Classes</h3>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      <input type="text" placeholder="Search" id="classSearch" oninput="filterClasses(this.value)" autocomplete="off" />
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Class Name</th>
+        <th>Code</th>
+        <th>Days</th>
+        <th style="text-align:center;">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="classBody">
+
+      {% for cls in classes %}
+      <tr>
+        <td><strong>{{ cls.name }}</strong></td>
+        <td><span class="code-text">{{ cls.code }}</span></td>
+        <td><span class="days-text">{{ cls.days }}</span></td>
+        <td style="text-align:center;">
+          <a href="{% url 'faculty_class_detail' cls.id %}">
+            <button class="btn-manage">Manage</button>
+          </a>
+          <a href="{% url 'faculty_take_attendance' cls.id %}">
+            <button class="btn-attendance">Attendance</button>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <!-- Fallback static rows -->
+      {% for item in "12345" %}
+      <tr>
+        {% if forloop.counter == 1 %}
+        <td><strong>Web Development</strong></td>
+        <td><span class="code-text">CLS-9GHD6A</span></td>
+        <td><span class="days-text">Mon, Wed, Mt</span></td>
+        {% elif forloop.counter == 2 %}
+        <td><strong>Database Systems</strong></td>
+        <td><span class="code-text">CLS-4TRFJ3</span></td>
+        <td><span class="days-text">Tue, Thu, Fri</span></td>
+        {% elif forloop.counter == 3 %}
+        <td><strong>Algorithms</strong></td>
+        <td><span class="code-text">CLS-1BQ92Y</span></td>
+        <td><span class="days-text">Tue, Thu, Fri</span></td>
+        {% elif forloop.counter == 4 %}
+        <td><strong>Machine Learning</strong></td>
+        <td><span class="code-text">CLS-7KH6M1</span></td>
+        <td><span class="days-text">Mon, Wed, Mt</span></td>
+        {% else %}
+        <td><strong>Data Structures</strong></td>
+        <td><span class="code-text">CLS-5PS0QW</span></td>
+        <td><span class="days-text">Mon, Wed, Mt</span></td>
+        {% endif %}
+        <td style="text-align:center;">
+          <button class="btn-manage">Manage</button>
+          <button class="btn-attendance">Attendance</button>
+        </td>
+      </tr>
+      {% endfor %}
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <div class="classes-footer">
+    <div class="footer-info">
+      Showing {{ classes|length|default:"5" }} of {{ total_classes|default:"8" }} classes
+    </div>
+    <div class="pagination">
+      <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
+      <button class="pg-btn active" id="pg1" onclick="setPage(1)">1</button>
+      <button class="pg-btn" id="pg2" onclick="setPage(2)">2</button>
+      <button class="pg-btn" id="pg3" onclick="setPage(3)">3</button>
+      <button class="pg-btn" id="nextBtn" onclick="changePage(1)">Next ›</button>
+    </div>
+  </div>
+
+</div><!-- /classes-card -->
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  let currentPage = 1;
+  const totalPages = Number('{{ total_pages|default:"3" }}') || 1;
+
+  function filterClasses(q) {
+    document.querySelectorAll('#classBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1', 'pg2', 'pg3'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    const active = document.getElementById('pg' + p);
+    if (active) active.classList.add('active');
+    // Django: window.location = `?page=${p}`;
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+
+  setPage(currentPage);
+</script>
+{% endblock %}

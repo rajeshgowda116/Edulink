@@ -197,7 +197,7 @@
                 <polyline points="9 11 12 14 22 4" />
               </svg>
               <input type="text" id="hod_id" name="hod_id" class="form-input" placeholder="AV12345"
-                value="{{ form.advicer_id.value|default:'' }}" required autocomplete="off">
+                value="{{ form.hod_id.value|default:'' }}" required autocomplete="off">
             </div>
           </div>
 
@@ -210,7 +210,7 @@
                 <line x1="12" y1="18" x2="12.01" y2="18" />
               </svg>
               <input type="tel" id="mobile" name="mobile" class="form-input" placeholder="9876543210"
-                value="{{ form.mobile_num.value|default:'' }}" required maxlength="15">
+                value="{{ form.mobile.value|default:'' }}" required maxlength="15">
             </div>
           </div>
 
@@ -223,7 +223,7 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
               <input type="number" id="college" name="college" class="form-input" placeholder="56778"
-                value="{{ form.hod_code.value|default:'' }}" required autocomplete="off">
+                value="{{ form.college.value|default:'' }}" required autocomplete="off">
             </div>
           </div>
         </div>

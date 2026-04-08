@@ -5,7 +5,7 @@ from User.models import User
 class advicer(models.Model):
   username=models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
   advicer_id=models.CharField(max_length=50,primary_key=True)
-  mobile_num=models.CharField(max_length=10,unique=True)
+  mobile_num=models.CharField(max_length=10)
   hod_code=models.IntegerField()
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at=models.DateTimeField(auto_now=True)

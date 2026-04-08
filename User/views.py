@@ -44,8 +44,23 @@ def login(requset):
     form=AuthenticationForm(requset,data=requset.POST)
     if form.is_valid():
       user=form.get_user()
-      auth.login(requset,user)
-      return HttpResponse("hi bvc this is dashbord")
+      selected_role = requset.POST.get('role')
+      if selected_role and user.role != selected_role:
+        form.add_error(None, "Selected role does not match your account.")
+      else:
+        auth.login(requset,user)
+        role = user.selected_role
+        if role == 'advisor':
+           return redirect('advisor_dashboard')
+        elif role == 'hod':
+            return redirect('hod_dashboard')
+
+        elif role == 'faculty':
+            return redirect('faculty_info')
+
+        elif role == 'student':
+             return redirect('student_dashboard')
+        
   else:
       form=AuthenticationForm()
   return render(requset,'login.html',{'form':form})
