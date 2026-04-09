@@ -31,7 +31,7 @@ def register(request):
                 return redirect('faculty_info')
 
             elif role == 'student':
-                return redirect('student_dashboard')
+                return redirect('student_info')
 
     else:
         form = ResgistrationForm()

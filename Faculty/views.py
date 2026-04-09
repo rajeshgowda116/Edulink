@@ -24,5 +24,7 @@ def faculty_info(request):
 def faculty_dashboard(request):
   return render(request, 'faculty_dashboard.html')
 
+def add_attendence(request):
+  return render(request,'daily_attendance.html')
 
   

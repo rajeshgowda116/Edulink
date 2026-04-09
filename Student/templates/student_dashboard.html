@@ -1,0 +1,354 @@
+{% extends "student_base.html" %}
+
+{% block title %}EduLink – Student Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ══════════════════════════════════
+     STUDENT DASHBOARD — page styles
+  ══════════════════════════════════ */
+
+  /* ── Stat Cards ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    border-radius: 18px;
+    padding: 24px 18px 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    cursor: pointer; position: relative; overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    transition: transform .2s, box-shadow .2s;
+    min-height: 150px;
+  }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(0,0,0,.25); }
+
+  .stat-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,.06); pointer-events: none;
+  }
+
+  /* nav arrows on sides */
+  .stat-card .arrow-left,
+  .stat-card .arrow-right {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 0.80rem; color: rgba(255,255,255,.65);
+    cursor: pointer; padding: 4px;
+    transition: color .2s;
+    user-select: none;
+  }
+  .stat-card .arrow-left { left: 10px; }
+  .stat-card .arrow-right { right: 10px; }
+  .stat-card .arrow-left:hover,
+  .stat-card .arrow-right:hover { color: white; }
+
+  .stat-card.blue-grad   { background: linear-gradient(135deg, #2563eb, #60a5fa); }
+  .stat-card.purple-grad { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+  .stat-card.orange-grad { background: linear-gradient(135deg, #ea580c, #fb923c); }
+  .stat-card.green-grad  { background: linear-gradient(135deg, #16a34a, #4ade80); }
+
+  .stat-card-icon {
+    font-size: 2rem; margin-bottom: 6px;
+  }
+
+  .stat-card-label {
+    font-size: 0.82rem; font-weight: 700;
+    color: rgba(255,255,255,.88);
+    margin-bottom: 6px; letter-spacing: .02em;
+  }
+
+  .stat-card-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.4rem; font-weight: 900;
+    color: white; line-height: 1;
+  }
+
+  /* ── Two-column bottom grid ── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* ── Schedule Card ── */
+  .schedule-card {
+    background: rgba(255,255,255,0.84);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.55);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.10);
+  }
+
+  .schedule-subtitle {
+    font-size: 0.80rem; color: #94a3b8; margin-bottom: 14px; margin-top: 2px;
+  }
+
+  .schedule-item {
+    display: flex; align-items: center; gap: 14px;
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 13px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: box-shadow .18s, transform .15s;
+  }
+  .schedule-item:last-child { margin-bottom: 0; }
+  .schedule-item:hover { box-shadow: 0 4px 16px rgba(37,99,235,.12); transform: translateX(3px); }
+
+  .schedule-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .si-blue   { background: #dbeafe; }
+  .si-purple { background: #ede9fe; }
+  .si-yellow { background: #fef9c3; }
+  .si-green  { background: #dcfce7; }
+
+  .schedule-info { flex: 1; }
+  .schedule-time {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 0.88rem; color: #1e293b;
+  }
+  .schedule-subject {
+    font-size: 0.88rem; color: #374151; margin-left: 6px;
+  }
+
+  .schedule-arrow {
+    color: #94a3b8; font-size: 0.80rem;
+  }
+
+  /* ── Announcements Card ── */
+  .ann-card {
+    background: rgba(255,255,255,0.84);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.55);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.10);
+    display: flex; flex-direction: column;
+  }
+
+  .ann-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer; transition: background .15s;
+  }
+  .ann-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .ann-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: #fff7ed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+
+  .ann-body { flex: 1; min-width: 0; }
+  .ann-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 0.90rem; color: #1e293b;
+    margin-bottom: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ann-sub {
+    font-size: 0.76rem; color: #94a3b8;
+  }
+  .ann-date {
+    font-size: 0.76rem; color: #94a3b8; white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* Dot indicators */
+  .dots {
+    display: flex; justify-content: center; gap: 7px; margin-top: 18px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(124,58,237,.20); cursor: pointer;
+    transition: background .2s;
+  }
+  .dot.active { background: #7c3aed; }
+
+  @media (max-width: 1050px) {
+    .stat-grid   { grid-template-columns: repeat(2, 1fr); }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <!-- ── Stat Cards ── -->
+  <div class="stat-grid">
+
+    <div class="stat-card blue-grad">
+      <span class="arrow-left">&#8249;</span>
+      <div class="stat-card-icon">🎓</div>
+      <div class="stat-card-label">My Classes</div>
+      <div class="stat-card-num">{{ total_classes|default:"4" }}</div>
+      <span class="arrow-right">&#8250;</span>
+    </div>
+
+    <div class="stat-card purple-grad">
+      <span class="arrow-left">&#8249;</span>
+      <div class="stat-card-icon">📋</div>
+      <div class="stat-card-label">Attendance</div>
+      <div class="stat-card-num">{{ attendance_pct|default:"88" }}%</div>
+      <span class="arrow-right">&#8250;</span>
+    </div>
+
+    <div class="stat-card orange-grad">
+      <span class="arrow-left">&#8249;</span>
+      <div class="stat-card-icon">📅</div>
+      <div class="stat-card-label">Upcoming Events</div>
+      <div class="stat-card-num">{{ upcoming_events|default:"2" }}</div>
+      <span class="arrow-right">&#8250;</span>
+    </div>
+
+    <div class="stat-card green-grad">
+      <span class="arrow-left">&#8249;</span>
+      <div class="stat-card-icon">🔔</div>
+      <div class="stat-card-label">Announcements</div>
+      <div class="stat-card-num">{{ announcements_count|default:"5" }}</div>
+      <span class="arrow-right">&#8250;</span>
+    </div>
+
+  </div><!-- /stat-grid -->
+
+  <!-- ── Bottom Two-Col ── -->
+  <div class="bottom-grid">
+
+    <!-- My Schedule -->
+    <div class="schedule-card">
+      <div class="panel-header">
+        <div class="panel-header-dot" style="background:#dbeafe;">📘</div>
+        <h3>My Schedule</h3>
+      </div>
+      <div class="schedule-subtitle">Today's Classes -</div>
+
+      {% for cls in today_schedule %}
+      <div class="schedule-item">
+        <div class="schedule-icon si-{{ cls.color|default:'blue' }}">{{ cls.icon|default:'📚' }}</div>
+        <div class="schedule-info">
+          <span class="schedule-time">{{ cls.time }}</span>
+          <span class="schedule-subject">{{ cls.subject }}</span>
+        </div>
+        <span class="schedule-arrow">›</span>
+      </div>
+      {% empty %}
+      <div class="schedule-item">
+        <div class="schedule-icon si-blue">🎓</div>
+        <div class="schedule-info">
+          <span class="schedule-time">10:00 AM</span>
+          <span class="schedule-subject">Math</span>
+        </div>
+        <span class="schedule-arrow">›</span>
+      </div>
+      <div class="schedule-item">
+        <div class="schedule-icon si-purple">⚛️</div>
+        <div class="schedule-info">
+          <span class="schedule-time">11:00 AM</span>
+          <span class="schedule-subject">Physics</span>
+        </div>
+        <span class="schedule-arrow">›</span>
+      </div>
+      <div class="schedule-item">
+        <div class="schedule-icon si-yellow">🧪</div>
+        <div class="schedule-info">
+          <span class="schedule-time">12:00 PM</span>
+          <span class="schedule-subject">Chemistry</span>
+        </div>
+        <span class="schedule-arrow">›</span>
+      </div>
+      <div class="schedule-item">
+        <div class="schedule-icon si-green">💻</div>
+        <div class="schedule-info">
+          <span class="schedule-time">02:00 PM</span>
+          <span class="schedule-subject">Programming</span>
+        </div>
+        <span class="schedule-arrow">›</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Recent Announcements -->
+    <div class="ann-card">
+      <div class="panel-header">
+        <div class="panel-header-dot" style="background:#fff7ed;">📣</div>
+        <h3>Recent Announcements</h3>
+      </div>
+
+      {% for ann in announcements %}
+      <div class="ann-item">
+        <div class="ann-icon">📢</div>
+        <div class="ann-body">
+          <div class="ann-title">{{ ann.title }}</div>
+          <div class="ann-sub">{{ ann.subtitle }}</div>
+        </div>
+        <div class="ann-date">{{ ann.date|date:"M d, Y" }}</div>
+      </div>
+      {% empty %}
+      <div class="ann-item">
+        <div class="ann-icon">📢</div>
+        <div class="ann-body">
+          <div class="ann-title">Project Submission Deadline</div>
+          <div class="ann-sub">Campus instituted culture</div>
+        </div>
+        <div class="ann-date">May 25, 2024</div>
+      </div>
+      <div class="ann-item">
+        <div class="ann-icon">📢</div>
+        <div class="ann-body">
+          <div class="ann-title">New Internship Opportunities</div>
+          <div class="ann-sub">Campus instituted culture</div>
+        </div>
+        <div class="ann-date">May 22, 2024</div>
+      </div>
+      <div class="ann-item">
+        <div class="ann-icon">📢</div>
+        <div class="ann-body">
+          <div class="ann-title">Campus Maintenance Notice</div>
+          <div class="ann-sub">Campus instituted culture</div>
+        </div>
+        <div class="ann-date">May 20</div>
+      </div>
+      {% endfor %}
+
+      <!-- Dot pagination -->
+      <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+  </div><!-- /bottom-grid -->
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  /* Dot carousel (static demo) */
+  document.querySelectorAll('.dot').forEach((dot, i, dots) => {
+    dot.addEventListener('click', () => {
+      dots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+</script>
+{% endblock %}
