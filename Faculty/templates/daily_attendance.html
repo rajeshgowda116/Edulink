@@ -1,373 +1,749 @@
 {% extends "faculty_base.html" %}
 
-{# ══════════════════════════════════════════════
-PAGE TITLE
-══════════════════════════════════════════════ #}
-{% block title %}Daily Attendance – EduLink{% endblock %}
-
-{# ══════════════════════════════════════════════
-ACTIVE NAV ITEM
-══════════════════════════════════════════════ #}
+{% block title %}EduLink – Daily Attendance{% endblock %}
 {% block nav_classes %}active{% endblock %}
 
-{# ══════════════════════════════════════════════
-TOAST MESSAGE
-══════════════════════════════════════════════ #}
-{% block toast_message %}✅ Attendance saved successfully!{% endblock %}
-
-{# ══════════════════════════════════════════════
-PAGE-SPECIFIC CSS
-══════════════════════════════════════════════ #}
 {% block extra_css %}
+<style>
+  /* ── Light theme override ── */
+  body {
+    background: #f0f4ff;
+  }
 
-/* ── Class card ── */
-.class-card {
-padding: 22px 28px;
-margin-top: 28px;
-}
-.class-card-top {
-display: flex;
-align-items: center;
-justify-content: space-between;
-flex-wrap: wrap;
-gap: 14px;
-}
-.class-info { display: flex; align-items: center; gap: 14px; }
+  .bg-layer {
+    display: none;
+  }
 
-.class-icon {
-width: 46px; height: 46px;
-background: #dbeafe;
-border-radius: 12px;
-display: flex; align-items: center; justify-content: center;
-font-size: 1.3rem;
-color: var(--accent);
-flex-shrink: 0;
-}
-.class-name { font-size: 1.3rem; font-weight: 800; letter-spacing: -.4px; }
-.class-code { font-size: .82rem; color: var(--muted); font-weight: 500; margin-top: 1px; }
+  .main {
+    background: #f0f4ff;
+    padding: 32px 36px 48px;
+  }
 
-/* Date picker */
-.date-picker {
-position: relative;
-display: flex; align-items: center; gap: 8px;
-background: var(--bg);
-border: 1.5px solid var(--border);
-border-radius: 10px;
-padding: 8px 14px;
-font-size: .9rem;
-font-weight: 600;
-color: var(--text);
-cursor: pointer;
-transition: border-color .18s;
-}
-.date-picker:hover { border-color: var(--accent); }
-.date-picker .cal-icon { font-size: 1rem; color: var(--accent); }
-.date-picker .chevron { font-size: .75rem; color: var(--muted); }
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.83rem;
+    color: #94a3b8;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
 
-/* ── Attendance table section ── */
-.table-section {
-margin-top: 28px;
-overflow: hidden;
-}
-.table-header {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 20px 28px 16px;
-flex-wrap: wrap;
-gap: 12px;
-}
-.table-title { font-size: .98rem; font-weight: 500; }
-.table-title strong { font-weight: 800; }
+  .breadcrumb a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color .2s;
+  }
 
-/* Search */
-.search-box {
-display: flex; align-items: center; gap: 8px;
-background: var(--bg);
-border: 1.5px solid var(--border);
-border-radius: 10px;
-padding: 8px 14px;
-transition: border-color .18s;
-}
-.search-box:focus-within { border-color: var(--accent); }
-.search-box .search-icon { color: var(--muted); font-size: .95rem; }
-.search-box input {
-border: none; background: transparent; outline: none;
-font-family: inherit; font-size: .9rem; color: var(--text); width: 180px;
-}
-.search-box input::placeholder { color: #adb5bd; }
+  .breadcrumb a:hover {
+    color: #2563eb;
+  }
 
-/* Table */
-table { width: 100%; border-collapse: collapse; }
-thead th {
-background: #f8f9ff;
-padding: 12px 18px;
-font-size: .8rem;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: .06em;
-color: var(--muted);
-text-align: left;
-border-bottom: 1.5px solid var(--border);
-}
-tbody tr {
-border-bottom: 1px solid #f1f3f9;
-transition: background .14s;
-}
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: #f8f9ff; }
-tbody td { padding: 14px 18px; font-size: .9rem; vertical-align: middle; }
-td.row-num { color: var(--muted); font-weight: 600; width: 40px; }
-td.student-name { font-weight: 700; }
-td.student-id { color: var(--muted); font-weight: 500; }
+  .breadcrumb .crumb-active {
+    color: #2563eb;
+    font-weight: 700;
+  }
 
-/* Attendance buttons */
-.att-btns { display: flex; gap: 8px; align-items: center; }
-.btn-present, .btn-absent {
-display: inline-flex; align-items: center; gap: 5px;
-padding: 8px 16px;
-border-radius: 8px;
-font-size: .84rem; font-weight: 700;
-border: none; cursor: pointer;
-font-family: inherit;
-transition: opacity .15s, transform .12s;
-}
-.btn-present { background: var(--green); color: #fff; box-shadow: 0 2px 8px rgba(34,197,94,.25); }
-.btn-absent { background: var(--red); color: #fff; box-shadow: 0 2px 8px rgba(239,68,68,.22); }
-.btn-present:hover, .btn-absent:hover { opacity: .88; transform: translateY(-1px); }
-.btn-present:not(.selected), .btn-absent:not(.selected) { opacity: .42; }
-.btn-present.selected, .btn-absent.selected { opacity: 1; }
+  .breadcrumb .sep {
+    color: #cbd5e1;
+  }
 
-/* Table footer / pagination */
-.table-footer {
-display: flex; align-items: center; justify-content: space-between;
-padding: 16px 28px;
-border-top: 1.5px solid var(--border);
-background: #f8f9ff;
-flex-wrap: wrap; gap: 10px;
-}
-.showing-text { font-size: .85rem; color: var(--muted); font-weight: 500; }
-.pagination { display: flex; align-items: center; gap: 4px; }
-.page-btn {
-width: 34px; height: 34px;
-display: flex; align-items: center; justify-content: center;
-border-radius: 8px;
-border: 1.5px solid var(--border);
-background: var(--card);
-font-size: .87rem; font-weight: 700;
-color: var(--muted); cursor: pointer;
-transition: all .15s;
-}
-.page-btn:hover { border-color: var(--accent); color: var(--accent); }
-.page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 10px
-rgba(79,110,247,.3); }
-.next-btn { width: auto; padding: 0 14px; font-size: .87rem; }
+  /* ── Page Title ── */
+  .page-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.95rem;
+    font-weight: 900;
+    color: #1e293b;
+    margin-bottom: 20px;
+    text-shadow: none;
+  }
 
+  /* ── Class Info Bar ── */
+  .class-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, .06);
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .class-info-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .class-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .class-icon-box svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+
+  .class-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #1e293b;
+    margin-bottom: 2px;
+  }
+
+  .class-code {
+    font-size: 0.83rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  /* Date picker button */
+  .date-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0f4ff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #2563eb;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .2s, border-color .2s;
+  }
+
+  .date-btn:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+  }
+
+  .date-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: #2563eb;
+  }
+
+  /* Hidden date input overlay */
+  .date-picker-wrap {
+    position: relative;
+  }
+
+  .date-picker-wrap input[type="date"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  /* Save button */
+  .btn-save {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 28px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.97rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, .32);
+    transition: background .2s, transform .15s, box-shadow .2s;
+    white-space: nowrap;
+  }
+
+  .btn-save:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, .40);
+  }
+
+  .btn-save:active {
+    transform: translateY(0);
+  }
+
+  /* ── Attendance Table Card ── */
+  .att-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, .06);
+  }
+
+  /* Card sub-header */
+  .att-subheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .att-subheader h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .att-subheader h3 strong {
+    font-weight: 800;
+  }
+
+  /* Search */
+  .att-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8faff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 14px;
+    transition: border-color .2s;
+  }
+
+  .att-search:focus-within {
+    border-color: #2563eb;
+  }
+
+  .att-search svg {
+    width: 15px;
+    height: 15px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .att-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.86rem;
+    color: #374151;
+    font-family: 'Inter', sans-serif;
+    width: 170px;
+  }
+
+  .att-search input::placeholder {
+    color: #94a3b8;
+  }
+
+  /* Table */
+  .att-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .att-table thead tr {
+    background: #f8faff;
+  }
+
+  .att-table thead th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+
+  .att-table thead th.th-center {
+    text-align: center;
+  }
+
+  .att-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+
+  .att-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .att-table tbody tr:hover {
+    background: #f8faff;
+  }
+
+  .att-table tbody td {
+    padding: 14px 16px;
+    font-size: 0.90rem;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  .att-table tbody td.td-num {
+    color: #94a3b8;
+    font-weight: 600;
+    width: 44px;
+  }
+
+  .att-table tbody td.td-id {
+    color: #64748b;
+    font-size: 0.86rem;
+  }
+
+  .att-table tbody td.td-center {
+    text-align: center;
+  }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .sb-active {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .sb-absent {
+    background: #fef9c3;
+    color: #b45309;
+  }
+
+  .sb-inactive {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  .sb-present {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  /* Attendance toggle buttons */
+  .att-btn-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-present,
+  .btn-absent {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.80rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+    white-space: nowrap;
+  }
+
+  .btn-present {
+    background: #16a34a;
+    color: white;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, .28);
+  }
+
+  .btn-absent {
+    background: #dc2626;
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, .28);
+  }
+
+  .btn-present:hover {
+    background: #15803d;
+    transform: scale(1.04);
+  }
+
+  .btn-absent:hover {
+    background: #b91c1c;
+    transform: scale(1.04);
+  }
+
+  .btn-present svg,
+  .btn-absent svg {
+    width: 14px;
+    height: 14px;
+    fill: white;
+    flex-shrink: 0;
+  }
+
+  /* selected state — dim unselected */
+  tr.marked-present .btn-absent {
+    opacity: .38;
+  }
+
+  tr.marked-absent .btn-present {
+    opacity: .38;
+  }
+
+  /* ── Footer / Pagination ── */
+  .att-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-info {
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pg-btn {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    transition: all .15s;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .pg-btn:hover {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+
+  .pg-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+  }
+
+  .pg-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 700px) {
+    .main {
+      padding: 20px 12px 36px;
+    }
+
+    .att-btn-group {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .class-info-bar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
 {% endblock %}
 
-{# ══════════════════════════════════════════════
-MAIN PAGE CONTENT
-══════════════════════════════════════════════ #}
+
 {% block content %}
 
-<!-- Page Header -->
-<div class="page-header">
-  <h1 class="page-title">Daily Attendance</h1>
-  <nav class="breadcrumb">
-    <a href="">My Classes</a>
-    <span class="sep">/</span>
-    <a href="">{{ class.name }}</a>
-    <span class="sep">/</span>
-    <span class="current">Daily Attendance</span>
-  </nav>
-</div>
+<!-- Breadcrumb -->
+<nav class="breadcrumb">
+  <a href="">My Classes</a>
+  <span class="sep">/</span>
+  <a href="" class="crumb-active">
+    {{ class.name|default:"Web Development" }}
+  </a>
+  <span class="sep">/</span>
+  <span>Daily Attendance</span>
+</nav>
 
-<!-- Class Info Card -->
-<div class="card class-card">
-  <div class="class-card-top">
-    <div class="class-info">
-      <div class="class-icon">📄</div>
-      <div>
-        <div class="class-name">{{ class.name }}</div>
-        <div class="class-code">{{ class.code }}</div>
-      </div>
-      <div class="date-picker" onclick="openDatePicker()">
-        <span class="cal-icon">📅</span>
-        <span id="selected-date">{{ attendance_date|date:"F j, Y" }}</span>
-        <span class="chevron">▾</span>
-        <input type="date" id="date-input" value="{{ attendance_date|date:'Y-m-d' }}"
-          style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;" onchange="updateDate(this.value)" />
-      </div>
+<!-- Page Title -->
+<h1 class="page-title">Daily Attendance</h1>
+
+<!-- Class Info Bar -->
+<div class="class-info-bar">
+  <div class="class-info-left">
+    <div class="class-icon-box">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 6h18v2H4zm0 5h18v2H4zm0 5h18v2H4z" />
+      </svg>
     </div>
-    <button class="btn-primary" onclick="saveAttendance()">Save Attendance</button>
+    <div>
+      <div class="class-name">{{ class.name|default:"Web Development" }}</div>
+      <div class="class-code">{{ class.code|default:"CLS-9GHD6A" }}</div>
+    </div>
+
+    <!-- Date picker -->
+    <div class="date-picker-wrap">
+      <button class="date-btn" id="dateBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        <span id="dateLabel">{{ selected_date|date:"F d, Y"|default:"April 25, 2024" }}</span>
+        ▾
+      </button>
+      <input type="date" id="datePicker" value="{{ selected_date|date:'Y-m-d'|default:'2024-04-25' }}"
+        onchange="updateDate(this.value)" />
+    </div>
   </div>
+
+  <!-- Save Attendance -->
+  <form method="POST" action="">
+    {% csrf_token %}
+    <input type="hidden" name="attendance_date" id="attendanceDateField"
+      value="{{ selected_date|date:'Y-m-d'|default:'2024-04-25' }}" />
+    <!-- Hidden inputs for each student are injected by JS -->
+    <div id="hiddenInputs"></div>
+    <button type="submit" class="btn-save">Save Attendance</button>
+  </form>
 </div>
 
 <!-- Attendance Table -->
-<div class="card table-section">
-  <div class="table-header">
-    <div class="table-title">
+<div class="att-card">
+
+  <div class="att-subheader">
+    <h3>
       Mark attendance for
-      <strong>{{ class.name }} class on <span id="header-date">{{ attendance_date|date:"F j, Y" }}</span></strong>
-    </div>
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Search student..." oninput="filterStudents(this.value)" />
+      <strong>{{ class.name|default:"Web Development" }} class on
+        {{ selected_date|date:"F d, Y"|default:"April 25, 2024" }}</strong>
+    </h3>
+    <div class="att-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
+      <input type="text" placeholder="Search student..." id="stuSearch" oninput="filterStudents(this.value)"
+        autocomplete="off" />
     </div>
   </div>
 
-  <table>
+  <table class="att-table">
     <thead>
       <tr>
         <th>#</th>
         <th>Name</th>
         <th>ID</th>
         <th>Status</th>
-        <th style="text-align:center;">Attendance</th>
+        <th class="th-center">Attendance</th>
       </tr>
     </thead>
-    <tbody id="student-tbody"></tbody>
+    <tbody id="stuBody">
+
+      {% for student in students %}
+      <tr id="row-{{ student.id }}" data-sid="{{ student.id }}"
+        class="{% if student.today_status == 'present' %}marked-present{% elif student.today_status == 'absent' %}marked-absent{% endif %}">
+        <td class="td-num">{{ forloop.counter }}</td>
+        <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+        <td class="td-id">{{ student.student_id }}</td>
+        <td>
+          <span class="status-badge
+              {% if student.today_status == 'present' %}sb-present
+              {% elif student.today_status == 'absent' %}sb-absent
+              {% else %}sb-inactive{% endif %}">
+            {{ student.today_status|capfirst|default:"Inactive" }}
+          </span>
+        </td>
+        <td class="td-center">
+          <div class="att-btn-group">
+            <button type="button" class="btn-present" onclick="markAttendance('{{ student.id }}', 'present', this)">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+              </svg>
+              Present
+            </button>
+            <button type="button" class="btn-absent" onclick="markAttendance('{{ student.id }}', 'absent', this)">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+              Absent
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <!-- Fallback static rows -->
+      {% for item in "1234567890" %}
+      <tr data-sid="{{ forloop.counter }}">
+        <td class="td-num">{{ forloop.counter }}</td>
+        <td><strong>
+            {% if forloop.counter == 1 %}Mark Allen
+            {% elif forloop.counter == 2 %}Lisa Wong
+            {% elif forloop.counter == 3 %}Adam Patel
+            {% elif forloop.counter == 4 %}Emily Torres
+            {% elif forloop.counter == 5 %}Daniel Kim
+            {% elif forloop.counter == 6 %}Sarah Brown
+            {% elif forloop.counter == 7 %}James Miller
+            {% elif forloop.counter == 8 %}Olivia Johnson
+            {% elif forloop.counter == 9 %}Ryan Garcia
+            {% else %}Mia Davis{% endif %}
+          </strong></td>
+        <td class="td-id">6612-3421{{ forloop.counter }}</td>
+        <td>
+          <span class="status-badge
+              {% if forloop.counter == 1 or forloop.counter == 5 %}sb-active
+              {% elif forloop.counter == 9 %}sb-present
+              {% elif forloop.counter == 3 or forloop.counter == 4 or forloop.counter == 7 %}sb-inactive
+              {% else %}sb-absent{% endif %}">
+            {% if forloop.counter == 1 or forloop.counter == 5 %}Active
+            {% elif forloop.counter == 9 %}Present
+            {% elif forloop.counter == 3 or forloop.counter == 4 or forloop.counter == 7 %}Inactive
+            {% else %}Absent{% endif %}
+          </span>
+        </td>
+        <td class="td-center">
+          <div class="att-btn-group">
+            <button type="button" class="btn-present" onclick="markAttendance({{ forloop.counter }}, 'present', this)">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+              </svg>
+              Present
+            </button>
+            <button type="button" class="btn-absent" onclick="markAttendance({{ forloop.counter }}, 'absent', this)">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+              Absent
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+      {% endfor %}
+
+    </tbody>
   </table>
 
-  <div class="table-footer">
-    <span class="showing-text" id="showing-text">Showing students…</span>
-    <div class="pagination" id="pagination"></div>
+  <!-- Footer -->
+  <div class="att-footer">
+    <div class="footer-info">
+      Showing {{ students|length|default:"10" }} of {{ total_students|default:"25" }} students
+    </div>
+    <div class="pagination">
+      <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
+      <button class="pg-btn" id="pg1" onclick="setPage(1)">1</button>
+      <button class="pg-btn active" id="pg2" onclick="setPage(2)">1</button>
+      <button class="pg-btn" id="pg3" onclick="setPage(3)">2</button>
+      <button class="pg-btn" id="pg4" onclick="setPage(4)">3</button>
+      <button class="pg-btn" id="nextBtn" onclick="changePage(1)">Next ›</button>
+    </div>
   </div>
-</div>
+
+</div><!-- /att-card -->
 
 {% endblock %}
 
-{# ══════════════════════════════════════════════
-PAGE SCRIPTS
-══════════════════════════════════════════════ #}
+
 {% block extra_js %}
 <script>
-  /* ── Student data injected from Django context ──
-     In a real project this would come from:
-       const ALL_STUDENTS = {{ students_json|safe }};
-     For demo purposes we use static data below.
-  ── */
-  const ALL_STUDENTS = [
-    { id: 1, name: "Mark Allen", sid: "6612-34210", status: "Active", att: "absent" },
-    { id: 2, name: "Lisa Wong", sid: "6612-34221", status: "Absent", att: null },
-    { id: 3, name: "Adam Patel", sid: "6612-34210", status: "Inactive", att: null },
-    { id: 4, name: "Emily Torres", sid: "6612-34213", status: "Inactive", att: null },
-    { id: 5, name: "Daniel Kim", sid: "6612-34214", status: "Active", att: null },
-    { id: 6, name: "Sarah Brown", sid: "6612-34215", status: "Absent", att: null },
-    { id: 7, name: "James Miller", sid: "6612-34216", status: "Inactive", att: null },
-    { id: 8, name: "Olivia Johnson", sid: "6612-34217", status: "Absent", att: null },
-    { id: 9, name: "Ryan Garcia", sid: "6612-34218", status: "Present", att: "present" },
-    { id: 10, name: "Mia Davis", sid: "6612-34219", status: "Absent", att: null },
-    { id: 11, name: "Ethan Clark", sid: "6612-34220", status: "Active", att: null },
-    { id: 12, name: "Sophia Lee", sid: "6612-34222", status: "Active", att: null },
-    { id: 13, name: "Liam Harris", sid: "6612-34223", status: "Inactive", att: null },
-    { id: 14, name: "Ava Wilson", sid: "6612-34224", status: "Absent", att: null },
-    { id: 15, name: "Noah Martin", sid: "6612-34225", status: "Present", att: "present" },
-    { id: 16, name: "Isabella Thomas", sid: "6612-34226", status: "Active", att: null },
-    { id: 17, name: "Mason Jackson", sid: "6612-34227", status: "Absent", att: null },
-    { id: 18, name: "Charlotte White", sid: "6612-34228", status: "Active", att: null },
-    { id: 19, name: "Logan Anderson", sid: "6612-34229", status: "Inactive", att: null },
-    { id: 20, name: "Amelia Taylor", sid: "6612-34230", status: "Present", att: "present" },
-    { id: 21, name: "Lucas Moore", sid: "6612-34231", status: "Active", att: null },
-    { id: 22, name: "Harper Jackson", sid: "6612-34232", status: "Absent", att: null },
-    { id: 23, name: "Henry Smith", sid: "6612-34233", status: "Inactive", att: null },
-    { id: 24, name: "Ella Brown", sid: "6612-34234", status: "Active", att: null },
-    { id: 25, name: "Aiden Davis", sid: "6612-34235", status: "Absent", att: null },
-  ];
+  /* Attendance state: { studentId: 'present'|'absent' } */
+  var attendanceMap = {};
 
-  const PAGE_SIZE = 10;
-  let currentPage = 1;
-  let filteredStudents = [...ALL_STUDENTS];
-  const attendance = {};
-  ALL_STUDENTS.forEach(s => { attendance[s.id] = s.att; });
+  function markAttendance(sid, status, btn) {
+    attendanceMap[sid] = status;
 
-  function badgeClass(status) {
-    return { Active: "badge-active", Absent: "badge-absent", Inactive: "badge-inactive", Present: "badge-present" }[status] || "badge-absent";
-  }
+    var row = document.querySelector('tr[data-sid="' + sid + '"]');
+    if (!row) return;
 
-  function setAttendance(id, val) {
-    attendance[id] = val;
-    renderTable();
-  }
+    /* Toggle row class for opacity effect */
+    row.classList.remove('marked-present', 'marked-absent');
+    row.classList.add(status === 'present' ? 'marked-present' : 'marked-absent');
 
-  function renderTable() {
-    const tbody = document.getElementById("student-tbody");
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const page = filteredStudents.slice(start, start + PAGE_SIZE);
-
-    tbody.innerHTML = page.map((s, i) => {
-      const att = attendance[s.id];
-      const pSel = att === "present" ? "selected" : "";
-      const aSel = att === "absent" ? "selected" : "";
-      return `
-        <tr>
-          <td class="row-num">${start + i + 1}</td>
-          <td class="student-name">${s.name}</td>
-          <td class="student-id">${s.sid}</td>
-          <td><span class="badge ${badgeClass(s.status)}">${s.status}</span></td>
-          <td>
-            <div class="att-btns">
-              <button class="btn-present ${pSel}" onclick="setAttendance(${s.id},'present')">✔ Present</button>
-              <button class="btn-absent  ${aSel}" onclick="setAttendance(${s.id},'absent')">✖ Absent</button>
-            </div>
-          </td>
-        </tr>`;
-    }).join("");
-
-    const shown = Math.min(PAGE_SIZE, filteredStudents.length - start);
-    document.getElementById("showing-text").textContent =
-      `Showing ${shown} of ${filteredStudents.length} students`;
-    renderPagination();
-  }
-
-  function renderPagination() {
-    const total = Math.ceil(filteredStudents.length / PAGE_SIZE);
-    let html = "";
-    for (let i = 1; i <= total; i++) {
-      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+    /* Update status badge in the row */
+    var badge = row.querySelector('.status-badge');
+    if (badge) {
+      badge.className = 'status-badge ' + (status === 'present' ? 'sb-present' : 'sb-absent');
+      badge.textContent = status === 'present' ? 'Present' : 'Absent';
     }
-    if (currentPage < total) {
-      html += `<button class="page-btn next-btn" onclick="goPage(${currentPage + 1})">Next ›</button>`;
-    }
-    document.getElementById("pagination").innerHTML = html;
+
+    /* Sync hidden inputs for form submission */
+    syncHiddenInputs();
   }
 
-  function goPage(n) { currentPage = n; renderTable(); }
-
-  function filterStudents(q) {
-    q = q.toLowerCase().trim();
-    filteredStudents = q
-      ? ALL_STUDENTS.filter(s => s.name.toLowerCase().includes(q) || s.sid.includes(q))
-      : [...ALL_STUDENTS];
-    currentPage = 1;
-    renderTable();
+  function syncHiddenInputs() {
+    var container = document.getElementById('hiddenInputs');
+    if (!container) return;
+    container.innerHTML = '';
+    Object.keys(attendanceMap).forEach(function (sid) {
+      var status = attendanceMap[sid];
+      var i = document.createElement('input');
+      i.type = 'hidden';
+      i.name = 'attendance_' + sid;
+      i.value = status;
+      container.appendChild(i);
+    });
   }
 
-  function openDatePicker() {
-    const input = document.getElementById("date-input");
-    input.showPicker ? input.showPicker() : input.click();
-  }
-
+  /* Date picker */
   function updateDate(val) {
-    const d = new Date(val + "T00:00:00");
-    const fmt = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-    document.getElementById("selected-date").textContent = fmt;
-    document.getElementById("header-date").textContent = fmt;
+    if (!val) return;
+    var d = new Date(val + 'T00:00:00');
+    var label = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('dateLabel').textContent = label;
+    var field = document.getElementById('attendanceDateField');
+    if (field) field.value = val;
   }
 
-  function saveAttendance() {
-    /* In production, POST attendance{} to your Django view via fetch():
-    fetch("{% url 'save_attendance' %}", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
-      body: JSON.stringify({ date: document.getElementById("date-input").value, attendance })
-    }); */
-    const toast = document.getElementById("toast");
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2800);
+  /* Search */
+  function filterStudents(q) {
+    document.querySelectorAll('#stuBody tr').forEach(function (row) {
+      row.style.display = row.textContent.toLowerCase().indexOf(q.toLowerCase()) !== -1 ? '' : 'none';
+    });
   }
 
-  // Init
-  renderTable();
+  /* Pagination (static demo) */
+  var currentPage = 1;
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1', 'pg2', 'pg3', 'pg4'].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    var a = document.getElementById('pg' + p);
+    if (a) a.classList.add('active');
+    // Django: window.location = `?page=${p}&date=${datePicker.value}`;
+  }
+
+  function changePage(dir) {
+    var next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
 </script>
 {% endblock %}

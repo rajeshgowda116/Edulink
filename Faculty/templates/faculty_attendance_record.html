@@ -1,0 +1,322 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}EduLink – Faculty Attendance Record{% endblock %}
+{% block nav_classes %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Light theme override ── */
+  body { background: #f0f4ff; }
+  .bg-layer { display: none; }
+  .main { background: #f0f4ff; padding: 32px 36px 48px; }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.83rem; color: #94a3b8;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .breadcrumb a { color: #94a3b8; text-decoration: none; transition: color .2s; }
+  .breadcrumb a:hover { color: #2563eb; }
+  .breadcrumb .crumb-active { color: #2563eb; font-weight: 700; }
+  .breadcrumb .sep { color: #cbd5e1; }
+
+  /* ── Page Title ── */
+  .page-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.95rem; font-weight: 900;
+    color: #1e293b; margin-bottom: 4px;
+    text-shadow: none;
+  }
+
+  /* ── Class Info ── */
+  .class-info { margin-bottom: 24px; }
+  .class-info h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.45rem; font-weight: 900; color: #1e293b;
+    margin-bottom: 3px;
+  }
+  .class-info p { font-size: 0.87rem; color: #94a3b8; font-weight: 500; }
+
+  /* ── Table Card ── */
+  .record-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(37,99,235,.06);
+  }
+
+  /* Sub-header */
+  .record-subheader {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .record-subheader p {
+    font-size: 0.92rem; font-weight: 500; color: #475569;
+  }
+
+  /* Search */
+  .att-search {
+    display: flex; align-items: center; gap: 8px;
+    background: #f8faff; border: 1.5px solid #e2e8f0;
+    border-radius: 10px; padding: 9px 16px;
+    transition: border-color .2s; min-width: 200px;
+  }
+  .att-search:focus-within { border-color: #2563eb; }
+  .att-search svg { width: 15px; height: 15px; color: #94a3b8; flex-shrink: 0; }
+  .att-search input {
+    border: none; background: transparent; outline: none;
+    font-size: 0.86rem; color: #374151;
+    font-family: 'Inter', sans-serif; width: 100%;
+  }
+  .att-search input::placeholder { color: #94a3b8; }
+
+  /* ── Table ── */
+  .rec-table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
+
+  .rec-table thead tr { background: #f8faff; }
+  .rec-table thead th {
+    padding: 12px 14px; text-align: center;
+    font-size: 0.80rem; font-weight: 700; color: #94a3b8;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap; letter-spacing: .02em;
+  }
+  .rec-table thead th:first-child { text-align: left; min-width: 160px; }
+
+  .rec-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+  .rec-table tbody tr:last-child { border-bottom: none; }
+  .rec-table tbody tr:hover { background: #f8faff; }
+
+  .rec-table tbody td {
+    padding: 15px 14px; text-align: center;
+    font-size: 0.90rem; color: #1e293b;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .rec-table tbody td:first-child {
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; color: #1e293b;
+  }
+
+  /* ── Status Badges ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    border-radius: 8px; padding: 6px 14px;
+    font-size: 0.80rem; font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    white-space: nowrap; cursor: default;
+    letter-spacing: .01em;
+  }
+  .badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  .badge-present {
+    background: #16a34a; color: white;
+    box-shadow: 0 2px 8px rgba(22,163,74,.22);
+  }
+  .badge-absent {
+    background: #dc2626; color: white;
+    box-shadow: 0 2px 8px rgba(220,38,38,.22);
+  }
+
+  /* ── Footer / Pagination ── */
+  .rec-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 22px; border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .footer-info { font-size: 0.82rem; color: #94a3b8; }
+
+  .pagination { display: flex; align-items: center; gap: 5px; }
+  .pg-btn {
+    min-width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid #e2e8f0; background: white;
+    font-size: 0.82rem; font-weight: 700; color: #64748b;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    padding: 0 8px; transition: all .15s; font-family: 'Nunito', sans-serif;
+  }
+  .pg-btn:hover { background: #dbeafe; border-color: #2563eb; color: #2563eb; }
+  .pg-btn.active { background: #2563eb; border-color: #2563eb; color: white; }
+  .pg-btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  @media (max-width: 700px) {
+    .main { padding: 20px 12px 36px; }
+    .page-title { font-size: 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="">My Classes</a>
+    <span class="sep">/</span>
+    <span class="crumb-active">{{ class.name|default:"Web Development" }}</span>
+    <span class="sep">/</span>
+    <span>Attendance Record</span>
+  </nav>
+
+  <!-- Page Title -->
+  <h1 class="page-title">Faculty Attendance Record</h1>
+
+  <!-- Class Info -->
+  <div class="class-info">
+    <h2>{{ class.name|default:"Web Development" }}</h2>
+    <p>{{ class.code|default:"CLS-9GHD6A" }}</p>
+  </div>
+
+  <!-- Record Table Card -->
+  <div class="record-card">
+
+    <div class="record-subheader">
+      <p>Manage attendance records for <strong>{{ class.name|default:"Web Development" }}</strong> class</p>
+      <div class="att-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="Search student..."
+               id="stuSearch" oninput="filterStudents(this.value)" autocomplete="off"/>
+      </div>
+    </div>
+
+    <!-- Scrollable table -->
+    <div style="overflow-x:auto;">
+      <table class="rec-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            {% for date in dates %}
+              <th>{{ date|date:"M d, Y" }}</th>
+            {% empty %}
+              <th>Apr 22, 2024</th>
+              <th>Apr 22, 2024</th>
+              <th>Apr 26, 2024</th>
+              <th>Apr 26, 2024</th>
+              <th>Apr 26, 2024</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody id="stuBody">
+
+          {% for student in students %}
+          <tr>
+            <td>{{ student.first_name }} {{ student.last_name }}</td>
+            {% for record in student.records %}
+            <td>
+              {% if record.status == 'present' %}
+                <span class="badge badge-present">
+                  <svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  Present
+                </span>
+              {% else %}
+                <span class="badge badge-absent">
+                  <svg viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  Absent
+                </span>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% empty %}
+          <!-- Fallback static rows -->
+          {% with rows="Mark Allen,Lisa Wong,Adam Patel,Emily Torres,Daniel Kim,Sarah Brown,James Miller" %}
+          
+          <tr>
+            <td>{{ name }}</td>
+            <!-- Col 1 -->
+            <td><span class="badge badge-present"><svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Present</span></td>
+            <!-- Col 2 -->
+            <td><span class="badge badge-present"><svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Present</span></td>
+            <!-- Col 3 — vary some absent -->
+            <td>
+              {% if forloop.counter == 2 %}
+                <span class="badge badge-absent"><svg viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Absent</span>
+              {% else %}
+                <span class="badge badge-present"><svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Present</span>
+              {% endif %}
+            </td>
+            <!-- Col 4 — vary some absent -->
+            <td>
+              {% if forloop.counter == 4 or forloop.counter == 6 or forloop.counter == 7 %}
+                <span class="badge badge-absent"><svg viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Absent</span>
+              {% else %}
+                <span class="badge badge-present"><svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Present</span>
+              {% endif %}
+            </td>
+            <!-- Col 5 — vary some absent -->
+            <td>
+              {% if forloop.counter == 3 or forloop.counter == 5 %}
+                <span class="badge badge-absent"><svg viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>Absent</span>
+              {% else %}
+                <span class="badge badge-present"><svg viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Present</span>
+              {% endif %}
+            </td>
+          </tr>
+         
+          {% endwith %}
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="rec-footer">
+      <div class="footer-info">
+        Showing 1 – {{ students|length|default:"7" }} of {{ total_students|default:"110" }} students
+      </div>
+      <div class="pagination">
+        <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
+        <button class="pg-btn" id="pg1" onclick="setPage(1)">1</button>
+        <button class="pg-btn active" id="pg2" onclick="setPage(2)">1</button>
+        <button class="pg-btn" id="pg3" onclick="setPage(3)">2</button>
+        <button class="pg-btn" id="pg4" onclick="setPage(4)">3</button>
+        <button class="pg-btn" id="nextBtn" onclick="changePage(1)">Next ›</button>
+      </div>
+    </div>
+
+  </div><!-- /record-card -->
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  /* Search filter */
+  function filterStudents(q) {
+    document.querySelectorAll('#stuBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  /* Pagination */
+  let currentPage = 1;
+ 
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1','pg2','pg3','pg4'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    const a = document.getElementById('pg' + p);
+    if (a) a.classList.add('active');
+    // Django: window.location = `?page=${p}`;
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+</script>
+{% endblock %}
