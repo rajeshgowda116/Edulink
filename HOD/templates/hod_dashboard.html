@@ -205,7 +205,7 @@
       </svg>
     </div>
     <div class="stat-info">
-      <div class="num">{{ advisors_count|default:"20" }}</div>
+      <div class="num">{{ advisors_count}}</div>
       <div class="lbl">Advisors</div>
     </div>
   </div>
@@ -219,7 +219,7 @@
       </svg>
     </div>
     <div class="stat-info">
-      <div class="num">{{ faculty_count|default:"75" }}</div>
+      <div class="num">{{ faculty_count }}</div>
       <div class="lbl">Faculty</div>
     </div>
   </div>
@@ -232,7 +232,7 @@
       </svg>
     </div>
     <div class="stat-info">
-      <div class="num">{{ students_count|default:"250" }}</div>
+      <div class="num">{{ students_count }}</div>
       <div class="lbl">Students</div>
     </div>
   </div>
@@ -248,7 +248,7 @@
       </svg>
     </div>
     <div class="stat-info">
-      <div class="num code-num">{{ dept_code|default:"ADV-XF3P2Y" }}</div>
+      <div class="num code-num">{{ department.dept_code|default:"Not created" }}</div>
       <div class="lbl code-lbl">Department Code</div>
     </div>
   </div>

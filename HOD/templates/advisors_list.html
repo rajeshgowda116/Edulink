@@ -284,66 +284,15 @@
           <td>
             <div class="name-cell">
               <div class="advisor-avatar v{{ forloop.counter }}">
-                {{ advisor.first_name|first }}{{ advisor.last_name|first }}
+                {{ advisor.user.first_name|first }}{{ advisor.user.last_name|first }}
               </div>
-              <span class="advisor-name">Dr. {{ advisor.first_name }} {{ advisor.last_name }}</span>
+              <span class="advisor-name">Dr. {{ advisor.user.first_name }} {{ advisor.user.last_name }}</span>
             </div>
           </td>
-          <td><span class="dept-text">{{ advisor.department }}</span></td>
-          <td><span class="class-badge">{{ advisor.class_code }}</span></td>
+          <td><span class="dept-text">{{ advisor.advicer_id|default:"-" }}</span></td>
+          <td><span class="class-badge">{{ advisor.class_name|default:"-" }}</span></td>
         </tr>
-        {% empty %}
-        {# ── Fallback static rows for preview ── #}
-        <tr>
-          <td>
-            <div class="name-cell">
-              <div class="advisor-avatar">NS</div>
-              <span class="advisor-name">Dr. Neha Sharma</span>
-            </div>
-          </td>
-          <td><span class="dept-text">Computer Science</span></td>
-          <td><span class="class-badge">AIML-3A</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="name-cell">
-              <div class="advisor-avatar v2">AV</div>
-              <span class="advisor-name">Dr. Ankit Verma</span>
-            </div>
-          </td>
-          <td><span class="dept-text">Mechanical</span></td>
-          <td><span class="class-badge">MECH-5B</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="name-cell">
-              <div class="advisor-avatar v3">PK</div>
-              <span class="advisor-name">Dr. Priya Kapoor</span>
-            </div>
-          </td>
-          <td><span class="dept-text">Electrical</span></td>
-          <td><span class="class-badge">ECE-2A</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="name-cell">
-              <div class="advisor-avatar v4">RI</div>
-              <span class="advisor-name">Dr. Ramesh Iyer</span>
-            </div>
-          </td>
-          <td><span class="dept-text">Civil</span></td>
-          <td><span class="class-badge">CIVIL-4C</span></td>
-        </tr>
-        <tr>
-          <td>
-            <div class="name-cell">
-              <div class="advisor-avatar v5">SS</div>
-              <span class="advisor-name">Dr. Sonali Singh</span>
-            </div>
-          </td>
-          <td><span class="dept-text">Electronics</span></td>
-          <td><span class="class-badge">EEE-1B</span></td>
-        </tr>
+
         {% endfor %}
 
       </tbody>

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import Faculty
 from django.http import HttpResponse
 # Create your views here.
@@ -17,7 +17,7 @@ def faculty_info(request):
         subject_name=subject_name,
         subject_code=subject_code
         )
-    return HttpResponse("HIII lowde")  
+    return redirect("faculty_dashboard")  
 
   return render(request,'faculty_info.html')
 

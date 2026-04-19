@@ -122,7 +122,6 @@
   /* Code display box */
   .code-display {
     display: none;
-    /* shown via JS after generation */
     align-items: center;
     justify-content: center;
     gap: 16px;
@@ -257,7 +256,24 @@
 
   <div class="gen-card">
 
-    <!-- Form Section -->
+    {% if department.dept_code %}
+
+    <!-- Result Section — shown ONLY after code is generated, form is hidden -->
+    <div class="gen-result-section">
+      <div class="code-display visible">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+          </svg>
+        </div>
+        <span class="generated-code" id="generatedCode">{{ department.dept_code }}</span>
+        <button class="btn-copy" onclick="copyCode()">Copy</button>
+      </div>
+    </div>
+
+    {% else %}
+
+    <!-- Form Section — shown before generation -->
     <div class="gen-form-section">
 
       {% if messages %}
@@ -271,42 +287,20 @@
       <form method="POST" action="{% url 'generate_dept_code' %}" id="codeForm">
         {% csrf_token %}
 
-        <label class="field-label" for="department_name">Department Name</label>
-        <input type="text" id="department_name" name="department_name" class="dept-input"
-          placeholder="e.g. Computer Science" value="{{ department_name|default:'' }}" required autocomplete="off" />
+        <label class="field-label" for="department">Department Name</label>
+        <input type="text" id="department" name="department" class="dept-input" placeholder="e.g. Computer Science"
+          value="{{ department_name|default:'' }}" required autocomplete="off" />
 
         <button type="submit" class="btn-generate">Generate Code</button>
       </form>
     </div>
 
-    <!-- Result Section -->
+    <!-- Result placeholder — shown before generation -->
     <div class="gen-result-section">
-
-      {% if generated_code %}
-      {# Django passed the generated code back in context #}
-      <div class="code-display visible" id="codeDisplay">
-        <div class="check-circle">
-          <svg viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-          </svg>
-        </div>
-        <span class="generated-code" id="generatedCode">{{ generated_code }}</span>
-        <button class="btn-copy" onclick="copyCode()">Copy</button>
-      </div>
-      {% else %}
-      <div class="code-display" id="codeDisplay">
-        <div class="check-circle">
-          <svg viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-          </svg>
-        </div>
-        <span class="generated-code" id="generatedCode"></span>
-        <button class="btn-copy" onclick="copyCode()">Copy</button>
-      </div>
-      <span class="result-placeholder" id="resultPlaceholder">Your class code will appear here…</span>
-      {% endif %}
-
+      <p class="result-placeholder">Your generated code will appear here…</p>
     </div>
+
+    {% endif %}
 
   </div><!-- /gen-card -->
 </div>
@@ -323,16 +317,6 @@
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = 'Copy', 2000);
     });
-  }
-
-  /* Optional: client-side preview (generates same format as Django util) */
-  function generatePreview(dept) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'CLS-';
-    for (let i = 0; i < 6; i++) {
-      code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return code;
   }
 </script>
 {% endblock %}
