@@ -4,6 +4,7 @@ from .models import Hod,Department
 from utils.Codegen import Code
 from Advicer.models import advicer, Classroom
 from Faculty.models import Faculty
+from Attendence.models import Attendence
 
 
 # Create your views here.
@@ -39,7 +40,7 @@ def hod_dashboard(request):
 
 
 def class_attendence(request):
-  
+
   return render(request,'hod_attendance.html')
 
 
