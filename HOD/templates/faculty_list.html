@@ -273,24 +273,24 @@
               Name
             </span>
           </th>
-          <th>Department</th>
-          <th>Class</th>
+          <th>Faculty Id</th>
+          <th>Subject</th>
         </tr>
       </thead>
       <tbody id="advisorBody">
 
-        {% for advisor in advisors %}
+        {% for fac in faculty %}
         <tr>
           <td>
             <div class="name-cell">
               <div class="advisor-avatar v{{ forloop.counter }}">
-                {{ advisor.first_name|first }}{{ advisor.last_name|first }}
+                {{ fac.user.first_name|first }}{{ fac.user.last_name|first }}
               </div>
-              <span class="advisor-name">Dr. {{ advisor.first_name }} {{ advisor.last_name }}</span>
+              <span class="advisor-name">Dr. {{ fac.user.first_name }} {{ fac.user.last_name }}</span>
             </div>
           </td>
-          <td><span class="dept-text">{{ advisor.department }}</span></td>
-          <td><span class="class-badge">{{ advisor.class_code }}</span></td>
+          <td><span class="dept-text">{{ fac.faculty_id|default:"-" }}</span></td>
+          <td><span class="class-badge">{{ fac.subject_name|default:"-" }}</span></td>
         </tr>
         {% empty %}
         {# ── Fallback static rows for preview ── #}

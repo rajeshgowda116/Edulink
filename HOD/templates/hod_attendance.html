@@ -18,18 +18,18 @@
     font-weight: 900;
     color: white;
     margin-bottom: 32px;
-    text-shadow: 0 2px 16px rgba(0,0,0,.35);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, .35);
   }
 
   /* ── Table Card ── */
   .attendance-card {
-    background: rgba(255,255,255,0.18);
+    background: rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,0.30);
+    border: 1px solid rgba(255, 255, 255, 0.30);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,.22);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .22);
   }
 
   .att-table {
@@ -39,33 +39,37 @@
 
   /* Header row */
   .att-table thead tr {
-    background: rgba(255,255,255,0.10);
-    border-bottom: 1px solid rgba(255,255,255,0.20);
+    background: rgba(255, 255, 255, 0.10);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
   }
+
   .att-table thead th {
     padding: 18px 32px;
     text-align: left;
     font-family: 'Nunito', sans-serif;
     font-size: 0.95rem;
     font-weight: 700;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255, 255, 255, 0.85);
     text-transform: none;
     letter-spacing: .01em;
   }
+
   .att-table thead th:last-child {
     text-align: left;
   }
 
   /* Body rows */
   .att-table tbody tr {
-    border-bottom: 1px solid rgba(255,255,255,0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     transition: background .2s;
   }
+
   .att-table tbody tr:last-child {
     border-bottom: none;
   }
+
   .att-table tbody tr:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .att-table tbody td {
@@ -90,7 +94,7 @@
   .bar-track {
     width: 100%;
     height: 38px;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 50px;
     position: relative;
     overflow: hidden;
@@ -104,26 +108,29 @@
     justify-content: flex-end;
     padding-right: 14px;
     position: relative;
-    transition: width 1s cubic-bezier(.4,0,.2,1);
+    transition: width 1s cubic-bezier(.4, 0, .2, 1);
     min-width: 60px;
   }
 
   /* Colour themes */
   .bar-fill.green {
     background: linear-gradient(90deg, #22c55e, #16a34a);
-    box-shadow: 0 4px 18px rgba(34,197,94,.40);
+    box-shadow: 0 4px 18px rgba(34, 197, 94, .40);
   }
+
   .bar-fill.yellow {
     background: linear-gradient(90deg, #fbbf24, #f59e0b);
-    box-shadow: 0 4px 18px rgba(251,191,36,.40);
+    box-shadow: 0 4px 18px rgba(251, 191, 36, .40);
   }
+
   .bar-fill.orange {
     background: linear-gradient(90deg, #fb923c, #f97316);
-    box-shadow: 0 4px 18px rgba(249,115,22,.40);
+    box-shadow: 0 4px 18px rgba(249, 115, 22, .40);
   }
+
   .bar-fill.red {
     background: linear-gradient(90deg, #f87171, #ef4444);
-    box-shadow: 0 4px 18px rgba(239,68,68,.40);
+    box-shadow: 0 4px 18px rgba(239, 68, 68, .40);
   }
 
   /* Dot indicator on the bar end */
@@ -133,7 +140,8 @@
     right: 38px;
     top: 50%;
     transform: translateY(-50%);
-    width: 10px; height: 10px;
+    width: 10px;
+    height: 10px;
     background: white;
     border-radius: 50%;
     opacity: 0.85;
@@ -144,21 +152,41 @@
     font-size: 0.95rem;
     font-weight: 900;
     color: white;
-    text-shadow: 0 1px 4px rgba(0,0,0,.25);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .25);
     position: relative;
     z-index: 1;
   }
 
   /* Animated entrance */
   @keyframes barGrow {
-    from { width: 0; }
+    from {
+      width: 0;
+    }
   }
-  .bar-fill { animation: barGrow .9s cubic-bezier(.4,0,.2,1) both; }
-  .att-table tbody tr:nth-child(1) .bar-fill { animation-delay: .05s; }
-  .att-table tbody tr:nth-child(2) .bar-fill { animation-delay: .15s; }
-  .att-table tbody tr:nth-child(3) .bar-fill { animation-delay: .25s; }
-  .att-table tbody tr:nth-child(4) .bar-fill { animation-delay: .35s; }
-  .att-table tbody tr:nth-child(5) .bar-fill { animation-delay: .45s; }
+
+  .bar-fill {
+    animation: barGrow .9s cubic-bezier(.4, 0, .2, 1) both;
+  }
+
+  .att-table tbody tr:nth-child(1) .bar-fill {
+    animation-delay: .05s;
+  }
+
+  .att-table tbody tr:nth-child(2) .bar-fill {
+    animation-delay: .15s;
+  }
+
+  .att-table tbody tr:nth-child(3) .bar-fill {
+    animation-delay: .25s;
+  }
+
+  .att-table tbody tr:nth-child(4) .bar-fill {
+    animation-delay: .35s;
+  }
+
+  .att-table tbody tr:nth-child(5) .bar-fill {
+    animation-delay: .45s;
+  }
 
   /* Legend */
   .legend {
@@ -168,24 +196,52 @@
     margin-top: 28px;
     flex-wrap: wrap;
   }
+
   .legend-item {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.82rem; font-weight: 600;
-    color: rgba(255,255,255,0.75);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
   }
+
   .legend-dot {
-    width: 12px; height: 12px; border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
   }
-  .legend-dot.green  { background: #22c55e; }
-  .legend-dot.yellow { background: #fbbf24; }
-  .legend-dot.orange { background: #fb923c; }
-  .legend-dot.red    { background: #f87171; }
+
+  .legend-dot.green {
+    background: #22c55e;
+  }
+
+  .legend-dot.yellow {
+    background: #fbbf24;
+  }
+
+  .legend-dot.orange {
+    background: #fb923c;
+  }
+
+  .legend-dot.red {
+    background: #f87171;
+  }
 
   @media (max-width: 640px) {
+
     .att-table thead th,
-    .att-table tbody td { padding: 14px 16px; }
-    .bar-track { height: 30px; }
-    .page-title { font-size: 1.5rem; }
+    .att-table tbody td {
+      padding: 14px 16px;
+    }
+
+    .bar-track {
+      height: 30px;
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+    }
   }
 </style>
 {% endblock %}
@@ -208,11 +264,11 @@
 
         {% for dept in departments %}
         <tr>
-          <td class="dept-name">{{ dept.name }}</td>
+          <td class="dept-name"><a href="" style="text-decoration: none;color: white;">{{ dept.name }}</a></td>
           <td class="bar-cell">
             <div class="bar-track">
-              <div class="bar-fill {% if dept.percentage >= 85 %}green{% elif dept.percentage >= 75 %}yellow{% elif dept.percentage >= 65 %}orange{% else %}red{% endif %}"
-                   style="width: {{ dept.percentage }}%;">
+              <div
+                class="bar-fill {% if dept.percentage >= 85 %}green{% elif dept.percentage >= 75 %}yellow{% elif dept.percentage >= 65 %}orange{% else %}red{% endif %}">
                 <span class="bar-pct">{{ dept.percentage }}%</span>
               </div>
             </div>
@@ -221,7 +277,7 @@
         {% empty %}
         {# ── Fallback static data for preview ── #}
         <tr>
-          <td class="dept-name">Computer Science</td>
+          <td class="dept-name"><a href="" style="text-decoration: none;color: white;">Computer Science</a></td>
           <td class="bar-cell">
             <div class="bar-track">
               <div class="bar-fill green" style="width:92%;">
@@ -278,10 +334,18 @@
 
   <!-- Legend -->
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot green"></div> Excellent (85%+)</div>
-    <div class="legend-item"><div class="legend-dot yellow"></div> Good (75–84%)</div>
-    <div class="legend-item"><div class="legend-dot orange"></div> Average (65–74%)</div>
-    <div class="legend-item"><div class="legend-dot red"></div> Low (&lt;65%)</div>
+    <div class="legend-item">
+      <div class="legend-dot green"></div> Excellent (85%+)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot yellow"></div> Good (75–84%)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot orange"></div> Average (65–74%)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot red"></div> Low (&lt;65%)
+    </div>
   </div>
 
 </div>

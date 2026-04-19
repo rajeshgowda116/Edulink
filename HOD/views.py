@@ -3,6 +3,7 @@ from User.models import User
 from .models import Hod,Department
 from utils.Codegen import Code
 from Advicer.models import advicer, Classroom
+from Faculty.models import Faculty
 
 
 # Create your views here.
@@ -20,6 +21,9 @@ def hod_info(request):
     return redirect("hod_dashboard")
   return render(request,'hod_info.html')
 
+
+
+
 def hod_dashboard(request):
   advisors_count = User.objects.filter(role='advisor').count()
   faculty_count=User.objects.filter(role='faculty').count()
@@ -29,11 +33,18 @@ def hod_dashboard(request):
            'faculty_count':faculty_count,
            'students_count':students_count,
            'department':department}
-  
   return render(request,'hod_dashboard.html',context)
 
+
+
+
 def class_attendence(request):
+  
   return render(request,'hod_attendance.html')
+
+
+
+
 
 def advicers_list(request):
   advisors= User.objects.filter(role='advisor')
@@ -49,8 +60,28 @@ def advicers_list(request):
   context={'advisors':advisor_rows}
   return render(request,'advisors_list.html',context)
 
+
+
+
+
 def faculty_list(request):
-  return render(request,'faculty_list.html')
+  faculty=User.objects.filter(role='faculty')
+  faculty_row=[]
+  for fac in faculty:
+    faculty_info=Faculty.objects.filter(username=fac).first()
+    faculty_row.append({
+      'user':fac,
+      'faculty_id':faculty_info.faculty_id if faculty_info else '',
+      'subject_name':faculty_info.subject_name if faculty_info else ''
+    })
+  context={
+    'faculty':faculty_row
+  }
+  return render(request,'faculty_list.html',context)
+
+
+
+
 
 def generate_dept_code(request):
   department = Department.objects.filter(username=request.user).last()
@@ -62,6 +93,9 @@ def generate_dept_code(request):
                                            dept_code=dept_code)
   context={'department':department}
   return render(request,'generate_class_code.html',context)
+
+
+
 
 def Chat(request):
   return render(request,'chat.html')
