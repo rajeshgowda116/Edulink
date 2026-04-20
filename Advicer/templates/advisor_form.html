@@ -188,6 +188,12 @@
           {% endfor %}
           {% endif %}
 
+          {% if error %}
+          <div class="msg-error">
+            {{ error }}
+          </div>
+          {% endif %}
+
           <div class="field-group">
             <label class="field-label" for="advicer_id">Advisor ID</label>
             <div class="input-wrap">

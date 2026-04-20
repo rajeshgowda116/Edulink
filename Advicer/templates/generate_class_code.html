@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "advisor_base.html" %}
 
 {% block title %}EduLink – Generate Class Code{% endblock %}
 {% block nav_settings %}active{% endblock %}
@@ -251,12 +251,12 @@
 {% block content %}
 <div class="gen-wrapper">
 
-  <h1 class="gen-title">Generate Department Code</h1>
-  <p class="gen-subtitle">Enter the department name to generate a unique class code</p>
+  <h1 class="gen-title" style="color: #1e1040;">Generate Class Code</h1>
+  <p class="gen-subtitle" style="color: #1e1040;">Enter the class name to generate a unique class code</p>
 
   <div class="gen-card">
 
-    {% if department.dept_code %}
+    {% if classroom.class_code %}
 
     <!-- Result Section — shown ONLY after code is generated, form is hidden -->
     <div class="gen-result-section">
@@ -266,7 +266,7 @@
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
         </div>
-        <span class="generated-code" id="generatedCode">{{ department.dept_code }}</span>
+        <span class="generated-code" id="generatedCode">{{ classroom.class_code }}</span>
         <button class="btn-copy" onclick="copyCode()">Copy</button>
       </div>
     </div>
@@ -284,12 +284,12 @@
       {% endfor %}
       {% endif %}
 
-      <form method="POST" action="{% url 'generate_dept_code' %}" id="codeForm">
+      <form method="POST" action="{% url 'generate_class_code' %}" id="codeForm">
         {% csrf_token %}
 
-        <label class="field-label" for="department">Department Name</label>
-        <input type="text" id="department" name="department" class="dept-input" placeholder="e.g. Computer Science"
-          value="{{ department_name|default:'' }}" required autocomplete="off" />
+        <label class="field-label" for="class" style="color: #1e1040;">Class Name</label>
+        <input type="text" id="class" name="class" class="dept-input" placeholder="e.g. Computer Science"
+          value="{{ class|default:'' }}" required autocomplete="off" />
 
         <button type="submit" class="btn-generate">Generate Code</button>
       </form>

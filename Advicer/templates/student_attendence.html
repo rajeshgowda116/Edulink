@@ -1,0 +1,439 @@
+{% extends "advisor_base.html" %}
+
+{% block title %}Advisor Dashboard – EduLink{% endblock %}
+
+{% block nav_dashboard %}active{% endblock %}
+
+{% block toast_message %}✅ Data refreshed!{% endblock %}
+
+{# ══════════════════════════════════════════════
+PAGE-SPECIFIC CSS
+══════════════════════════════════════════════ #}
+{% block extra_css %}
+<style>
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .topbar-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -.6px;
+    color: var(--text);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 7px 16px 7px 12px;
+    cursor: pointer;
+    transition: border-color .18s, box-shadow .18s;
+  }
+
+  .user-pill:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(79, 110, 247, .12);
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a5b4fc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #fff;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .user-chevron {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-left: 2px;
+  }
+
+  /* Welcome card */
+  .welcome-card {
+    padding: 26px 32px 20px;
+    margin-bottom: 24px;
+    background: var(--card);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 18px rgba(79, 110, 247, .07);
+  }
+
+  .welcome-title {
+    font-size: 1.45rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .welcome-title strong {
+    font-weight: 800;
+  }
+
+  .class-code-label {
+    font-size: .85rem;
+    color: var(--muted);
+  }
+
+  .class-code-label span {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* Students table card */
+  .students-card {
+    background: var(--card);
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 18px rgba(79, 110, 247, .06);
+    overflow: hidden;
+  }
+
+  .students-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .students-card-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -.3px;
+    color: var(--text);
+  }
+
+  /* Search */
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    transition: border-color .18s;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--accent);
+  }
+
+  .search-icon {
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: .88rem;
+    color: var(--text);
+    width: 200px;
+  }
+
+  .search-box input::placeholder {
+    color: #adb5bd;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: #f8f9ff;
+    padding: 11px 20px;
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    text-align: left;
+    border-bottom: 1.5px solid var(--border);
+  }
+
+  thead th:not(:first-child) {
+    text-align: center;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f1f3f9;
+    transition: background .14s;
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: #f8f9ff;
+  }
+
+  tbody td {
+    padding: 13px 20px;
+    font-size: .91rem;
+    vertical-align: middle;
+  }
+
+  td.student-name {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  td.score-cell {
+    text-align: center;
+  }
+
+  /* Score badge */
+  .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 8px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #fff;
+    min-width: 72px;
+    justify-content: center;
+  }
+
+  .score-badge.green {
+    background: #22c55e;
+  }
+
+  .score-badge.red {
+    background: #ef4444;
+  }
+
+  .score-badge .check {
+    font-size: .8rem;
+    opacity: .9;
+  }
+
+  .score-badge .count {
+    background: rgba(0, 0, 0, .18);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: .75rem;
+    font-weight: 800;
+  }
+
+  /* Table footer */
+  .table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 28px;
+    border-top: 1.5px solid var(--border);
+    background: #f8f9ff;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .showing-text {
+    font-size: .84rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .page-btn {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    font-size: .86rem;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+  }
+
+  .page-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .page-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 2px 10px rgba(79, 110, 247, .3);
+  }
+
+  .page-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+</style>
+{% endblock %}
+
+{# ══════════════════════════════════════════════
+CONTENT
+══════════════════════════════════════════════ #}
+{% block content %}
+
+<!-- Top Bar -->
+<div class="topbar">
+  <h1 class="topbar-title">Advisor Dashboard</h1>
+  <div class="user-pill">
+    <span style="color:var(--muted);font-size:1.1rem;">👤</span>
+    <span class="user-name">{{ user.get_full_name }}</span>
+    <div class="user-avatar">{{ user.first_name.0 }}{{ user.last_name.0 }}</div>
+    <span class="user-chevron">▾</span>
+  </div>
+</div>
+
+<!-- Welcome Card -->
+<div class="welcome-card">
+  <div class="welcome-title">Welcome Back, <strong>{{ user.get_full_name }}</strong></div>
+</div>
+
+<!-- Students Table Card -->
+<div class="students-card">
+  <div class="students-card-header">
+    <div class="students-card-title">Your Students</div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search by student name..." oninput="filterStudents(this.value)" />
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Math</th>
+        <th>Physics</th>
+        <th>Chemistry</th>
+        <th>History</th>
+      </tr>
+    </thead>
+    <tbody id="student-tbody"></tbody>
+  </table>
+
+  <div class="table-footer">
+    <span class="showing-text" id="showing-text"></span>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{# ══════════════════════════════════════════════
+SCRIPTS
+══════════════════════════════════════════════ #}
+{% block extra_js %}
+<script>
+  /* Replace with: const ALL_STUDENTS = {{ students_json|safe }}; */
+  const ALL_STUDENTS = [
+    { name: "Mark Allen", math: 92, physics: 85, chemistry: 68, history: 90, chem_absent: 3 },
+    { name: "Lisa Wong", math: 85, physics: 75, chemistry: 92, history: 78 },
+    { name: "Adam Patel", math: 72, physics: 63, chemistry: 71, history: 65 },
+    { name: "Emily Torres", math: 88, physics: 79, chemistry: 90, history: 94 },
+    { name: "Daniel Kim", math: 95, physics: 88, chemistry: 65, history: 80 },
+    { name: "Sarah Brown", math: 67, physics: 82, chemistry: 79, history: 88 },
+    { name: "James Miller", math: 78, physics: 69, chemistry: 62, history: 92 },
+    { name: "Olivia Johnson", math: 91, physics: 85, chemistry: 89, history: 95 },
+    { name: "Ryan Garcia", math: 80, physics: 93, chemistry: 92, history: 90 },
+    { name: "Mia Davis", math: 74, physics: 70, chemistry: 85, history: 77 },
+    { name: "Ethan Clark", math: 88, physics: 91, chemistry: 76, history: 83 },
+    { name: "Sophia Lee", math: 96, physics: 87, chemistry: 93, history: 89 },
+  ];
+
+  const THRESHOLD = 75;
+  const PAGE_SIZE = 9;
+  let currentPage = 1;
+  let filtered = [...ALL_STUDENTS];
+
+  function scoreBadge(val, absentCount) {
+    const cls = val >= THRESHOLD ? "green" : "red";
+    const extra = absentCount ? `<span class="count">${absentCount}</span>` : `<span class="check">✓</span>`;
+    return `<span class="score-badge ${cls}">${val}% ${extra}</span>`;
+  }
+
+  function renderTable() {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const page = filtered.slice(start, start + PAGE_SIZE);
+    const end = Math.min(start + PAGE_SIZE, filtered.length);
+
+    document.getElementById("student-tbody").innerHTML = page.map(s => `
+      <tr>
+        <td class="student-name">${s.name}</td>
+        <td class="score-cell">${scoreBadge(s.math)}</td>
+        <td class="score-cell">${scoreBadge(s.physics)}</td>
+        <td class="score-cell">${scoreBadge(s.chemistry, s.chem_absent)}</td>
+        <td class="score-cell">${scoreBadge(s.history)}</td>
+      </tr>`).join("");
+
+    document.getElementById("showing-text").textContent =
+      `Showing ${start + 1} to ${end} of ${filtered.length} students`;
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filtered.length / PAGE_SIZE);
+    let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+    for (let i = 1; i <= total; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === total ? 'disabled' : ''}>Next ›</button>`;
+    document.getElementById("pagination").innerHTML = html;
+  }
+
+  function goPage(n) {
+    const total = Math.ceil(filtered.length / PAGE_SIZE);
+    if (n < 1 || n > total) return;
+    currentPage = n;
+    renderTable();
+  }
+
+  function filterStudents(q) {
+    q = q.toLowerCase().trim();
+    filtered = q ? ALL_STUDENTS.filter(s => s.name.toLowerCase().includes(q)) : [...ALL_STUDENTS];
+    currentPage = 1;
+    renderTable();
+  }
+
+  renderTable();
+</script>
+{% endblock %}

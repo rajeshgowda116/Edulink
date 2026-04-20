@@ -6,9 +6,10 @@ from Advicer.models import advicer, Classroom
 from Faculty.models import Faculty
 from Attendence.models import Attendence
 from Class.models import Classes
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def hod_info(request):
   if request.method=='POST':
     hod_id=request.POST.get('hod_id')
@@ -25,7 +26,7 @@ def hod_info(request):
 
 
 
-
+@login_required
 def hod_dashboard(request):
   advisors_count = User.objects.filter(role='advisor').count()
   faculty_count=User.objects.filter(role='faculty').count()
@@ -39,7 +40,7 @@ def hod_dashboard(request):
 
 
 
-
+@login_required
 def class_attendence(request):
   classes = Classes.objects.all()
   codes = []
@@ -78,7 +79,7 @@ def class_attendence(request):
 
 
 
-
+@login_required
 def advicers_list(request):
   advisors= User.objects.filter(role='advisor')
   advisor_rows = []
@@ -96,7 +97,7 @@ def advicers_list(request):
 
 
 
-
+@login_required
 def faculty_list(request):
   faculty=User.objects.filter(role='faculty')
   faculty_row=[]
@@ -115,20 +116,26 @@ def faculty_list(request):
 
 
 
-
+@login_required
 def generate_dept_code(request):
   department = Department.objects.filter(username=request.user).last()
   if request.method=='POST':
-    department_name=request.POST.get('department')
-    dept_code=Code()
-    department = Department.objects.create(username=request.user,
-                                           department=department_name,
-                                           dept_code=dept_code)
-  context={'department':department}
-  return render(request,'generate_class_code.html',context)
+    if department:
+      error = "Department code already created"
+    else:
+      department_name=request.POST.get('department')
+      dept_code=str(Code())
+      department = Department.objects.create(username=request.user,
+                                             department=department_name,
+                                             dept_code=dept_code)
+      error = None
+  else:
+    error = None
+  context={'department':department, 'error':error}
+  return render(request,'generate_dept_code.html',context)
 
 
 
-
+@login_required
 def Chat(request):
   return render(request,'chat.html')
