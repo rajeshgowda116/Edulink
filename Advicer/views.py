@@ -27,3 +27,6 @@ def advicer_info(request):
 
 def advisor_dashboard(request):
   return render(request,'advisor_dashboard.html')
+
+def students(request):
+  return render(request,'students.html')

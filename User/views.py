@@ -49,7 +49,7 @@ def login(requset):
         form.add_error(None, "Selected role does not match your account.")
       else:
         auth.login(requset,user)
-        role = user.selected_role
+        role = user.role
         if role == 'advisor':
            return redirect('advisor_dashboard')
         elif role == 'hod':

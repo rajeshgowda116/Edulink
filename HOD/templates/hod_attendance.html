@@ -262,14 +262,14 @@
       </thead>
       <tbody>
 
-        {% for dept in departments %}
+        {% for class in perce_detils %}
         <tr>
-          <td class="dept-name"><a href="" style="text-decoration: none;color: white;">{{ dept.name }}</a></td>
+          <td class="dept-name"><a href="" style="text-decoration: none;color: white;">{{ class.class_name }}</a></td>
           <td class="bar-cell">
             <div class="bar-track">
               <div
                 class="bar-fill {% if dept.percentage >= 85 %}green{% elif dept.percentage >= 75 %}yellow{% elif dept.percentage >= 65 %}orange{% else %}red{% endif %}">
-                <span class="bar-pct">{{ dept.percentage }}%</span>
+                <span class="bar-pct">{{ class.percentage }}%</span>
               </div>
             </div>
           </td>
