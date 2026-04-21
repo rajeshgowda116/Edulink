@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
 from django.shortcuts import render,redirect
 from Advicer.models import Classroom
 from Attendence.models import Attendence
@@ -21,56 +20,59 @@ def student_info(request):
 
 @login_required
 def student_dashboard(request):
-  student_profiles = Student.objects.filter(username=request.user)
-  class_codes = student_profiles.values_list('class_code', flat=True).distinct()
+    student = Student.objects.filter(username=request.user).first()
 
-  attendance = Attendence.objects.filter(usn__in=student_profiles)
-  attendance_classroom_ids = attendance.exclude(class_code__isnull=True).values_list(
-    'class_code_id',
-    flat=True
-  ).distinct()
-  classrooms = Classroom.objects.filter(
-    Q(class_code__in=class_codes) | Q(id__in=attendance_classroom_ids)
-  ).distinct()
+    if not student:
+        context = {
+            'student': None,
+            'classes': [],
+            'today_schedule': [],
+            'total_classes': 0,
+            'attendance_pct': 0,
+            'total_attendance': 0,
+            'present_attendance': 0,
+        }
+        return render(request, 'student_dashboard.html', context)
 
-  attendance_summary = attendance.aggregate(
-    total=Count('id'),
-    present=Count('id', filter=Q(is_present=True)),
-  )
+    attendance = Attendence.objects.filter(usn=student)
+    classrooms = Classroom.objects.filter(class_code=student.class_code)
 
-  total_attendance = attendance_summary['total'] or 0
-  present_attendance = attendance_summary['present'] or 0
-  attendance_pct = round((present_attendance / total_attendance) * 100) if total_attendance else 0
+    total = attendance.count()
+    present = attendance.filter(is_present=True).count()
 
-  class_attendance = {
-    item['class_code__class_code']: item
-    for item in attendance.values('class_code__class_code').annotate(
-      total=Count('id'),
-      present=Count('id', filter=Q(is_present=True)),
-    )
-  }
+    if total > 0:
+        attendance_pct = round((present / total) * 100)
+    else:
+        attendance_pct = 0
 
-  classes = []
-  for classroom in classrooms:
-    summary = class_attendance.get(classroom.class_code, {})
-    class_total = summary.get('total', 0) or 0
-    class_present = summary.get('present', 0) or 0
-    class_pct = round((class_present / class_total) * 100) if class_total else 0
-    classes.append({
-      'class_name': classroom.class_name,
-      'class_code': classroom.class_code,
-      'attendance_pct': class_pct,
-      'present': class_present,
-      'total': class_total,
-    })
+    classes = []
 
-  context = {
-    'student_profiles': student_profiles,
-    'classes': classes,
-    'today_schedule': classes,
-    'total_classes': len(classes),
-    'attendance_pct': attendance_pct,
-    'total_attendance': total_attendance,
-    'present_attendance': present_attendance,
-  }
-  return render(request,'student_dashboard.html', context)
+    for classroom in classrooms:
+        class_att = attendance.filter(class_code=classroom)
+        class_total = class_att.count()
+        class_present = class_att.filter(is_present=True).count()
+
+        if class_total > 0:
+            class_pct = round((class_present / class_total) * 100)
+        else:
+            class_pct = 0
+
+        classes.append({
+            'class_name': classroom.class_name,
+            'class_code': classroom.class_code,
+            'attendance_pct': class_pct,
+            'present': class_present,
+            'total': class_total,
+        })
+
+    context = {
+        'student': student,
+        'classes': classes,
+        'today_schedule': classes,
+        'total_classes': len(classes),
+        'attendance_pct': attendance_pct,
+        'total_attendance': total,
+        'present_attendance': present,
+    }
+
+    return render(request, 'student_dashboard.html', context)
