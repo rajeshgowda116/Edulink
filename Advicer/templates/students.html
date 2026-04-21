@@ -372,7 +372,7 @@
 
           {% for student in students %}
           <tr>
-            <td>{{ student.first_name }} {{ student.last_name }}</td>
+            <td>{{ student.username.first_name }} {{ student.username.last_name }}</td>
             <td>{{ student.usn }}</td>
           </tr>
           {% empty %}

@@ -123,6 +123,13 @@
     font-size: 0.88rem; color: #374151; margin-left: 6px;
   }
 
+  .schedule-meta {
+    display: block;
+    font-size: 0.76rem;
+    color: #64748b;
+    margin-top: 3px;
+  }
+
   .schedule-arrow {
     color: #94a3b8; font-size: 0.80rem;
   }
@@ -198,7 +205,7 @@
       <span class="arrow-left">&#8249;</span>
       <div class="stat-card-icon">🎓</div>
       <div class="stat-card-label">My Classes</div>
-      <div class="stat-card-num">{{ total_classes|default:"4" }}</div>
+      <div class="stat-card-num">{{ total_classes }}</div>
       <span class="arrow-right">&#8250;</span>
     </div>
 
@@ -206,7 +213,7 @@
       <span class="arrow-left">&#8249;</span>
       <div class="stat-card-icon">📋</div>
       <div class="stat-card-label">Attendance</div>
-      <div class="stat-card-num">{{ attendance_pct|default:"88" }}%</div>
+      <div class="stat-card-num">{{ attendance_pct }}%</div>
       <span class="arrow-right">&#8250;</span>
     </div>
 
@@ -235,16 +242,17 @@
     <div class="schedule-card">
       <div class="panel-header">
         <div class="panel-header-dot" style="background:#dbeafe;">📘</div>
-        <h3>My Schedule</h3>
+        <h3>My Classes</h3>
       </div>
-      <div class="schedule-subtitle">Today's Classes -</div>
+      <div class="schedule-subtitle">Classes joined with your class code</div>
 
       {% for cls in today_schedule %}
       <div class="schedule-item">
         <div class="schedule-icon si-{{ cls.color|default:'blue' }}">{{ cls.icon|default:'📚' }}</div>
         <div class="schedule-info">
-          <span class="schedule-time">{{ cls.time }}</span>
-          <span class="schedule-subject">{{ cls.subject }}</span>
+          <span class="schedule-time">{{ cls.class_name }}</span>
+          <span class="schedule-subject">{{ cls.attendance_pct }}%</span>
+          <span class="schedule-meta">Code: {{ cls.class_code }} | Present {{ cls.present }}/{{ cls.total }}</span>
         </div>
         <span class="schedule-arrow">›</span>
       </div>
@@ -252,32 +260,8 @@
       <div class="schedule-item">
         <div class="schedule-icon si-blue">🎓</div>
         <div class="schedule-info">
-          <span class="schedule-time">10:00 AM</span>
-          <span class="schedule-subject">Math</span>
-        </div>
-        <span class="schedule-arrow">›</span>
-      </div>
-      <div class="schedule-item">
-        <div class="schedule-icon si-purple">⚛️</div>
-        <div class="schedule-info">
-          <span class="schedule-time">11:00 AM</span>
-          <span class="schedule-subject">Physics</span>
-        </div>
-        <span class="schedule-arrow">›</span>
-      </div>
-      <div class="schedule-item">
-        <div class="schedule-icon si-yellow">🧪</div>
-        <div class="schedule-info">
-          <span class="schedule-time">12:00 PM</span>
-          <span class="schedule-subject">Chemistry</span>
-        </div>
-        <span class="schedule-arrow">›</span>
-      </div>
-      <div class="schedule-item">
-        <div class="schedule-icon si-green">💻</div>
-        <div class="schedule-info">
-          <span class="schedule-time">02:00 PM</span>
-          <span class="schedule-subject">Programming</span>
+          <span class="schedule-time">No classes joined</span>
+          <span class="schedule-meta">Submit a valid class code to see your classes here.</span>
         </div>
         <span class="schedule-arrow">›</span>
       </div>
