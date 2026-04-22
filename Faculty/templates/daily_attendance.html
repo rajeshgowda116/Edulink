@@ -481,7 +481,7 @@
   <a href="">My Classes</a>
   <span class="sep">/</span>
   <a href="" class="crumb-active">
-    {{ class.name|default:"Web Development" }}
+    {{ class.name|default:"No subject selected" }}
   </a>
   <span class="sep">/</span>
   <span>Daily Attendance</span>
@@ -499,8 +499,11 @@
       </svg>
     </div>
     <div>
-      <div class="class-name">{{ class.name|default:"Web Development" }}</div>
-      <div class="class-code">{{ class.code|default:"CLS-9GHD6A" }}</div>
+      <div class="class-name">{{ class.name|default:"No subject selected" }}</div>
+      <div class="class-code">
+        {{ class.code|default:"" }}
+        {% if class.class_name %}- {{ class.class_name }} ({{ class.class_code }}){% endif %}
+      </div>
     </div>
 
     <!-- Date picker -->
@@ -537,8 +540,8 @@
   <div class="att-subheader">
     <h3>
       Mark attendance for
-      <strong>{{ class.name|default:"Web Development" }} class on
-        {{ selected_date|date:"F d, Y"|default:"April 25, 2024" }}</strong>
+      <strong>{{ class.name|default:"No subject selected" }} on
+        {{ selected_date|date:"F d, Y" }}</strong>
     </h3>
     <div class="att-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -566,7 +569,7 @@
       <tr id="row-{{ student.id }}" data-sid="{{ student.id }}"
         class="{% if student.today_status == 'present' %}marked-present{% elif student.today_status == 'absent' %}marked-absent{% endif %}">
         <td class="td-num">{{ forloop.counter }}</td>
-        <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+        <td><strong>{{ student.first_name }} {{ student.last_name }}{% if not student.first_name and not student.last_name %}{{ student.student_id }}{% endif %}</strong></td>
         <td class="td-id">{{ student.student_id }}</td>
         <td>
           <span class="status-badge
@@ -595,54 +598,9 @@
         </td>
       </tr>
       {% empty %}
-      <!-- Fallback static rows -->
-      {% for item in "1234567890" %}
-      <tr data-sid="{{ forloop.counter }}">
-        <td class="td-num">{{ forloop.counter }}</td>
-        <td><strong>
-            {% if forloop.counter == 1 %}Mark Allen
-            {% elif forloop.counter == 2 %}Lisa Wong
-            {% elif forloop.counter == 3 %}Adam Patel
-            {% elif forloop.counter == 4 %}Emily Torres
-            {% elif forloop.counter == 5 %}Daniel Kim
-            {% elif forloop.counter == 6 %}Sarah Brown
-            {% elif forloop.counter == 7 %}James Miller
-            {% elif forloop.counter == 8 %}Olivia Johnson
-            {% elif forloop.counter == 9 %}Ryan Garcia
-            {% else %}Mia Davis{% endif %}
-          </strong></td>
-        <td class="td-id">6612-3421{{ forloop.counter }}</td>
-        <td>
-          <span class="status-badge
-              {% if forloop.counter == 1 or forloop.counter == 5 %}sb-active
-              {% elif forloop.counter == 9 %}sb-present
-              {% elif forloop.counter == 3 or forloop.counter == 4 or forloop.counter == 7 %}sb-inactive
-              {% else %}sb-absent{% endif %}">
-            {% if forloop.counter == 1 or forloop.counter == 5 %}Active
-            {% elif forloop.counter == 9 %}Present
-            {% elif forloop.counter == 3 or forloop.counter == 4 or forloop.counter == 7 %}Inactive
-            {% else %}Absent{% endif %}
-          </span>
-        </td>
-        <td class="td-center">
-          <div class="att-btn-group">
-            <button type="button" class="btn-present" onclick="markAttendance({{ forloop.counter }}, 'present', this)">
-              <svg viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-              </svg>
-              Present
-            </button>
-            <button type="button" class="btn-absent" onclick="markAttendance({{ forloop.counter }}, 'absent', this)">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-              </svg>
-              Absent
-            </button>
-          </div>
-        </td>
+      <tr>
+        <td colspan="5" style="text-align:center;">No students found for this subject class.</td>
       </tr>
-      {% endfor %}
       {% endfor %}
 
     </tbody>
@@ -651,7 +609,7 @@
   <!-- Footer -->
   <div class="att-footer">
     <div class="footer-info">
-      Showing {{ students|length|default:"10" }} of {{ total_students|default:"25" }} students
+      Showing {{ students|length }} of {{ total_students }} students
     </div>
     <div class="pagination">
       <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
@@ -716,6 +674,7 @@
     document.getElementById('dateLabel').textContent = label;
     var field = document.getElementById('attendanceDateField');
     if (field) field.value = val;
+    window.location = window.location.pathname + '?date=' + val;
   }
 
   /* Search */
@@ -727,6 +686,7 @@
 
   /* Pagination (static demo) */
   var currentPage = 1;
+  var totalPages = 1;
 
   function setPage(p) {
     currentPage = p;

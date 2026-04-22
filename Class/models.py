@@ -7,3 +7,6 @@ class Classes(models.Model):
   subject_code=models.ForeignKey(Faculty,on_delete=models.CASCADE,null=True)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at=models.DateTimeField(auto_now=True)
+
+  def __str__(self):
+    return str(self.class_code) + " - " + str(self.subject_code)

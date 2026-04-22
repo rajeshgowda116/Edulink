@@ -227,15 +227,15 @@
   <div class="stat-card blue-grad">
     <div class="stat-emoji">👫</div>
     <div class="stat-info">
-      <div class="num">{{ total_classes|default:"8" }}</div>
-      <div class="lbl">My Classes</div>
+      <div class="num">{{ total_classes }}</div>
+      <div class="lbl">My Subjects</div>
     </div>
   </div>
 
   <div class="stat-card purple-grad">
     <div class="stat-emoji">👥</div>
     <div class="stat-info">
-      <div class="num">{{ total_students|default:"120" }}</div>
+      <div class="num">{{ total_students }}</div>
       <div class="lbl">Students</div>
     </div>
   </div>
@@ -243,7 +243,7 @@
   <div class="stat-card teal-grad">
     <div class="stat-emoji">📅</div>
     <div class="stat-info">
-      <div class="num">Today: {{ today_present|default:"4" }} / {{ today_total|default:"5" }}</div>
+      <div class="num">Today: {{ today_present }} / {{ today_total }}</div>
       <div class="lbl">Today's Attendance</div>
     </div>
   </div>
@@ -251,8 +251,8 @@
   <div class="stat-card orange-grad">
     <div class="stat-emoji">📣</div>
     <div class="stat-info">
-      <div class="num">{{ new_announcements|default:"1" }}</div>
-      <div class="lbl">New Announcement</div>
+      <div class="num">{{ total_classes_done }}</div>
+      <div class="lbl">Classes Done</div>
     </div>
   </div>
 
@@ -262,7 +262,7 @@
 <div class="classes-card">
 
   <div class="classes-header">
-    <h3>My Classes</h3>
+    <h3>My Subjects</h3>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8" />
@@ -275,9 +275,11 @@
   <table>
     <thead>
       <tr>
-        <th>Class Name</th>
-        <th>Code</th>
-        <th>Days</th>
+        <th>Subject</th>
+        <th>Class</th>
+        <th>Students</th>
+        <th>Attendance</th>
+        <th>Classes Done</th>
         <th style="text-align:center;">Actions</th>
       </tr>
     </thead>
@@ -285,49 +287,27 @@
 
       {% for cls in classes %}
       <tr>
-        <td><strong>{{ cls.name }}</strong></td>
-        <td><span class="code-text">{{ cls.code }}</span></td>
-        <td><span class="days-text">{{ cls.days }}</span></td>
+        <td>
+          <strong>{{ cls.subject_name|default:"Subject" }}</strong><br>
+          <span class="code-text">{{ cls.subject_code }}</span>
+        </td>
+        <td>
+          <strong>{{ cls.class_name }}</strong><br>
+          <span class="code-text">{{ cls.class_code }}</span>
+        </td>
+        <td><span class="days-text">{{ cls.students_count }}</span></td>
+        <td><span class="days-text">{{ cls.attendance_pct }}%</span></td>
+        <td><span class="days-text">{{ cls.classes_done }}</span></td>
         <td style="text-align:center;">
-          <a href="{% url 'faculty_class_detail' cls.id %}">
-            <button class="btn-manage">Manage</button>
-          </a>
-          <a href="{% url 'faculty_take_attendance' cls.id %}">
+          <a href="{% url 'add_attendence' cls.id %}">
             <button class="btn-attendance">Attendance</button>
           </a>
         </td>
       </tr>
       {% empty %}
-      <!-- Fallback static rows -->
-      {% for item in "12345" %}
       <tr>
-        {% if forloop.counter == 1 %}
-        <td><strong>Web Development</strong></td>
-        <td><span class="code-text">CLS-9GHD6A</span></td>
-        <td><span class="days-text">Mon, Wed, Mt</span></td>
-        {% elif forloop.counter == 2 %}
-        <td><strong>Database Systems</strong></td>
-        <td><span class="code-text">CLS-4TRFJ3</span></td>
-        <td><span class="days-text">Tue, Thu, Fri</span></td>
-        {% elif forloop.counter == 3 %}
-        <td><strong>Algorithms</strong></td>
-        <td><span class="code-text">CLS-1BQ92Y</span></td>
-        <td><span class="days-text">Tue, Thu, Fri</span></td>
-        {% elif forloop.counter == 4 %}
-        <td><strong>Machine Learning</strong></td>
-        <td><span class="code-text">CLS-7KH6M1</span></td>
-        <td><span class="days-text">Mon, Wed, Mt</span></td>
-        {% else %}
-        <td><strong>Data Structures</strong></td>
-        <td><span class="code-text">CLS-5PS0QW</span></td>
-        <td><span class="days-text">Mon, Wed, Mt</span></td>
-        {% endif %}
-        <td style="text-align:center;">
-          <button class="btn-manage">Manage</button>
-          <button class="btn-attendance">Attendance</button>
-        </td>
+        <td colspan="6" style="text-align:center;">No subjects assigned yet.</td>
       </tr>
-      {% endfor %}
       {% endfor %}
 
     </tbody>
@@ -336,7 +316,7 @@
   <!-- Footer -->
   <div class="classes-footer">
     <div class="footer-info">
-      Showing {{ classes|length|default:"5" }} of {{ total_classes|default:"8" }} classes
+      Showing {{ classes|length }} of {{ total_classes }} subjects
     </div>
     <div class="pagination">
       <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
