@@ -6,6 +6,7 @@ from HOD.models import Department
 from django.contrib.auth.decorators import login_required
 from Attendence.models import Attendence
 from Student.models import Student
+from Faculty.models import Faculty
 # Create your views here.
 
 @login_required
@@ -110,3 +111,16 @@ def generate_class_code(request):
 @login_required
 def student_attendence_list(request):
    return render(request,'student_attendence.html')
+
+@login_required
+def faculty_lists(request):
+    classroom = Classroom.objects.filter(advisor=request.user).last()
+    code = classroom.class_code if classroom else None
+    faculties = Faculty.objects.filter(class_code=code).select_related('username')
+    
+    context = {
+        'faculty_list': faculties,
+        'class_code': code
+    }
+        
+    return render(request, 'faculty_list.html', context)

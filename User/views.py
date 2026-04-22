@@ -56,7 +56,7 @@ def login(requset):
             return redirect('hod_dashboard')
 
         elif role == 'faculty':
-            return redirect('faculty_info')
+            return redirect('faculty_dashboard')
 
         elif role == 'student':
              return redirect('student_dashboard')

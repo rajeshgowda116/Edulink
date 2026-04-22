@@ -1,0 +1,601 @@
+{% extends "advisor_base.html" %}
+
+{% block title %}EduLink – Faculty List{% endblock %}
+{% block nav_faculty %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Class Info Banner ── */
+  .class-banner {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 10px rgba(37, 99, 235, .05);
+    overflow: hidden;
+  }
+
+  .class-banner-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb, #4c6ef5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 20px;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, .25);
+  }
+
+  .class-banner-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+  }
+
+  .class-banner-item {
+    padding: 0 28px;
+    border-right: 1px solid #f1f5f9;
+  }
+
+  .class-banner-item:last-child {
+    border-right: none;
+  }
+
+  .class-banner-label {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 4px;
+  }
+
+  .class-banner-value {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #1e293b;
+  }
+
+  /* ── Faculty Table Card ── */
+  .faculty-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 10px rgba(37, 99, 235, .05);
+  }
+
+  /* Card header */
+  .faculty-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px 14px;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .faculty-card-header h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.08rem;
+    color: #1e293b;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Search */
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8faff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 16px;
+    transition: border-color .2s;
+    min-width: 240px;
+  }
+
+  .search-box:focus-within {
+    border-color: #2563eb;
+  }
+
+  .search-box svg {
+    width: 15px;
+    height: 15px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.86rem;
+    color: #374151;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+  }
+
+  .search-box input::placeholder {
+    color: #94a3b8;
+  }
+
+  /* Filter button */
+  .btn-filter {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    border: 1.5px solid #2563eb;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #2563eb;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .18s;
+  }
+
+  .btn-filter:hover {
+    background: #dbeafe;
+  }
+
+  .btn-filter svg {
+    width: 15px;
+    height: 15px;
+    stroke: #2563eb;
+  }
+
+  /* ── Table ── */
+  .fac-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .fac-table thead tr {
+    background: #f8faff;
+  }
+
+  .fac-table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    border-bottom: 1.5px solid #e2e8f0;
+    letter-spacing: .04em;
+  }
+
+  .fac-table thead th:first-child {
+    width: 48px;
+  }
+
+  .fac-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+
+  .fac-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .fac-table tbody tr:hover {
+    background: #f8faff;
+  }
+
+  .fac-table tbody td {
+    padding: 15px 16px;
+    font-size: 0.90rem;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  .fac-table tbody td:first-child {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  /* Name cell with avatar */
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fac-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.88rem;
+    color: white;
+    border: 2px solid #e2e8f0;
+  }
+
+  .av1 {
+    background: linear-gradient(135deg, #0f2d6e, #4c6ef5);
+  }
+
+  .av2 {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  }
+
+  .av3 {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+  }
+
+  .av4 {
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+  }
+
+  .av5 {
+    background: linear-gradient(135deg, #0f2d6e, #2563eb);
+  }
+
+  .av6 {
+    background: linear(135deg, #be185d, #f472b6);
+    background: linear-gradient(135deg, #be185d, #f472b6);
+  }
+
+  .fac-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #1e293b;
+  }
+
+  .fac-id {
+    color: #64748b;
+    font-size: 0.88rem;
+  }
+
+  .fac-subject {
+    color: #374151;
+    font-size: 0.88rem;
+  }
+
+  .fac-role {
+    color: #64748b;
+    font-size: 0.88rem;
+  }
+
+  /* Status */
+  .badge-active {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .badge-inactive {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: #fef9c3;
+    color: #b45309;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* Actions */
+  .action-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.80rem;
+    font-weight: 700;
+    color: #2563eb;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .18s, border-color .18s;
+  }
+
+  .btn-view:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+  }
+
+  .btn-view svg {
+    width: 14px;
+    height: 14px;
+    stroke: #2563eb;
+  }
+
+  .btn-more {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: background .18s, color .18s;
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .btn-more:hover {
+    background: #f1f5f9;
+    color: #374151;
+  }
+
+  /* ── Footer ── */
+  .fac-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-info {
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pg-btn {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    transition: all .15s;
+    font-family: 'Nunito', sans-serif;
+    white-space: nowrap;
+  }
+
+  .pg-btn:hover {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+
+  .pg-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+  }
+
+  .pg-btn:disabled {
+    opacity: .38;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 900px) {
+    .class-banner {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .class-banner-item {
+      border-right: none;
+      padding: 0;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Breadcrumbs & Title -->
+<div style="margin-bottom: 8px; font-size: 0.9rem; color: #64748b; font-family: 'Inter', sans-serif;">
+  <a href="{% url 'advisor_dashboard' %}" style="color: #2563eb; text-decoration: none; font-weight: 500;">Dashboard</a>
+  <span style="margin: 0 8px;">›</span>
+  <span style="color: #1e293b; font-weight: 600;">Faculty List</span>
+</div>
+<h1 class="page-title">Faculty List</h1>
+
+<!-- ── Class Info Banner ── -->
+<div class="class-banner">
+  <div class="class-banner-icon">
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+    </svg>
+  </div>
+  <div class="class-banner-item">
+    <div class="class-banner-label">Classroom / Section</div>
+    <div class="class-banner-value">{{ class_code|default:"CLS-9GHD6A" }}</div>
+  </div>
+  <div class="class-banner-item">
+    <div class="class-banner-label">Department</div>
+    <div class="class-banner-value">{{ department|default:"Computer Science" }}</div>
+  </div>
+  <div class="class-banner-item">
+    <div class="class-banner-label">Semester</div>
+    <div class="class-banner-value">{{ semester|default:"VI Semester" }}</div>
+  </div>
+  <div class="class-banner-item">
+    <div class="class-banner-label">Academic Year</div>
+    <div class="class-banner-value">{{ academic_year|default:"2024 – 2025" }}</div>
+  </div>
+</div>
+
+<!-- ── Faculty Table Card ── -->
+<div class="faculty-card">
+
+  <div class="faculty-card-header">
+    <h3>Faculty Assigned to This Class</h3>
+    <div class="header-actions">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" placeholder="Search by faculty name or ID..." id="facSearch"
+          oninput="filterFaculty(this.value)" autocomplete="off" />
+      </div>
+      <button class="btn-filter">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        Filter
+      </button>
+    </div>
+  </div>
+
+  <table class="fac-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Faculty Name</th>
+        <th>Faculty ID</th>
+        <th>Subject</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="facBody">
+
+      {% for f in faculty_list %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <div class="name-cell">
+            <div class="fac-avatar av{{ forloop.counter }}">
+              {{ f.username.first_name|first }}{{ f.username.last_name|first }}
+            </div>
+            <span class="fac-name">{{ f.username.first_name }} {{ f.username.last_name }}</span>
+          </div>
+        </td>
+        <td class="fac-id">{{ f.faculty_id }}</td>
+        <td class="fac-subject">{{ f.subject_name }}</td>
+        <td class="fac-role">{{ f.username.get_role_display }}</td>
+        <td>
+          <span class="{% if f.username.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+            {% if f.username.is_active %}Active{% else %}Inactive{% endif %}
+          </span>
+        </td>
+        <td>
+          <div class="action-cell">
+            <a href="#">
+              <button class="btn-view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                View
+              </button>
+            </a>
+            <button class="btn-more">⋮</button>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 24px; color: #64748b;">
+          No faculty members are currently assigned to your classroom.
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <div class="fac-footer">
+    <div class="footer-info">
+      Showing 1 to {{ faculty_list|length|default:"6" }}
+      of {{ total_faculty|default:"6" }} faculty members
+    </div>
+    <div class="pagination">
+      <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>Previous</button>
+      <button class="pg-btn active" id="pg1" onclick="setPage(1)">1</button>
+      <button class="pg-btn" id="pg2" onclick="setPage(2)">2</button>
+      <button class="pg-btn" id="nextBtn" onclick="changePage(1)">Next</button>
+    </div>
+  </div>
+
+</div><!-- /faculty-card -->
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  function filterFaculty(q) {
+    document.querySelectorAll('#facBody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  let currentPage = 1;
+  const totalPages = 2;
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1', 'pg2'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    const a = document.getElementById('pg' + p);
+    if (a) a.classList.add('active');
+    // Django: window.location = `?page=${p}`;
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+</script>
+{% endblock %}

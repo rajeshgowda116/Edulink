@@ -23,7 +23,7 @@ def faculty_info(request):
     if Faculty.objects.filter(faculty_id=faculty_id).exists():
         error = "This advisor ID already exists"
     elif code:
-            Faculty.objects.create(
+            faculty = Faculty.objects.create(
                username=request.user,
               faculty_id=faculty_id,
               mobile_num=mobile_num,
@@ -31,6 +31,7 @@ def faculty_info(request):
               subject_name=subject_name,
               subject_code=subject_code
               )
+            Classes.objects.create(class_code=code, subject_code=faculty)
             return redirect("advisor_dashboard")
     else:
             error = "Your code is not Valid"
