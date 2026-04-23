@@ -113,6 +113,7 @@ def faculty_dashboard(request):
 
 @login_required
 def add_attendence(request, class_link_id=None):
+    today = timezone.localdate()
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(
         subject_code__in=faculties
@@ -148,24 +149,13 @@ def add_attendence(request, class_link_id=None):
             if status not in ['present', 'absent']:
                 continue
 
-            attendance = Attendence.objects.filter(
+            Attendence.objects.create(
                 usn=student,
                 subject_code=subject,
                 class_code=classroom,
-                date=selected_date,
-            ).first()
-
-            if attendance:
-                attendance.is_present = status == 'present'
-                attendance.save()
-            else:
-                Attendence.objects.create(
-                    usn=student,
-                    subject_code=subject,
-                    class_code=classroom,
-                    date=selected_date,
-                    is_present=status == 'present',
-                )
+                date=today,
+                is_present=status == 'present',
+            )
 
         return redirect('add_attendence', class_link_id=class_link.id)
 
@@ -174,7 +164,7 @@ def add_attendence(request, class_link_id=None):
         for attendance in Attendence.objects.filter(
             subject_code=subject,
             class_code=classroom,
-            date=selected_date,
+            date=today,
         )
     }
 
@@ -203,14 +193,40 @@ def add_attendence(request, class_link_id=None):
         },
         'students': student_rows,
         'total_students': len(student_rows),
-        'selected_date': selected_date,
+        'date':today,
     }
 
     return render(request,'daily_attendance.html', context)
 
+@login_required
 def student_attendence(request):
-  return render(request,'faculty_attendance_record.html')
+    faculties = Faculty.objects.filter(username=request.user)
+    class_links = Classes.objects.filter(
+        subject_code__in=faculties
+    ).select_related('class_code', 'subject_code')
+
+    subjects = []
+    classrooms = []
+    for link in class_links:
+        if link.subject_code:
+            subjects.append(link.subject_code)
+        if link.class_code:
+            classrooms.append(link.class_code)
+
+    # Fetch the attendance history for these specific classes
+    attendance_records = Attendence.objects.filter(
+        subject_code__in=subjects,
+        class_code__in=classrooms
+    ).select_related('usn', 'usn__username', 'class_code', 'subject_code').order_by('-date', 'usn__usn')
+
+    context = {
+        'attendance_records': attendance_records,
+        'classes': class_links,
+    }
+    return render(request, 'faculty_attendance_record.html', context)
+
+@login_required
 def student_list(request):
-   return render(request,'faculty_attendance_record2.html')
+    return render(request, 'faculty_attendance_record2.html')
 
   

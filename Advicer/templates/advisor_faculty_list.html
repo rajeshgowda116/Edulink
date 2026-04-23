@@ -453,11 +453,11 @@
   </div>
   <div class="class-banner-item">
     <div class="class-banner-label">Classroom / Section</div>
-    <div class="class-banner-value">{{ class_code|default:"CLS-9GHD6A" }}</div>
+    <div class="class-banner-value">{{ class_name|default:"-" }} ({{ class_code|default:"-" }})</div>
   </div>
   <div class="class-banner-item">
     <div class="class-banner-label">Department</div>
-    <div class="class-banner-value">{{ department|default:"Computer Science" }}</div>
+    <div class="class-banner-value">{{ department|default:"-" }}</div>
   </div>
   <div class="class-banner-item">
     <div class="class-banner-label">Semester</div>
@@ -554,8 +554,8 @@
   <!-- Footer -->
   <div class="fac-footer">
     <div class="footer-info">
-      Showing 1 to {{ faculty_list|length|default:"6" }}
-      of {{ total_faculty|default:"6" }} faculty members
+      Showing {{ faculty_list|length }}
+      of {{ total_faculty|default:"0" }} faculty members
     </div>
     <div class="pagination">
       <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>Previous</button>

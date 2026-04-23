@@ -113,14 +113,27 @@ def student_attendence_list(request):
    return render(request,'student_attendence.html')
 
 @login_required
-def faculty_lists(request):
+def faculty_lists_advicer(request):
     classroom = Classroom.objects.filter(advisor=request.user).last()
     code = classroom.class_code if classroom else None
-    faculties = Faculty.objects.filter(class_code=code).select_related('username')
+    class_name = classroom.class_name if classroom else "N/A"
     
+    faculties = Faculty.objects.filter(class_code=code).select_related('username')
+    total_faculty = faculties.count()
+    
+    department_name = "N/A"
+    adv = advicer.objects.filter(username=request.user).first()
+    if adv:
+        dept = Department.objects.filter(dept_code=adv.hod_code).first()
+        if dept:
+            department_name = dept.department
+
     context = {
         'faculty_list': faculties,
-        'class_code': code
+        'class_code': code,
+        'class_name': class_name,
+        'total_faculty': total_faculty,
+        'department': department_name,
     }
         
-    return render(request, 'faculty_list.html', context)
+    return render(request, 'advisor_faculty_list.html', context)
