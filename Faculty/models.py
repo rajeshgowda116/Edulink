@@ -1,10 +1,13 @@
 from django.db import models
 from User.models import User
+from HOD.models import Hod  
+# Create your models here.
 
 class Faculty(models.Model):
+  hod=models.ForeignKey(Hod,on_delete=models.CASCADE,null=True,blank=True)
   username=models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
   faculty_id=models.CharField(max_length=50,primary_key=True)
-  mobile_num=models.CharField(max_length=10,)
+  mobile_num=models.CharField(max_length=50,null=True,blank=True)
   class_code=models.IntegerField()
   subject_name=models.CharField(max_length=50,null=True,blank=True)
   subject_code=models.CharField(max_length=50,null=True,blank=True)

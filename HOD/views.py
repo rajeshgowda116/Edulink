@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from User.models import User
 from .models import Hod,Department
 from utils.Codegen import Code
@@ -133,6 +134,42 @@ def generate_dept_code(request):
     error = None
   context={'department':department, 'error':error}
   return render(request,'generate_dept_code.html',context)
+
+
+
+@login_required
+def Hod_classes(request):
+  students=User.objects.filter(role='student')
+  return render(request,'my_classes.html',{'students':students})
+
+
+def add_class(request):
+    if request.method == 'POST':
+        class_code = request.POST.get('class_code')
+        subject_name = request.POST.get('subject_name')
+        subject_code = request.POST.get('subject_code')
+
+        user = request.user
+        hod = Hod.objects.filter(user=user).first()
+
+        if not hod:
+            return HttpResponse("HOD profile not found!")  # 👈 important
+
+        Faculty.objects.create(
+            username=user,
+            faculty_id=hod.hod_id,
+            mobile_num=hod.mobile,
+            class_code=class_code,
+            subject_name=subject_name,
+            subject_code=subject_code
+        )
+
+        return redirect('Hod_classes')
+
+    return render(request, 'hod_class.html')
+
+
+
 
 
 
