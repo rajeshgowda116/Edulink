@@ -559,8 +559,8 @@
     </ul>
 
     <div class="nav-actions">
-      <a href="#" class="btn-ghost">Login</a>
-      <a href="#" class="btn-primary">Register</a>
+      <a href="{% url 'login' %}" class="btn-ghost">Login</a>
+      <a href="{% url 'register' %}" class="btn-primary">Register</a>
     </div>
   </nav>
 
@@ -625,7 +625,7 @@
 
         <div class="form-header">
           <h1>Create Account</h1>
-          <p>Already have an account? <a href="#">Login here</a></p>
+          <p>Already have an account? <a href="{% url 'login' %}" class="btn-ghost">Login here</a></p>
         </div>
 
         <!-- Django would render {% csrf_token %} and form errors here -->
@@ -672,7 +672,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                <input type="text" id="first_name" name="first_name" placeholder="John" required maxlength="50" value="{{ form.first_name.value|default:'' }}" class="{% if form.first_name.errors %}input-error{% endif %}" />
+                <input type="text" id="first_name" name="first_name" placeholder="John" required maxlength="50"
+                  value="{{ form.first_name.value|default:'' }}"
+                  class="{% if form.first_name.errors %}input-error{% endif %}" />
               </div>
               {% for error in form.first_name.errors %}
               <div class="error-text">{{ error }}</div>
@@ -685,7 +687,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                <input type="text" id="last_name" name="last_name" placeholder="Doe" required maxlength="50" value="{{ form.last_name.value|default:'' }}" class="{% if form.last_name.errors %}input-error{% endif %}" />
+                <input type="text" id="last_name" name="last_name" placeholder="Doe" required maxlength="50"
+                  value="{{ form.last_name.value|default:'' }}"
+                  class="{% if form.last_name.errors %}input-error{% endif %}" />
               </div>
               {% for error in form.last_name.errors %}
               <div class="error-text">{{ error }}</div>
@@ -701,7 +705,9 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-              <input type="text" id="username" name="username" placeholder="johndoe123" required value="{{ form.username.value|default:'' }}" class="{% if form.username.errors %}input-error{% endif %}" />
+              <input type="text" id="username" name="username" placeholder="johndoe123" required
+                value="{{ form.username.value|default:'' }}"
+                class="{% if form.username.errors %}input-error{% endif %}" />
             </div>
             {% for error in form.username.errors %}
             <div class="error-text">{{ error }}</div>
@@ -716,7 +722,8 @@
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="M2 7l10 7 10-7" />
               </svg>
-              <input type="email" id="email" name="email" placeholder="john@example.com" required maxlength="50" value="{{ form.email.value|default:'' }}" class="{% if form.email.errors %}input-error{% endif %}" />
+              <input type="email" id="email" name="email" placeholder="john@example.com" required maxlength="50"
+                value="{{ form.email.value|default:'' }}" class="{% if form.email.errors %}input-error{% endif %}" />
             </div>
             {% for error in form.email.errors %}
             <div class="error-text">{{ error }}</div>
