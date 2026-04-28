@@ -581,25 +581,31 @@
         </thead>
         <tbody id="clsBody">
 
-          {% for cls in classes %}
+          {% for cls in hod %}
           <tr>
             <td>
               <div class="cls-name-cell">
                 <div class="cls-icon ci-{{ cls.color|default:'blue' }}">{{ cls.icon|default:'📘' }}</div>
-                <span class="cls-name">{{ cls.name }}</span>
+                <span class="cls-name">{{ cls.subject_name }}</span>
               </div>
             </td>
-            <td class="cls-code">{{ cls.code }}</td>
+            <td class="cls-code">{{ cls.subject_code }}</td>
             <td class="cls-days">{{ cls.days }}</td>
             <td class="td-center cls-count">{{ cls.student_count }}</td>
             <td>
               <div class="action-cell">
-                <a href="{% url 'faculty_class_detail' cls.id %}">
+                <a href="">
                   <button class="btn-view">View</button>
                 </a>
-                <a href="{% url 'class_students' cls.id %}">
+                {% if cls.class_link_id %}
+                <a href="{% url 'add_attendence_as_Faculty' cls.class_link_id %}">
                   <button class="btn-students">Students</button>
                 </a>
+                {% else %}
+                <a href="{% url 'add_attendence_as_Faculty' %}">
+                  <button class="btn-students">Students</button>
+                </a>
+                {% endif %}
                 <button class="btn-more">⋮</button>
               </div>
             </td>

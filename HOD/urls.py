@@ -9,5 +9,7 @@ urlpatterns = [
   path('generate_dept_code/',views.generate_dept_code,name='generate_dept_code'),
   path('Hod_classes/',views.Hod_classes,name='Hod_classes'),
   path('add_class/',views.add_class,name='add_class'),
-  path('Chat/',views.Chat,name='Chat')
+  path('add_attendence_as_faculty/', views.add_attendence_as_Faculty, name='add_attendence_as_Faculty'),
+  path('add_attendence_as_faculty/<int:class_link_id>/', views.add_attendence_as_Faculty, name='add_attendence_as_Faculty'),
+  path('Chat/',views.Chat,name='Chat'),
 ]
