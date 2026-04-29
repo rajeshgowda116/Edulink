@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render,redirect
 from django.utils import timezone
@@ -118,7 +119,6 @@ def add_attendence(request, class_link_id=None):
     class_links = Classes.objects.filter(
         subject_code__in=faculties
     ).select_related('class_code', 'subject_code')
-    print( class_links )
     if class_link_id:
         class_link = get_object_or_404(class_links, id=class_link_id)
     else:
@@ -136,7 +136,7 @@ def add_attendence(request, class_link_id=None):
     classroom = class_link.class_code
     selected_date = parse_date(
         request.POST.get('attendance_date') or request.GET.get('date') or ''
-    ) #or timezone.localdate()
+    ) or today
 
     students = Student.objects.filter(
         class_code=classroom.class_code
@@ -153,8 +153,8 @@ def add_attendence(request, class_link_id=None):
                 usn=student,
                 subject_code=subject,
                 class_code=classroom,
-                date=today,
-                is_present=status == 'present',
+                date=selected_date,
+                is_present=(status == 'present'),
             )
 
         return redirect('add_attendence', class_link_id=class_link.id)
@@ -164,7 +164,7 @@ def add_attendence(request, class_link_id=None):
         for attendance in Attendence.objects.filter(
             subject_code=subject,
             class_code=classroom,
-            date=today,
+            date=selected_date,
         )
     }
 
@@ -193,7 +193,8 @@ def add_attendence(request, class_link_id=None):
         },
         'students': student_rows,
         'total_students': len(student_rows),
-        'date':today,
+        'date': selected_date,
+        'selected_date': selected_date,
     }
 
     return render(request,'daily_attendance.html', context)
@@ -226,7 +227,100 @@ def student_attendence(request):
     return render(request, 'faculty_attendance_record.html', context)
 
 @login_required
-def student_list(request):
-    return render(request, 'faculty_attendance_record2.html')
+def student_list(request, class_link_id=None):
+    faculties = Faculty.objects.filter(username=request.user)
+    class_links = Classes.objects.filter(
+        subject_code__in=faculties
+    ).select_related('class_code', 'subject_code')
+
+    if class_link_id:
+        class_link = get_object_or_404(class_links, id=class_link_id)
+    else:
+        class_link = class_links.first()
+
+    if not class_link:
+        return render(request, 'faculty_attendance_record2.html', {
+            'class': None,
+            'dates': [],
+            'students': [],
+            'total_students': 0,
+        })
+
+    subject = class_link.subject_code
+    classroom = class_link.class_code
+
+    students = Student.objects.filter(
+        class_code=classroom.class_code
+    ).select_related('username').order_by('usn')
+
+    if not students.exists():
+        students = Student.objects.filter(
+            class_code__iexact=str(classroom.class_code).strip()
+        ).select_related('username').order_by('usn')
+
+    attendances = Attendence.objects.filter(
+        subject_code=subject,
+        class_code=classroom,
+        usn__in=students
+    ).select_related('usn').order_by('date', 'id')
+
+    # Build date sessions (allow multiple attendance entries on same date).
+    student_date_records = defaultdict(list)
+    max_sessions_by_date = defaultdict(int)
+    for attendance in attendances:
+        key = (attendance.usn_id, attendance.date)
+        student_date_records[key].append(attendance)
+        current_count = len(student_date_records[key])
+        if current_count > max_sessions_by_date[attendance.date]:
+            max_sessions_by_date[attendance.date] = current_count
+
+    dates = []
+    date_columns = []
+    for date in sorted(max_sessions_by_date.keys()):
+        for session in range(1, max_sessions_by_date[date] + 1):
+            dates.append(date)
+            date_columns.append({
+                'date': date,
+                'session': session,
+            })
+
+    student_rows = []
+    for student in students:
+        records = []
+        date_index_tracker = defaultdict(int)
+        for date in dates:
+            session_index = date_index_tracker[date]
+            date_index_tracker[date] += 1
+            entries = student_date_records.get((student.id, date), [])
+            if session_index >= len(entries):
+                status = 'na'
+            else:
+                status = 'present' if entries[session_index].is_present else 'absent'
+            records.append({
+                'date': date,
+                'status': status,
+            })
+
+        student_rows.append({
+            'first_name': student.username.first_name if student.username else '',
+            'last_name': student.username.last_name if student.username else '',
+            'records': records,
+        })
+
+    context = {
+        'class': {
+            'id': class_link.id,
+            'name': subject.subject_name,
+            'code': subject.subject_code,
+            'class_name': classroom.class_name,
+            'class_code': classroom.class_code,
+        },
+        'dates': dates,
+        'date_columns': date_columns,
+        'students': student_rows,
+        'total_students': len(student_rows),
+    }
+
+    return render(request, 'faculty_attendance_record2.html', context)
 
   

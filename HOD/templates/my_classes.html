@@ -594,9 +594,15 @@
             <td class="td-center cls-count">{{ cls.student_count }}</td>
             <td>
               <div class="action-cell">
-                <a href="">
-                  <button class="btn-view">View</button>
+                {% if cls.class_link_id %}
+                <a href="{% url 'student_list_hod' cls.class_link_id %}">
+                  <button class="btn-view">Attendence List</button>
                 </a>
+                {% else %}
+                <a href="{% url 'student_list_hod' %}">
+                  <button class="btn-view">Attendence</button>
+                </a>
+                {% endif %}
                 {% if cls.class_link_id %}
                 <a href="{% url 'add_attendence_as_Faculty' cls.class_link_id %}">
                   <button class="btn-students">Students</button>

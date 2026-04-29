@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from User.models import User
@@ -37,46 +38,119 @@ def hod_dashboard(request):
   faculty_count=User.objects.filter(role='faculty').count()
   students_count=User.objects.filter(role='student').count()
   department=Department.objects.filter(username=request.user).first()
+  advisors = []
+  advisor_users = User.objects.filter(role='advisor').order_by('first_name', 'last_name')
+  for advisor_user in advisor_users:
+    advisor_profile = advicer.objects.filter(username=advisor_user).first()
+    advisor_classroom = Classroom.objects.filter(advisor=advisor_user).first()
+    advisors.append({
+      'first_name': advisor_user.first_name,
+      'last_name': advisor_user.last_name,
+      'mobile': advisor_profile.mobile_num if advisor_profile else '',
+      'class_code': advisor_classroom.class_code if advisor_classroom else '',
+    })
+
+  class_students = []
+  hod_faculties = Faculty.objects.filter(username=request.user)
+  hod_class_links = Classes.objects.filter(
+    subject_code__in=hod_faculties
+  ).select_related('class_code').order_by('class_code__class_name')
+
+  seen_class_ids = set()
+  hod_classrooms = []
+  for link in hod_class_links:
+    classroom = link.class_code
+    if not classroom:
+      continue
+    if classroom.id in seen_class_ids:
+      continue
+    seen_class_ids.add(classroom.id)
+    hod_classrooms.append(classroom)
+
+  for classroom in hod_classrooms:
+    students_qs = Student.objects.filter(class_code=classroom.class_code)
+    if not students_qs.exists():
+      students_qs = Student.objects.filter(
+        class_code__iexact=str(classroom.class_code).strip()
+      )
+    class_students.append({
+      'class_name': classroom.class_name,
+      'class_code': classroom.class_code,
+      'students_count': students_qs.count(),
+      'advisor_name': f"{classroom.advisor.first_name} {classroom.advisor.last_name}".strip(),
+    })
+
+  class_one = hod_classrooms[0] if len(hod_classrooms) > 0 else None
+  class_two = hod_classrooms[1] if len(hod_classrooms) > 1 else None
+
+  class_one_students = []
+  class_two_students = []
+
+  if class_one:
+    class_one_qs = Student.objects.filter(class_code=class_one.class_code)
+    if not class_one_qs.exists():
+      class_one_qs = Student.objects.filter(class_code__iexact=str(class_one.class_code).strip())
+    for student in class_one_qs.select_related('username').order_by('usn'):
+      class_one_students.append({
+        'first_name': student.username.first_name if student.username else '',
+        'last_name': student.username.last_name if student.username else '',
+        'usn': student.usn,
+        'class_code': student.class_code,
+      })
+
+  if class_two:
+    class_two_qs = Student.objects.filter(class_code=class_two.class_code)
+    if not class_two_qs.exists():
+      class_two_qs = Student.objects.filter(class_code__iexact=str(class_two.class_code).strip())
+    for student in class_two_qs.select_related('username').order_by('usn'):
+      class_two_students.append({
+        'first_name': student.username.first_name if student.username else '',
+        'last_name': student.username.last_name if student.username else '',
+        'usn': student.usn,
+        'class_code': student.class_code,
+      })
+
   context={'advisors_count': advisors_count,
            'faculty_count':faculty_count,
            'students_count':students_count,
-           'department':department}
+           'department':department,
+           'advisors': advisors[:5],
+           'class_students': class_students[:8],
+           'class_one': class_one,
+           'class_two': class_two,
+           'class_one_students': class_one_students,
+           'class_two_students': class_two_students}
   return render(request,'hod_dashboard.html',context)
 
 
 
 @login_required
 def class_attendence(request):
-  classes = Classes.objects.all()
-  codes = []
+  classes = Classes.objects.select_related('class_code')
   perce_detils=[]
 
+  # Aggregate at class level so each class appears only once.
+  unique_classes = {}
   for clas in classes:
-    codes.append({
-  'class_code': clas.class_code.class_code,
-  'class_name': clas.class_code.class_name,
-  'subject_code': clas.subject_code.subject_code,
-  'subject_name': clas.subject_code.subject_name,
-   })
-  for code in codes:
+    if clas.class_code:
+      unique_classes[clas.class_code.class_code] = clas.class_code.class_name
+
+  for class_code, class_name in unique_classes.items():
     total = Attendence.objects.filter(
-    class_code__class_code=code['class_code'],
-    subject_code__subject_code=code['subject_code']
+      class_code__class_code=class_code
     ).count()
     present = Attendence.objects.filter(
-    class_code__class_code=code['class_code'],
-    subject_code__subject_code=code['subject_code'],
-    is_present=True
+      class_code__class_code=class_code,
+      is_present=True
     ).count()
-    class_name=code['class_name']
-    
+
     if total > 0:
       percentage = (present * 100) / total
     else:
       percentage = 0
     perce_detils.append({
       'class_name':class_name,'percentage':percentage
-      })
+    })
   context={'perce_detils':perce_detils}
 
   return render(request,'hod_attendance.html',context)
@@ -86,7 +160,11 @@ def class_attendence(request):
 
 @login_required
 def advicers_list(request):
-  advisors= User.objects.filter(role='advisor')
+  # Show only advisors who completed advicer registration.
+  advisors = User.objects.filter(
+    role='advisor',
+    advicer__isnull=False
+  ).distinct()
   advisor_rows = []
   for advisor in advisors:
     advicer_info = advicer.objects.filter(username=advisor).first()
@@ -260,12 +338,12 @@ def add_attendence_as_Faculty(request, class_link_id=None):
       if status not in ['present', 'absent']:
         continue
 
-      Attendence.objects.update_or_create(
+      Attendence.objects.create(
           usn=student,
           subject_code=subject,
           class_code=classroom,
           date=selected_date,
-          defaults={'is_present': status == 'present'},
+          is_present=(status == 'present'),
       )
 
     return redirect('add_attendence_as_Faculty', class_link_id=class_link.id)
@@ -318,3 +396,97 @@ def add_attendence_as_Faculty(request, class_link_id=None):
 def Chat(request):
   return render(request,'chat.html')
 
+@login_required
+def student_list_hod(request, class_link_id=None):
+  faculties = Faculty.objects.filter(username=request.user)
+  class_links = Classes.objects.filter(
+      subject_code__in=faculties
+  ).select_related('class_code', 'subject_code')
+
+  if class_link_id:
+    class_link = get_object_or_404(class_links, id=class_link_id)
+  else:
+    class_link = class_links.first()
+
+  if not class_link:
+    return render(request, 'faculty_student_attendence_list_ashod.html', {
+        'class': None,
+        'dates': [],
+        'students': [],
+        'total_students': 0,
+    })
+
+  subject = class_link.subject_code
+  classroom = class_link.class_code
+
+  students = Student.objects.filter(
+      class_code=classroom.class_code
+  ).select_related('username').order_by('usn')
+  if not students.exists():
+    students = Student.objects.filter(
+      class_code__iexact=str(classroom.class_code).strip()
+    ).select_related('username').order_by('usn')
+
+  attendances = Attendence.objects.filter(
+      subject_code=subject,
+      class_code=classroom,
+      usn__in=students
+  ).select_related('usn').order_by('date', 'id')
+
+  # Build date sessions (allow multiple attendance entries on same date).
+  student_date_records = defaultdict(list)
+  max_sessions_by_date = defaultdict(int)
+  for attendance in attendances:
+    key = (attendance.usn_id, attendance.date)
+    student_date_records[key].append(attendance)
+    current_count = len(student_date_records[key])
+    if current_count > max_sessions_by_date[attendance.date]:
+      max_sessions_by_date[attendance.date] = current_count
+
+  dates = []
+  date_columns = []
+  for date in sorted(max_sessions_by_date.keys()):
+    for session in range(1, max_sessions_by_date[date] + 1):
+      dates.append(date)
+      date_columns.append({
+          'date': date,
+          'session': session,
+      })
+
+  student_rows = []
+  for student in students:
+    records = []
+    date_index_tracker = defaultdict(int)
+    for date in dates:
+      session_index = date_index_tracker[date]
+      date_index_tracker[date] += 1
+      entries = student_date_records.get((student.id, date), [])
+      if session_index >= len(entries):
+        status = 'na'
+      else:
+        status = 'present' if entries[session_index].is_present else 'absent'
+      records.append({
+          'date': date,
+          'status': status,
+      })
+
+    student_rows.append({
+      'first_name': student.username.first_name if student.username else '',
+      'last_name': student.username.last_name if student.username else '',
+      'records': records,
+    })
+
+  context = {
+      'class': {
+          'id': class_link.id,
+          'name': subject.subject_name,
+          'code': subject.subject_code,
+          'class_name': classroom.class_name,
+          'class_code': classroom.class_code,
+      },
+      'dates': dates,
+      'date_columns': date_columns,
+      'students': student_rows,
+      'total_students': len(student_rows),
+  }
+  return render(request, 'faculty_student_attendence_list_ashod.html', context)

@@ -1,4 +1,4 @@
-{% extends "faculty_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}EduLink – Faculty Attendance Record{% endblock %}
 {% block nav_classes %}active{% endblock %}
@@ -339,7 +339,7 @@
   <div class="top-header">
     <h1>Faculty Attendance Record</h1>
     <nav class="breadcrumb">
-      <a href="{% url 'faculty_dashboard' %}">My Classes</a>
+      <a href="{% url 'Hod_classes' %}">My Classes</a>
       <span class="sep">/</span>
       <span class="crumb-active">{{ class.name|default:"Web Development" }}</span>
       <span class="sep">/</span>

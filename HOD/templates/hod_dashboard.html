@@ -261,44 +261,27 @@
   <!-- Advisors Overview -->
   <div class="panel-card">
     <div class="panel-header">
-      <h3>Advisors Overview</h3>
+      <h3>Class Students - {{ class_one.class_name|default:"Class 1" }}</h3>
       <a href="" class="view-all">View All &rsaquo;</a>
     </div>
     <table>
       <thead>
         <tr>
           <th>Name</th>
-          <th>Mobile</th>
+          <th>USN</th>
           <th>Class Code</th>
         </tr>
       </thead>
       <tbody>
-        {% for advisor in advisors %}
+        {% for student in class_one_students %}
         <tr>
-          <td><strong>{{ advisor.first_name }} {{ advisor.last_name }}</strong></td>
-          <td>{{ advisor.mobile }}</td>
-          <td><span class="code-badge">{{ advisor.class_code }}</span></td>
+          <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+          <td>{{ student.usn }}</td>
+          <td><span class="code-badge">{{ student.class_code }}</span></td>
         </tr>
         {% empty %}
         <tr>
-          <td><strong>John Doe</strong></td>
-          <td>9876543210</td>
-          <td><span class="code-badge">CLS-9GHD6A</span></td>
-        </tr>
-        <tr>
-          <td><strong>Emma Wilson</strong></td>
-          <td>8765432109</td>
-          <td><span class="code-badge">CLS-4TRFJ3</span></td>
-        </tr>
-        <tr>
-          <td><strong>Michael Brown</strong></td>
-          <td>7654321098</td>
-          <td><span class="code-badge">CLS-1BQ92Y</span></td>
-        </tr>
-        <tr>
-          <td><strong>Rachel Green</strong></td>
-          <td>6543210987</td>
-          <td><span class="code-badge">CLS-7MKP4X</span></td>
+          <td colspan="3" style="text-align:center;">No students in this class.</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -308,158 +291,7 @@
     </div>
   </div>
 
-  <!-- Registration Requests -->
-  <div class="panel-card">
-    <div class="panel-header">
-      <h3>Registration Requests</h3>
-      <a href="" class="view-all">View All &rsaquo;</a>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for req in registration_requests %}
-        <tr>
-          <td><strong>{{ req.first_name }} {{ req.last_name }}</strong></td>
-          <td><span class="role-tag">{{ req.get_role_display }}</span></td>
-          <td><span class="date-tag">{{ req.created_at|date:"M d, Y" }}</span></td>
-          <td>
-            {% if req.status == 'pending' %}
-            <form method="POST" action="" style="display:inline;">
-              {% csrf_token %}<button type="submit" class="btn-approve">Approve</button>
-            </form>
-            <form method="POST" action="" style="display:inline;">
-              {% csrf_token %}<button type="submit" class="btn-reject">Reject</button>
-            </form>
-            {% else %}
-            <span class="pending-badge">{{ req.status|capfirst }}</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td><strong>Alice Johnson</strong></td>
-          <td><span class="role-tag">Faculty</span></td>
-          <td><span class="date-tag">Apr 23, 2024</span></td>
-          <td><span class="pending-badge">Pending</span></td>
-        </tr>
-        <tr>
-          <td><strong>Mark Allen</strong></td>
-          <td><span class="role-tag">Student</span></td>
-          <td><span class="date-tag">Apr 24, 2024</span></td>
-          <td><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></td>
-        </tr>
-        <tr>
-          <td><strong>Samantha Lee</strong></td>
-          <td><span class="role-tag">Student</span></td>
-          <td><span class="date-tag">Apr 24, 2024</span></td>
-          <td><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></td>
-        </tr>
-        <tr>
-          <td><strong>James Carter</strong></td>
-          <td><span class="role-tag">Advisor</span></td>
-          <td><span class="date-tag">Apr 25, 2024</span></td>
-          <td><button class="btn-approve">Approve</button><button class="btn-reject">Reject</button></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <div style="text-align:right;margin-top:14px;">
-      <a href="" class="view-all">View All &rsaquo;</a>
-    </div>
-  </div>
-
 </div>
 
-<!-- Recent Notifications -->
-<div class="section-header">
-  <h3>Recent Notifications</h3>
-  <a href="" class="view-all" style="color:rgba(255,255,255,.70);">View All &rsaquo;</a>
 </div>
-
-<div class="notif-grid">
-  {% for notif in notifications %}
-  <div class="notif-item">
-    <div class="notif-avatar {{ notif.color|default:'' }}">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-      </svg>
-    </div>
-    <div class="notif-content">
-      <p>{{ notif.message }}</p>
-      <span class="time">{{ notif.created_at|timesince }} ago</span>
-    </div>
-    <div class="notif-arrow">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6" />
-      </svg>
-    </div>
-  </div>
-  {% empty %}
-  <div class="notif-item">
-    <div class="notif-avatar">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-      </svg>
-    </div>
-    <div class="notif-content">
-      <p><strong>Mark Allen</strong> registered as a new student</p><span class="time">10 mins ago</span>
-    </div>
-    <div class="notif-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6" />
-      </svg></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-avatar teal">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-      </svg>
-    </div>
-    <div class="notif-content">
-      <p><strong>Alice Johnson</strong> registered as a new faculty</p><span class="time">2 hours ago</span>
-    </div>
-    <div class="notif-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6" />
-      </svg></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-avatar orange">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-      </svg>
-    </div>
-    <div class="notif-content">
-      <p><strong>Emma Wilson</strong> assigned as Computer Science Advisor</p><span class="time">1 hour ago</span>
-    </div>
-    <div class="notif-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6" />
-      </svg></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-avatar green">
-      <svg viewBox="0 0 24 24">
-        <path
-          d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-      </svg>
-    </div>
-    <div class="notif-content">
-      <p><strong>James Carter</strong> request approved as Advisor</p><span class="time">3 hours ago</span>
-    </div>
-    <div class="notif-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6" />
-      </svg></div>
-  </div>
-  {% endfor %}
-</div>
-
 {% endblock %}
