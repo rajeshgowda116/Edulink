@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from Attendence.models import Attendence
 from Student.models import Student
 from Faculty.models import Faculty
+from Class.models import Classes
+import json
 # Create your views here.
 
 @login_required
@@ -110,7 +112,77 @@ def generate_class_code(request):
 
 @login_required
 def student_attendence_list(request):
-   return render(request,'student_attendence.html')
+    classroom = Classroom.objects.filter(advisor=request.user).last()
+
+    if not classroom:
+        context = {
+            'classroom': None,
+            'subjects': [],
+            'students_json': '[]',
+            'subjects_json': '[]',
+        }
+        return render(request, 'student_attendence.html', context)
+
+    class_links = Classes.objects.filter(class_code=classroom).select_related('subject_code')
+    subjects = [link.subject_code for link in class_links if link.subject_code]
+
+    students = Student.objects.filter(
+        class_code=classroom.class_code
+    ).select_related('username').order_by('usn')
+
+    if not students.exists():
+        students = Student.objects.filter(
+            class_code__iexact=str(classroom.class_code).strip()
+        ).select_related('username').order_by('usn')
+
+    students_payload = []
+    for student in students:
+        full_name = " ".join(
+            x for x in [
+                student.username.first_name if student.username else '',
+                student.username.last_name if student.username else '',
+            ] if x
+        ) or student.usn
+
+        row = {
+            'name': full_name,
+            'usn': student.usn,
+            'scores': {},
+        }
+
+        for subject in subjects:
+            total = Attendence.objects.filter(
+                usn=student,
+                class_code=classroom,
+                subject_code=subject
+            ).count()
+            present = Attendence.objects.filter(
+                usn=student,
+                class_code=classroom,
+                subject_code=subject,
+                is_present=True
+            ).count()
+
+            percentage = round((present / total) * 100) if total else 0
+            row['scores'][subject.subject_code] = percentage
+
+        students_payload.append(row)
+
+    subjects_payload = [
+        {
+            'code': subject.subject_code,
+            'name': subject.subject_name or subject.subject_code
+        }
+        for subject in subjects
+    ]
+
+    context = {
+        'classroom': classroom,
+        'subjects': subjects_payload,
+        'students_json': json.dumps(students_payload),
+        'subjects_json': json.dumps(subjects_payload),
+    }
+    return render(request, 'student_attendence.html', context)
 
 @login_required
 def faculty_lists_advicer(request):
