@@ -456,6 +456,8 @@ def student_list_hod(request, class_link_id=None):
   student_rows = []
   for student in students:
     records = []
+    present_count = 0
+    marked_count = 0
     date_index_tracker = defaultdict(int)
     for date in dates:
       session_index = date_index_tracker[date]
@@ -469,11 +471,18 @@ def student_list_hod(request, class_link_id=None):
           'date': date,
           'status': status,
       })
+      if status in ['present', 'absent']:
+        marked_count += 1
+        if status == 'present':
+          present_count += 1
+
+    percentage = round((present_count / marked_count) * 100) if marked_count else 0
 
     student_rows.append({
       'first_name': student.username.first_name if student.username else '',
       'last_name': student.username.last_name if student.username else '',
       'records': records,
+      'percentage': percentage,
     })
 
   context = {

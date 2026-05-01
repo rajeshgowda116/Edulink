@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "advisor_base.html" %}
 
 {% block title %}EduLink – My Classes{% endblock %}
 {% block nav_classes %}active{% endblock %}
@@ -264,7 +264,7 @@
     border-collapse: collapse;
   }
 
-  .cls-table thead th {
+  .cls-table thead tr .cls-table thead th {
     padding: 12px 20px;
     text-align: left;
     font-size: 0.80rem;
@@ -562,7 +562,7 @@
               <span class="sort-arrow">▾</span>
             </div>
           </div>
-          <a href="{% url 'add_class' %}">
+          <a href="{% url 'advicer_class_add'%}">
             <button class="btn-add-class">＋ Add Class</button>
           </a>
         </div>
@@ -595,103 +595,40 @@
             <td>
               <div class="action-cell">
                 {% if cls.class_link_id %}
-                <a href="{% url 'student_list_hod' cls.class_link_id %}">
+                <a href="{% url 'advicer_student_attendence_list' cls.class_link_id %}">
                   <button class="btn-view">Attendence List</button>
                 </a>
                 {% else %}
-                <a href="{% url 'student_list_hod' %}">
-                  <button class="btn-view">Attendence</button>
-                </a>
+                <button class="btn-view" disabled>Attendence List</button>
                 {% endif %}
                 {% if cls.class_link_id %}
-                <a href="{% url 'add_attendence_as_Faculty' cls.class_link_id %}">
+                <a href="{% url 'advicer_add_attendence' cls.class_link_id %}">
                   <button class="btn-students">Students</button>
                 </a>
                 {% else %}
-                <a href="{% url 'add_attendence_as_Faculty' %}">
-                  <button class="btn-students">Students</button>
-                </a>
+                <button class="btn-students" disabled>Students</button>
                 {% endif %}
+
                 <button class="btn-more">⋮</button>
               </div>
             </td>
           </tr>
-          {% empty %}
-          <!-- Fallback static rows -->
+                    {% empty %}
           <tr>
-            <td>
-              <div class="cls-name-cell">
-                <div class="cls-icon ci-blue">💻</div><span class="cls-name">Web Development</span>
-              </div>
-            </td>
-            <td class="cls-code">CLS-9GHD6A</td>
-            <td class="cls-days">Mon, Wed, Mt</td>
-            <td class="td-center cls-count">28</td>
-            <td>
-              <div class="action-cell"><button class="btn-view">View</button><button
-                  class="btn-students">Students</button><button class="btn-more">⋮</button></div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="cls-name-cell">
-                <div class="cls-icon ci-purple">🗄️</div><span class="cls-name">Database Systems</span>
-              </div>
-            </td>
-            <td class="cls-code">CLS-4TRFJ3</td>
-            <td class="cls-days">Tue, Thu, Fri</td>
-            <td class="td-center cls-count">24</td>
-            <td>
-              <div class="action-cell"><button class="btn-view">View</button><button
-                  class="btn-students">Students</button><button class="btn-more">⋮</button></div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="cls-name-cell">
-                <div class="cls-icon ci-orange">{}</div><span class="cls-name">Algorithms</span>
-              </div>
-            </td>
-            <td class="cls-code">CLS-1BQ92Y</td>
-            <td class="cls-days">Tue, Thu, Fri</td>
-            <td class="td-center cls-count">30</td>
-            <td>
-              <div class="action-cell"><button class="btn-view">View</button><button
-                  class="btn-students">Students</button><button class="btn-more">⋮</button></div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="cls-name-cell">
-                <div class="cls-icon ci-green">🤖</div><span class="cls-name">Machine Learning</span>
-              </div>
-            </td>
-            <td class="cls-code">CLS-7KH6M1</td>
-            <td class="cls-days">Mon, Wed, Mt</td>
-            <td class="td-center cls-count">22</td>
-            <td>
-              <div class="action-cell"><button class="btn-view">View</button><button
-                  class="btn-students">Students</button><button class="btn-more">⋮</button></div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div class="cls-name-cell">
-                <div class="cls-icon ci-red">🔗</div><span class="cls-name">Data Structures</span>
-              </div>
-            </td>
-            <td class="cls-code">CLS-5PS0QW</td>
-            <td class="cls-days">Mon, Wed, Mt</td>
-            <td class="td-center cls-count">26</td>
-            <td>
-              <div class="action-cell"><button class="btn-view">View</button><button
-                  class="btn-students">Students</button><button class="btn-more">⋮</button></div>
-            </td>
+            <td colspan="5" style="text-align:center;color:#64748b;">No classes found.</td>
           </tr>
           {% endfor %}
 
         </tbody>
       </table>
+
+      {% if selected_classroom %}
+      <div style="padding:16px 24px;border-top:1px solid #f1f5f9;">
+        <h4 style="margin:0;color:#1e293b;">
+          Selected Class: {{ selected_classroom.class_name }} ({{ selected_classroom.class_code }})
+        </h4>
+      </div>
+      {% endif %}
 
       <!-- Footer -->
       <div class="cls-footer">
@@ -747,7 +684,6 @@
 
   /* Pagination */
   let currentPage = 1;
-  const totalPages = Math.max(1, document.querySelectorAll('.pg-btn[id^="pg"]').length);
 
   function setPage(p) {
     currentPage = p;
@@ -765,3 +701,4 @@
   }
 </script>
 {% endblock %}
+
