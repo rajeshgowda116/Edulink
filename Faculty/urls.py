@@ -9,4 +9,5 @@ urlpatterns = [
     path('student_attendence/',views.student_attendence,name='student_attendence'),
     path('student_list/',views.student_list,name='student_list'),
     path('student_list/<int:class_link_id>/',views.student_list,name='student_list'),
+    path('add_class_as_faculty/',views.add_class_as_faculty,name='add_class_as_faculty'),
     ]

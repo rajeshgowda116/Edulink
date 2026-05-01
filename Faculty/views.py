@@ -112,6 +112,10 @@ def faculty_dashboard(request):
 
     return render(request, 'faculty_dashboard.html', context)
 
+
+
+
+
 @login_required
 def add_attendence(request, class_link_id=None):
     today = timezone.localdate()
@@ -129,7 +133,6 @@ def add_attendence(request, class_link_id=None):
             'class': None,
             'students': [],
             'total_students': 0,
-            #'selected_date': timezone.localdate(),
         })
 
     subject = class_link.subject_code
@@ -197,7 +200,8 @@ def add_attendence(request, class_link_id=None):
         'selected_date': selected_date,
     }
 
-    return render(request,'daily_attendance.html', context)
+    return render(request, 'daily_attendance.html', context)
+
 
 @login_required
 def student_attendence(request):
@@ -214,7 +218,6 @@ def student_attendence(request):
         if link.class_code:
             classrooms.append(link.class_code)
 
-    # Fetch the attendance history for these specific classes
     attendance_records = Attendence.objects.filter(
         subject_code__in=subjects,
         class_code__in=classrooms
@@ -225,6 +228,7 @@ def student_attendence(request):
         'classes': class_links,
     }
     return render(request, 'faculty_attendance_record.html', context)
+
 
 @login_required
 def student_list(request, class_link_id=None):
@@ -239,9 +243,10 @@ def student_list(request, class_link_id=None):
         class_link = class_links.first()
 
     if not class_link:
-        return render(request, 'faculty_attendance_record2.html', {
+        return render(request, 'faculty_student_list.html', {
             'class': None,
             'dates': [],
+            'date_columns': [],
             'students': [],
             'total_students': 0,
         })
@@ -264,7 +269,6 @@ def student_list(request, class_link_id=None):
         usn__in=students
     ).select_related('usn').order_by('date', 'id')
 
-    # Build date sessions (allow multiple attendance entries on same date).
     student_date_records = defaultdict(list)
     max_sessions_by_date = defaultdict(int)
     for attendance in attendances:
@@ -287,6 +291,8 @@ def student_list(request, class_link_id=None):
     student_rows = []
     for student in students:
         records = []
+        present_count = 0
+        marked_count = 0
         date_index_tracker = defaultdict(int)
         for date in dates:
             session_index = date_index_tracker[date]
@@ -300,11 +306,19 @@ def student_list(request, class_link_id=None):
                 'date': date,
                 'status': status,
             })
+            if status in ['present', 'absent']:
+                marked_count += 1
+                if status == 'present':
+                    present_count += 1
+
+        percentage = round((present_count / marked_count) * 100) if marked_count else 0
 
         student_rows.append({
             'first_name': student.username.first_name if student.username else '',
             'last_name': student.username.last_name if student.username else '',
+            'student_id': student.usn,
             'records': records,
+            'percentage': percentage,
         })
 
     context = {
@@ -321,6 +335,53 @@ def student_list(request, class_link_id=None):
         'total_students': len(student_rows),
     }
 
-    return render(request, 'faculty_attendance_record2.html', context)
+    return render(request, 'faculty_student_list.html', context)
+
+
+@login_required
+def add_class_as_faculty(request):
+  if request.method == 'POST':
+    class_code = request.POST.get('class_code')
+    subject_name = request.POST.get('subject_name')
+    subject_code = request.POST.get('subject_code')
+
+    faculty_profile = Faculty.objects.filter(username=request.user).first()
+    if not faculty_profile:
+      return HttpResponse("Faculty profile not found. Please complete faculty info first.")
+
+    class_code_str = str(class_code).strip()
+    if not class_code_str:
+      return HttpResponse("Class code is required.")
+
+    try:
+      class_code_int = int(class_code_str)
+    except (TypeError, ValueError):
+      return HttpResponse("Invalid class code. It must be a number.")
+
+    classroom = Classroom.objects.filter(class_code=class_code_str).first()
+    if not classroom:
+      return HttpResponse("Classroom not found for the provided class code.")
+
+    faculty_key = f"{faculty_profile.faculty_id}_{subject_code}"
+    faculty_obj, _ = Faculty.objects.update_or_create(
+      faculty_id=faculty_key,
+      defaults={
+        'hod': faculty_profile.hod,
+        'username': request.user,
+        'mobile_num': faculty_profile.mobile_num,
+        'class_code': class_code_int,
+        'subject_name': subject_name,
+        'subject_code': subject_code,
+      }
+    )
+
+    Classes.objects.update_or_create(
+      class_code=classroom,
+      subject_code=faculty_obj,
+    )
+
+    return redirect('faculty_dashboard')
+
+  return render(request,'add_class_as_faculty.html')
 
   

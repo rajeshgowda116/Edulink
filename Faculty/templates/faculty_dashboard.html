@@ -61,6 +61,18 @@
     margin-bottom: 24px;
   }
 
+  .stat-link {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    border-radius: var(--radius);
+  }
+
+  .stat-link:focus-visible {
+    outline: 3px solid rgba(217, 119, 6, .32);
+    outline-offset: 4px;
+  }
+
   .stat-card {
     border-radius: var(--radius);
     padding: 20px 18px;
@@ -247,14 +259,15 @@
       <div class="lbl">Today's Attendance</div>
     </div>
   </div>
-
-  <div class="stat-card orange-grad">
-    <div class="stat-emoji">📣</div>
-    <div class="stat-info">
-      <div class="num">{{ total_classes_done }}</div>
-      <div class="lbl">Classes Done</div>
+  <a href="{% url 'add_class_as_faculty' %}" class="stat-link" aria-label="Add a new class">
+    <div class="stat-card orange-grad">
+      <div class="stat-emoji">+</div>
+      <div class="stat-info">
+        <div class="num">Add</div>
+        <div class="lbl">Add Class</div>
+      </div>
     </div>
-  </div>
+  </a>
 
 </div><!-- /stat-grid -->
 
@@ -299,6 +312,9 @@
         <td><span class="days-text">{{ cls.attendance_pct }}%</span></td>
         <td><span class="days-text">{{ cls.classes_done }}</span></td>
         <td style="text-align:center;">
+          <a href="{% url 'student_list' cls.id %}">
+            <button class="btn-manage">Students</button>
+          </a>
           <a href="{% url 'add_attendence' cls.id %}">
             <button class="btn-attendance">Attendance</button>
           </a>
