@@ -384,4 +384,76 @@ def add_class_as_faculty(request):
 
   return render(request,'add_class_as_faculty.html')
 
+@login_required
+def add_marks(request, class_link_id=None):
+    faculties = Faculty.objects.filter(username=request.user)
+    class_links = Classes.objects.filter(
+        subject_code__in=faculties
+    ).select_related('class_code', 'subject_code')
+
+    if class_link_id:
+        class_link = get_object_or_404(class_links, id=class_link_id)
+    else:
+        class_link = class_links.first()
+
+    if not class_link:
+        return render(request, 'marks_entry.html', {'class': None, 'students': []})
+
+    subject = class_link.subject_code
+    classroom = class_link.class_code
+
+    students = Student.objects.filter(
+        class_code=classroom.class_code
+    ).select_related('username').order_by('usn')
+
+    from marks.models import Marks
+    
+    if request.method == 'POST':
+        for student in students:
+            i1 = request.POST.get(f'internal1_{student.id}', 0)
+            i2 = request.POST.get(f'internal2_{student.id}', 0)
+            
+            try:
+                i1_val = float(i1) if i1 else 0
+                i2_val = float(i2) if i2 else 0
+            except ValueError:
+                i1_val = 0
+                i2_val = 0
+            
+            Marks.objects.update_or_create(
+                student=student,
+                subject=subject,
+                class_code=classroom,
+                defaults={
+                    'internal1': i1_val,
+                    'internal2': i2_val,
+                    'total_marks': i1_val + i2_val
+                }
+            )
+        return redirect('add_marks', class_link_id=class_link.id)
+
+    marks_data = {
+        m.student_id: m for m in Marks.objects.filter(subject=subject, class_code=classroom)
+    }
+
+    student_rows = []
+    for student in students:
+        m = marks_data.get(student.id)
+        student_rows.append({
+            'id': student.id,
+            'usn': student.usn,
+            'name': student.username.get_full_name() if student.username else student.usn,
+            'internal1': m.internal1 if m else 0,
+            'internal2': m.internal2 if m else 0,
+            'total': m.total_marks if m else 0,
+        })
+
+    context = {
+        'class_link': class_link,
+        'class_links': class_links,
+        'students': student_rows,
+        'selected_class': class_link,
+    }
+    return render(request, 'marks_entry.html', context)
+
   

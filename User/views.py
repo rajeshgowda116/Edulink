@@ -64,4 +64,7 @@ def login(requset):
   else:
       form=AuthenticationForm()
   return render(requset,'login.html',{'form':form})
-    
+
+def logout(request):
+    auth.logout(request)
+    return redirect('login')

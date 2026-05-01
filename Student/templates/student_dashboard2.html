@@ -1,0 +1,551 @@
+{% extends "student_base.html" %}
+
+{% block title %}EduLink – Student Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Light theme override ── */
+  body { background: #f4f6fb; }
+  .bg-layer { display: none; }
+  .main { background: #f4f6fb; padding: 0; overflow: hidden; }
+  .page-body { background: #f4f6fb; }
+
+  /* Sidebar override to navy */
+  .sidebar {
+    background: #1a2d6e !important;
+    backdrop-filter: none !important;
+    border-right: 1px solid rgba(255,255,255,.08) !important;
+  }
+  .nav-item { color: rgba(255,255,255,.68) !important; }
+  .nav-item.active {
+    background: #2563eb !important;
+    color: white !important;
+    border-left: none !important;
+  }
+  .nav-item.active::before { display: none; }
+
+  /* ── Content Scroll ── */
+  .content-scroll {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 36px 48px;
+  }
+  .content-scroll::-webkit-scrollbar { width: 5px; }
+  .content-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+  /* ── Top row: welcome + bell + semester ── */
+  .top-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+  }
+  .welcome-text h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.7rem; font-weight: 900; color: #1e293b;
+    margin-bottom: 4px;
+  }
+  .welcome-text p { font-size: 0.88rem; color: #64748b; }
+
+  .top-right-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+  /* Bell */
+  .bell-btn {
+    position: relative; cursor: pointer;
+    width: 40px; height: 40px; border-radius: 10px;
+    background: white; border: 1px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .18s;
+  }
+  .bell-btn:hover { background: #f0f4ff; }
+  .bell-btn svg { width: 20px; height: 20px; stroke: #64748b; }
+  .bell-badge {
+    position: absolute; top: -5px; right: -5px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #ef4444; color: white;
+    font-size: 0.65rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid white; font-family: 'Nunito', sans-serif;
+  }
+
+  /* Semester dropdown */
+  .semester-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: white; border: 1.5px solid #e2e8f0;
+    border-radius: 10px; padding: 8px 14px;
+    transition: border-color .2s; cursor: pointer;
+  }
+  .semester-wrap svg { width: 18px; height: 18px; fill: #2563eb; flex-shrink: 0; }
+  .semester-select {
+    appearance: none; border: none; background: transparent;
+    font-size: 0.88rem; font-weight: 700; color: #1e293b;
+    font-family: 'Nunito', sans-serif; cursor: pointer; outline: none;
+    padding-right: 20px;
+  }
+  .semester-arrow { color: #94a3b8; font-size: 0.70rem; flex-shrink: 0; }
+
+  /* ── Stat Cards ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 14px; padding: 20px 22px;
+    display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 1px 8px rgba(37,99,235,.05);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .stat-card:hover { box-shadow: 0 6px 20px rgba(37,99,235,.10); transform: translateY(-2px); }
+
+  .stat-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; flex-shrink: 0;
+  }
+  .sc-blue   { background: #dbeafe; }
+  .sc-green  { background: #dcfce7; }
+  .sc-orange { background: #fef3c7; }
+  .sc-purple { background: #ede9fe; }
+
+  .stat-info { min-width: 0; }
+  .stat-label {
+    font-size: 0.78rem; font-weight: 700; color: #64748b;
+    margin-bottom: 4px; white-space: nowrap;
+  }
+  .stat-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.9rem; font-weight: 900; line-height: 1;
+  }
+  .sn-blue   { color: #2563eb; }
+  .sn-green  { color: #16a34a; }
+  .sn-orange { color: #f59e0b; }
+  .sn-purple { color: #7c3aed; }
+
+  .stat-sub { font-size: 0.74rem; color: #94a3b8; margin-top: 3px; }
+
+  /* ── My Classes Section ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-header h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.15rem; font-weight: 900; color: #1e293b;
+  }
+  .btn-view-all {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: white; border: 1.5px solid #e2e8f0;
+    border-radius: 8px; padding: 7px 14px;
+    font-size: 0.80rem; font-weight: 700; color: #2563eb;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+    transition: background .18s, border-color .18s;
+    text-decoration: none;
+  }
+  .btn-view-all:hover { background: #dbeafe; border-color: #93c5fd; }
+  .btn-view-all svg { width: 14px; height: 14px; }
+
+  /* ── Class Cards Grid ── */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px; margin-bottom: 24px;
+  }
+
+  .class-card {
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 16px; padding: 20px;
+    box-shadow: 0 1px 8px rgba(37,99,235,.05);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .class-card:hover { box-shadow: 0 6px 24px rgba(37,99,235,.10); transform: translateY(-2px); }
+
+  /* Card top row */
+  .class-card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .class-card-left { display: flex; align-items: center; gap: 12px; }
+  .class-abbr {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 900;
+    font-size: 0.85rem; color: white; flex-shrink: 0;
+  }
+  .ca-blue   { background: #2563eb; }
+  .ca-green  { background: #16a34a; }
+  .ca-purple { background: #7c3aed; }
+  .ca-orange { background: #f59e0b; }
+  .ca-pink   { background: #ec4899; }
+  .ca-teal   { background: #0891b2; }
+
+  .class-code-name h4 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 1rem; color: #1e293b;
+    margin-bottom: 1px;
+  }
+  .class-code-name p { font-size: 0.78rem; color: #64748b; }
+
+  .class-type-badge {
+    font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; white-space: nowrap;
+    font-family: 'Nunito', sans-serif;
+  }
+  .ctb-blue   { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
+  .ctb-orange { color: #f59e0b; background: #fffbeb; border: 1px solid #fde68a; }
+  .ctb-pink   { color: #ec4899; background: #fdf2f8; border: 1px solid #fbcfe8; }
+  .ctb-teal   { color: #0891b2; background: #ecfeff; border: 1px solid #a5f3fc; }
+  .ctb-purple { color: #7c3aed; background: #f5f3ff; border: 1px solid #ddd6fe; }
+
+  /* Faculty */
+  .class-faculty {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 0.78rem; color: #64748b; margin-bottom: 14px;
+  }
+  .class-faculty svg { width: 13px; height: 13px; fill: #94a3b8; flex-shrink: 0; }
+
+  /* Stats row */
+  .class-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin-bottom: 16px;
+    padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;
+  }
+  .cs-item { text-align: center; }
+  .cs-label { font-size: 0.70rem; color: #94a3b8; margin-bottom: 6px; }
+
+  /* Circular progress */
+  .circle-wrap {
+    position: relative; width: 62px; height: 62px;
+    margin: 0 auto 4px;
+  }
+  .circle-wrap svg { transform: rotate(-90deg); }
+  .circle-wrap .track { fill: none; stroke: #f1f5f9; stroke-width: 5; }
+  .circle-wrap .progress { fill: none; stroke-width: 5; stroke-linecap: round;
+    transition: stroke-dashoffset .6s ease; }
+  .circle-pct {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.82rem;
+  }
+  .progress-blue   { stroke: #2563eb; }
+  .progress-green  { stroke: #16a34a; }
+  .progress-orange { stroke: #f59e0b; }
+  .progress-pink   { stroke: #ec4899; }
+  .progress-teal   { stroke: #0891b2; }
+  .progress-purple { stroke: #7c3aed; }
+  .pct-blue   { color: #2563eb; }
+  .pct-green  { color: #16a34a; }
+  .pct-orange { color: #f59e0b; }
+  .pct-pink   { color: #ec4899; }
+  .pct-teal   { color: #0891b2; }
+  .pct-purple { color: #7c3aed; }
+
+  /* Mark numbers */
+  .mark-big {
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.7rem;
+    line-height: 1; margin-bottom: 2px;
+  }
+  .mark-sub { font-size: 0.72rem; color: #94a3b8; }
+
+  /* Classes attended */
+  .classes-attended { font-size: 0.72rem; color: #94a3b8; text-align: center; margin-bottom: 14px; }
+
+  /* View Details link */
+  .view-details {
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-size: 0.82rem; font-weight: 700; color: #2563eb;
+    text-decoration: none; cursor: pointer;
+    transition: color .18s;
+  }
+  .view-details:hover { color: #1d4ed8; }
+  .view-details svg { width: 14px; height: 14px; stroke: currentColor; }
+
+  /* ── Footer note ── */
+  .footer-note {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.80rem; color: #64748b;
+    background: #eff6ff; border: 1px solid #bfdbfe;
+    border-radius: 10px; padding: 12px 18px;
+  }
+  .footer-note svg { width: 16px; height: 16px; fill: #2563eb; flex-shrink: 0; }
+
+  @media (max-width: 1100px) {
+    .stat-grid { grid-template-columns: repeat(2,1fr); }
+    .class-grid { grid-template-columns: repeat(2,1fr); }
+  }
+  @media (max-width: 700px) {
+    .content-scroll { padding: 16px 12px 36px; }
+    .class-grid { grid-template-columns: 1fr; }
+    .stat-grid  { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="content-scroll">
+
+  <!-- ── Top Row ── -->
+  <div class="top-row">
+    <div class="welcome-text">
+      <h1>Welcome back, {{ user.first_name|default:"Rahul" }}! 👋</h1>
+      <p>Here's an overview of your classes, attendance and internal marks.</p>
+    </div>
+    <div class="top-right-controls">
+      <!-- Bell -->
+      <div class="bell-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="bell-badge">{{ notif_count|default:"3" }}</span>
+      </div>
+      <!-- Semester -->
+      <div class="semester-wrap">
+        <svg viewBox="0 0 24 24"><path d="M4 6h18v2H4zm0 5h18v2H4zm0 5h18v2H4z"/></svg>
+        <select class="semester-select" name="semester">
+          <option>VI Semester</option>
+          <option>V Semester</option>
+          <option>IV Semester</option>
+          <option>III Semester</option>
+        </select>
+        <span class="semester-arrow">▾</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Stat Cards ── -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-circle sc-blue">📖</div>
+      <div class="stat-info">
+        <div class="stat-label">Total Classes</div>
+        <div class="stat-num sn-blue">{{ total_classes }}</div>
+        <div class="stat-sub">This Semester</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-circle sc-green">🎯</div>
+      <div class="stat-info">
+        <div class="stat-label">Average Attendance</div>
+        <div class="stat-num sn-green">{{ avg_attendance }}%</div>
+        <div class="stat-sub">Across all subjects</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-circle sc-orange">📋</div>
+      <div class="stat-info">
+        <div class="stat-label">Internal 1 Average</div>
+        <div class="stat-num sn-orange">{{ avg_internal1 }}%</div>
+        <div class="stat-sub">Across all subjects</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-circle sc-purple">📝</div>
+      <div class="stat-info">
+        <div class="stat-label">Internal 2 Average</div>
+        <div class="stat-num sn-purple">{{ avg_internal2 }}%</div>
+        <div class="stat-sub">Across all subjects</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── My Classes ── -->
+  <div class="section-header">
+    <h2>My Classes</h2>
+    <a href="" class="btn-view-all">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h18v2H4zm0 5h18v2H4zm0 5h18v2H4z"/></svg>
+      View All Classes
+    </a>
+  </div>
+
+  <div class="class-grid">
+
+    {% for cls in classes %}
+    <!-- Dynamic card -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-{{ cls.color|default:'blue' }}">{{ cls.abbr }}</div>
+          <div class="class-code-name">
+            <h4>{{ cls.code }}</h4>
+            <p>{{ cls.name }}</p>
+          </div>
+        </div>
+        <span class="class-type-badge ctb-{{ cls.color|default:'blue' }}">{{ cls.type|default:"Theory" }}</span>
+      </div>
+      <div class="class-faculty">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        {{ cls.faculty }}
+      </div>
+      <!-- stats -->
+      <div class="class-stats">
+        <div class="cs-item">
+          <div class="cs-label">Attendance</div>
+          <div class="circle-wrap">
+            <svg viewBox="0 0 62 62" width="62" height="62">
+              <circle class="track" cx="31" cy="31" r="27"/>
+              <circle class="progress progress-{{ cls.color|default:'blue' }}" cx="31" cy="31" r="27"
+                stroke-dasharray="169.6"
+                stroke-dashoffset="{{ cls.att_offset }}"/>
+            </svg>
+            <div class="circle-pct pct-{{ cls.color|default:'blue' }}">{{ cls.attendance }}%</div>
+          </div>
+        </div>
+        <div class="cs-item">
+          <div class="cs-label">Internal 1</div>
+          <div class="mark-big" style="color:{{ cls.color_hex }};">{{ cls.internal1 }}</div>
+          <div class="mark-sub">/ 50</div>
+        </div>
+        <div class="cs-item">
+          <div class="cs-label">Internal 2</div>
+          <div class="mark-big" style="color:{{ cls.color_hex }};">{{ cls.internal2 }}</div>
+          <div class="mark-sub">/ 50</div>
+        </div>
+      </div>
+      <div class="classes-attended">{{ cls.attended }} / {{ cls.total }} Classes</div>
+      <a href="" class="view-details">
+        View Details
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    {% empty %}
+    <!-- ── Fallback static cards ── -->
+
+    <!-- CS301 Data Structures -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-blue">DS</div>
+          <div class="class-code-name"><h4>CS301</h4><p>Data Structures</p></div>
+        </div>
+        <span class="class-type-badge ctb-blue">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Dr. Ravi Kumar</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-blue" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="13.6"/></svg><div class="circle-pct pct-blue">92%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big sn-blue" style="color:#2563eb;">76</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#2563eb;">82</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">46 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    <!-- CS302 Database -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-green">DB</div>
+          <div class="class-code-name"><h4>CS302</h4><p>Database Management Systems</p></div>
+        </div>
+        <span class="class-type-badge ctb-teal">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Ms. Anjali Sharma</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-green" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="20.4"/></svg><div class="circle-pct pct-green">88%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big" style="color:#16a34a;">70</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#16a34a;">74</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">44 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    <!-- CS303 Operating Systems -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-purple">OS</div>
+          <div class="class-code-name"><h4>CS303</h4><p>Operating Systems</p></div>
+        </div>
+        <span class="class-type-badge ctb-purple">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Mr. Kiran Patel</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-orange" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="33.9"/></svg><div class="circle-pct pct-orange">80%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big" style="color:#7c3aed;">68</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#7c3aed;">72</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">40 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    <!-- CS304 Computer Networks -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-orange">CN</div>
+          <div class="class-code-name"><h4>CS304</h4><p>Computer Networks</p></div>
+        </div>
+        <span class="class-type-badge ctb-orange">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Dr. Neha Gupta</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-orange" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="40.7"/></svg><div class="circle-pct pct-orange">76%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big" style="color:#f59e0b;">64</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#f59e0b;">70</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">38 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    <!-- CS305 Software Engineering -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-pink">SE</div>
+          <div class="class-code-name"><h4>CS305</h4><p>Software Engineering</p></div>
+        </div>
+        <span class="class-type-badge ctb-pink">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Mr. Suresh Babu</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-pink" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="23.7"/></svg><div class="circle-pct pct-pink">86%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big" style="color:#ec4899;">78</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#ec4899;">80</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">43 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    <!-- CS306 Artificial Intelligence -->
+    <div class="class-card">
+      <div class="class-card-top">
+        <div class="class-card-left">
+          <div class="class-abbr ca-teal">AI</div>
+          <div class="class-code-name"><h4>CS306</h4><p>Artificial Intelligence</p></div>
+        </div>
+        <span class="class-type-badge ctb-teal">Theory</span>
+      </div>
+      <div class="class-faculty"><svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>Ms. Priya Singh</div>
+      <div class="class-stats">
+        <div class="cs-item"><div class="cs-label">Attendance</div>
+          <div class="circle-wrap"><svg viewBox="0 0 62 62" width="62" height="62"><circle class="track" cx="31" cy="31" r="27"/><circle class="progress progress-teal" cx="31" cy="31" r="27" stroke-dasharray="169.6" stroke-dashoffset="16.9"/></svg><div class="circle-pct pct-teal">90%</div></div>
+        </div>
+        <div class="cs-item"><div class="cs-label">Internal 1</div><div class="mark-big" style="color:#0891b2;">82</div><div class="mark-sub">/ 50</div></div>
+        <div class="cs-item"><div class="cs-label">Internal 2</div><div class="mark-big" style="color:#0891b2;">84</div><div class="mark-sub">/ 50</div></div>
+      </div>
+      <div class="classes-attended">45 / 50 Classes</div>
+      <a href="#" class="view-details">View Details <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+
+    {% endfor %}
+  </div><!-- /class-grid -->
+
+  <!-- Footer note -->
+  <div class="footer-note">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+    Attendance and internal marks are updated regularly. Please check with your faculty for any discrepancies.
+  </div>
+
+</div><!-- /content-scroll -->
+{% endblock %}

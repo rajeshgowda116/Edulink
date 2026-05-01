@@ -3,6 +3,8 @@ from django.shortcuts import render,redirect
 from Advicer.models import Classroom
 from Attendence.models import Attendence
 from .models import Student
+from Class.models import Classes
+
 # Create your views here.
 @login_required
 def student_info(request):
@@ -76,3 +78,95 @@ def student_dashboard(request):
     }
 
     return render(request, 'student_dashboard.html', context)
+
+@login_required
+def Student_dashbord2(request):
+    student = Student.objects.filter(username=request.user).first()
+    if not student:
+        return redirect('student_info')
+    
+    classroom = Classroom.objects.filter(class_code=student.class_code).first()
+    if not classroom:
+        context = {
+            'student': student,
+            'classes': [],
+            'total_classes': 0,
+            'avg_attendance': 0,
+            'avg_internal1': 0,
+            'avg_internal2': 0,
+        }
+        return render(request, 'student_dashboard2.html', context)
+
+    # Get all subjects for this classroom via Classes model
+    class_links = Classes.objects.filter(class_code=classroom).select_related('subject_code', 'subject_code__username')
+    
+    classes_data = []
+    total_present = 0
+    total_marked = 0
+    
+    colors = ['blue', 'green', 'purple', 'orange', 'pink', 'teal']
+    
+    for i, link in enumerate(class_links):
+        subject = link.subject_code
+        if not subject:
+            continue
+            
+        # Attendance for this student in this subject
+        attendance_records = Attendence.objects.filter(usn=student, subject_code=subject)
+        total_count = attendance_records.count()
+        present_count = attendance_records.filter(is_present=True).count()
+        
+        attendance_pct = round((present_count / total_count) * 100) if total_count > 0 else 0
+        
+        # Calculate stroke-dashoffset: 169.6 is the full circle
+        att_offset = 169.6 * (1 - attendance_pct / 100)
+        
+        # Abbreviation for UI
+        abbr = "".join([w[0] for w in subject.subject_name.split() if w])[:2].upper() if subject.subject_name else "SB"
+        
+        # Define color map for hex values
+        color_map = {
+            'blue': '#2563eb',
+            'green': '#16a34a',
+            'purple': '#7c3aed',
+            'orange': '#f59e0b',
+            'pink': '#ec4899',
+            'teal': '#0891b2'
+        }
+        current_color = colors[i % len(colors)]
+        
+        classes_data.append({
+            'color': current_color,
+            'color_hex': color_map.get(current_color, '#2563eb'),
+            'abbr': abbr,
+            'code': subject.subject_code,
+            'name': subject.subject_name,
+            'faculty': subject.username.get_full_name() if subject.username else "Faculty",
+            'attendance': attendance_pct,
+            'att_offset': round(att_offset, 1),
+            'internal1': 0,
+            'internal2': 0,
+            'attended': present_count,
+            'total': total_count,
+            'type': 'Theory'
+        })
+
+        
+        total_present += present_count
+        total_marked += total_count
+
+    avg_attendance = round((total_present / total_marked) * 100) if total_marked > 0 else 0
+    
+    context = {
+        'student': student,
+        'classes': classes_data,
+        'total_classes': len(classes_data),
+        'avg_attendance': avg_attendance,
+        'avg_internal1': 0,
+        'avg_internal2': 0,
+    }
+    
+    return render(request, 'student_dashboard2.html', context)
+
+
+
