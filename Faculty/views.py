@@ -1,6 +1,7 @@
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render,redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from Attendence.models import Attendence
@@ -9,6 +10,8 @@ from Student.models import Student
 from .models import Faculty
 from django.http import HttpResponse
 from Advicer.models import Classroom
+from marks.models import Marks
+
 # Create your views here.
 def faculty_info(request):
   error = None
@@ -384,6 +387,7 @@ def add_class_as_faculty(request):
 
   return render(request,'add_class_as_faculty.html')
 
+
 @login_required
 def add_marks(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
@@ -397,63 +401,175 @@ def add_marks(request, class_link_id=None):
         class_link = class_links.first()
 
     if not class_link:
-        return render(request, 'marks_entry.html', {'class': None, 'students': []})
+        return render(request, 'marks.html', {
+            'classes': class_links,
+            'students': [],
+            'selected_class_link': None
+        })
 
     subject = class_link.subject_code
     classroom = class_link.class_code
 
+    # Fetch students for this classroom (more robust filtering)
     students = Student.objects.filter(
         class_code=classroom.class_code
     ).select_related('username').order_by('usn')
 
-    from marks.models import Marks
-    
+    if not students.exists():
+        students = Student.objects.filter(
+            class_code__iexact=str(classroom.class_code).strip()
+        ).select_related('username').order_by('usn')
+
     if request.method == 'POST':
-        for student in students:
-            i1 = request.POST.get(f'internal1_{student.id}', 0)
-            i2 = request.POST.get(f'internal2_{student.id}', 0)
-            
+        # Use student IDs or USNs to get marks from POST data
+        all_students = Student.objects.filter(
+            class_code__iexact=str(classroom.class_code).strip()
+        ) | Student.objects.filter(class_code=classroom.class_code)
+        
+        for student in all_students.distinct():
+            int1_val = request.POST.get(f'int1_{student.id}')
+            int2_val = request.POST.get(f'int2_{student.id}')
+
+            if int1_val is None and int2_val is None:
+                continue
+
             try:
-                i1_val = float(i1) if i1 else 0
-                i2_val = float(i2) if i2 else 0
+                int1 = float(int1_val) if (int1_val is not None and int1_val.strip() != '') else 0
+                int2 = float(int2_val) if (int2_val is not None and int2_val.strip() != '') else 0
             except ValueError:
-                i1_val = 0
-                i2_val = 0
-            
+                int1 = 0
+                int2 = 0
+
             Marks.objects.update_or_create(
                 student=student,
-                subject=subject,
                 class_code=classroom,
+                subject=subject,
                 defaults={
-                    'internal1': i1_val,
-                    'internal2': i2_val,
-                    'total_marks': i1_val + i2_val
+                    'internal1': int1,
+                    'internal2': int2,
+                    'total_marks': int1 + int2
                 }
             )
-        return redirect('add_marks', class_link_id=class_link.id)
+        return redirect(reverse('add_marks', kwargs={'class_link_id': class_link.id}) + '?success=true')
 
-    marks_data = {
-        m.student_id: m for m in Marks.objects.filter(subject=subject, class_code=classroom)
-    }
+    # Fetch existing marks records
+    marks_records = Marks.objects.filter(
+        subject=subject,
+        class_code=classroom,
+        student__in=students
+    )
+    marks_dict = {m.student_id: m for m in marks_records}
 
-    student_rows = []
+    student_data = []
     for student in students:
-        m = marks_data.get(student.id)
-        student_rows.append({
+        m = marks_dict.get(student.id)
+        # Only show as empty string if no record exists, otherwise show the mark
+        student_data.append({
             'id': student.id,
             'usn': student.usn,
-            'name': student.username.get_full_name() if student.username else student.usn,
-            'internal1': m.internal1 if m else 0,
-            'internal2': m.internal2 if m else 0,
-            'total': m.total_marks if m else 0,
+            'first_name': student.username.first_name if student.username else '',
+            'last_name': student.username.last_name if student.username else '',
+            'int1': m.internal1 if m else '',
+            'int2': m.internal2 if m else '',
+            'total': m.total_marks if m else 0
         })
 
     context = {
-        'class_link': class_link,
-        'class_links': class_links,
-        'students': student_rows,
-        'selected_class': class_link,
+        'classes': class_links,
+        'selected_class_link': class_link,
+        'students': student_data,
+        'total_students': len(student_data),
+        'max_internal1': 50,
+        'max_internal2': 50,
+        'max_total': 100,
+        'saved_success': request.GET.get('success') == 'true',
     }
-    return render(request, 'marks_entry.html', context)
 
-  
+    return render(request, 'marks.html', context)
+
+
+@login_required
+def show_marks(request, class_link_id=None):
+    faculties = Faculty.objects.filter(username=request.user)
+    class_links = Classes.objects.filter(
+        subject_code__in=faculties
+    ).select_related('class_code', 'subject_code')
+
+    if class_link_id:
+        class_link = get_object_or_404(class_links, id=class_link_id)
+    else:
+        class_link = class_links.first()
+
+    if not class_link:
+        return render(request, 'marks-show.html', {
+            'classes': class_links,
+            'students': [],
+            'selected_class_link': None
+        })
+
+    subject = class_link.subject_code
+    classroom = class_link.class_code
+
+    # Fetch students for this classroom
+    students = Student.objects.filter(
+        class_code=classroom.class_code
+    ).select_related('username').order_by('usn')
+
+    if not students.exists():
+        students = Student.objects.filter(
+            class_code__iexact=str(classroom.class_code).strip()
+        ).select_related('username').order_by('usn')
+
+    # Fetch existing marks records
+    marks_records = Marks.objects.filter(
+        subject=subject,
+        class_code=classroom,
+        student__in=students
+    )
+    marks_dict = {m.student_id: m for m in marks_records}
+
+    student_data = []
+    total_marks_sum = 0
+    highest_mark = 0
+    lowest_mark = 100 if marks_records.exists() else 0
+    highest_student = "N/A"
+    lowest_student = "N/A"
+
+    for student in students:
+        m = marks_dict.get(student.id)
+        current_total = m.total_marks if m else 0
+        
+        # Stats logic
+        if m:
+            total_marks_sum += current_total
+            if current_total >= highest_mark:
+                highest_mark = current_total
+                highest_student = f"{student.username.first_name} {student.username.last_name}" if student.username else student.usn
+            if current_total <= lowest_mark:
+                lowest_mark = current_total
+                lowest_student = f"{student.username.first_name} {student.username.last_name}" if student.username else student.usn
+
+        student_data.append({
+            'name': f"{student.username.first_name} {student.username.last_name}" if student.username else "N/A",
+            'usn': student.usn,
+            'internal1': m.internal1 if m else 0,
+            'internal2': m.internal2 if m else 0,
+            'total': current_total
+        })
+
+    avg_marks = round(total_marks_sum / len(marks_records), 2) if marks_records.exists() else 0
+
+    context = {
+        'classes': class_links,
+        'selected_class_link': class_link,
+        'students': student_data,
+        'total_students': len(student_data),
+        'avg_marks': avg_marks,
+        'highest_mark': highest_mark,
+        'highest_student': highest_student,
+        'lowest_mark': lowest_mark,
+        'lowest_student': lowest_student,
+        'max_total': 100,
+    }
+
+    return render(request, 'marks-show.html', context)

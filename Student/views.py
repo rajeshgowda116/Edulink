@@ -4,6 +4,7 @@ from Advicer.models import Classroom
 from Attendence.models import Attendence
 from .models import Student
 from Class.models import Classes
+from marks.models import Marks
 
 # Create your views here.
 @login_required
@@ -103,6 +104,9 @@ def Student_dashbord2(request):
     classes_data = []
     total_present = 0
     total_marked = 0
+    total_internal1 = 0
+    total_internal2 = 0
+    marks_count = 0
     
     colors = ['blue', 'green', 'purple', 'orange', 'pink', 'teal']
     
@@ -117,6 +121,15 @@ def Student_dashbord2(request):
         present_count = attendance_records.filter(is_present=True).count()
         
         attendance_pct = round((present_count / total_count) * 100) if total_count > 0 else 0
+        
+        # Marks for this student in this subject
+        marks = Marks.objects.filter(student=student, subject=subject).first()
+        internal1 = marks.internal1 if marks else 0
+        internal2 = marks.internal2 if marks else 0
+        
+        total_internal1 += internal1
+        total_internal2 += internal2
+        marks_count += 1
         
         # Calculate stroke-dashoffset: 169.6 is the full circle
         att_offset = 169.6 * (1 - attendance_pct / 100)
@@ -144,8 +157,8 @@ def Student_dashbord2(request):
             'faculty': subject.username.get_full_name() if subject.username else "Faculty",
             'attendance': attendance_pct,
             'att_offset': round(att_offset, 1),
-            'internal1': 0,
-            'internal2': 0,
+            'internal1': internal1,
+            'internal2': internal2,
             'attended': present_count,
             'total': total_count,
             'type': 'Theory'
@@ -156,14 +169,16 @@ def Student_dashbord2(request):
         total_marked += total_count
 
     avg_attendance = round((total_present / total_marked) * 100) if total_marked > 0 else 0
+    avg_internal1 = round((total_internal1 / (marks_count * 50)) * 100) if marks_count > 0 else 0
+    avg_internal2 = round((total_internal2 / (marks_count * 50)) * 100) if marks_count > 0 else 0
     
     context = {
         'student': student,
         'classes': classes_data,
         'total_classes': len(classes_data),
         'avg_attendance': avg_attendance,
-        'avg_internal1': 0,
-        'avg_internal2': 0,
+        'avg_internal1': avg_internal1,
+        'avg_internal2': avg_internal2,
     }
     
     return render(request, 'student_dashboard2.html', context)

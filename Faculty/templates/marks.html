@@ -1,0 +1,809 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}EduLink – Add / Update Marks{% endblock %}
+{% block nav_faculty %}active{% endblock %}
+
+{% block page_title %}Add / Update Marks{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'faculty_dashboard' %}">Dashboard</a>
+<span class="sep">›</span>
+<span class="active">Add / Update Marks</span>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── subtitle under title ── */
+  .page-subtitle {
+    font-size: 0.83rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  /* ── top filter dropdowns ── */
+  .top-filters {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .filter-label {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .filter-select-wrap {
+    position: relative;
+  }
+
+  .filter-select {
+    appearance: none;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 36px 9px 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .2s;
+    min-width: 200px;
+  }
+
+  .filter-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+  }
+
+  .filter-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #94a3b8;
+    font-size: 0.70rem;
+  }
+
+  /* Override topbar to allow filter row */
+  .topbar {
+    height: auto;
+    padding: 14px 32px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .topbar-left {
+    flex-direction: column;
+  }
+
+  .topbar-title {
+    font-size: 1.35rem;
+  }
+
+  /* ── Marking Scheme Banner ── */
+  .scheme-banner {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 8px rgba(37, 99, 235, .05);
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .scheme-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .scheme-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, .25);
+  }
+
+  .scheme-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+  }
+
+  .scheme-text .scheme-title {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .scheme-formula {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.02rem;
+    color: #1e293b;
+  }
+
+  .scheme-formula span {
+    color: #2563eb;
+  }
+
+  .scheme-right {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 12px 16px;
+    max-width: 340px;
+  }
+
+  .scheme-right svg {
+    width: 16px;
+    height: 16px;
+    fill: #2563eb;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .scheme-right p {
+    font-size: 0.80rem;
+    color: #374151;
+    line-height: 1.5;
+  }
+
+  /* ── Marks Table Card ── */
+  .marks-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(37, 99, 235, .05);
+  }
+
+  .marks-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .marks-card-header h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.08rem;
+    color: #1e293b;
+  }
+
+  .header-btns {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .18s, border-color .18s;
+  }
+
+  .btn-reset:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .btn-reset svg {
+    width: 15px;
+    height: 15px;
+    stroke: #475569;
+  }
+
+  .btn-save-marks {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, .28);
+    transition: background .2s, transform .15s;
+  }
+
+  .btn-save-marks:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    transform: translateY(-1px);
+  }
+
+  .btn-save-marks svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+  }
+
+  /* ── Table ── */
+  .marks-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .marks-table thead tr {
+    background: #f8faff;
+  }
+
+  .marks-table thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0;
+    letter-spacing: .03em;
+  }
+
+  .marks-table thead th.th-center {
+    text-align: center;
+  }
+
+  .marks-table thead th:first-child {
+    width: 52px;
+    text-align: center;
+  }
+
+  .marks-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+
+  .marks-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .marks-table tbody tr:hover {
+    background: #f8faff;
+  }
+
+  .marks-table tbody td {
+    padding: 13px 16px;
+    font-size: 0.88rem;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  .marks-table tbody td:first-child {
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  /* USN */
+  .td-usn {
+    color: #64748b !important;
+    font-size: 0.84rem !important;
+  }
+
+  /* Student name with avatar */
+  .stu-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .stu-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4c6ef5, #748ffc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.80rem;
+    color: white;
+    border: 2px solid #e2e8f0;
+  }
+
+  .av1 {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+  }
+
+  .av2 {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  }
+
+  .av3 {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+  }
+
+  .av4 {
+    background: linear-gradient(135deg, #ec4899, #f9a8d4);
+  }
+
+  .av5 {
+    background: linear-gradient(135deg, #16a34a, #4ade80);
+  }
+
+  .av6 {
+    background: linear-gradient(135deg, #f59e0b, #fde68a);
+    color: #7c2d12 !important;
+  }
+
+  .av7 {
+    background: linear-gradient(135deg, #2563eb, #818cf8);
+  }
+
+  .av8 {
+    background: linear-gradient(135deg, #db2777, #f472b6);
+  }
+
+  .av9 {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+  }
+
+  .av10 {
+    background: linear-gradient(135deg, #9333ea, #c084fc);
+  }
+
+  .stu-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #1e293b;
+  }
+
+  /* Mark input */
+  .mark-input {
+    width: 100%;
+    padding: 9px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+    background: #f8faff;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    min-width: 160px;
+  }
+
+  .mark-input:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+  }
+
+  .mark-input::placeholder {
+    color: #cbd5e1;
+  }
+
+  .mark-input:invalid {
+    border-color: #fca5a5;
+  }
+
+  /* Hide Internal 2 by default */
+  .int2-wrapper {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .int2-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+  }
+
+  /* Success Popup */
+  .success-popup {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: #16a34a;
+    color: white;
+    padding: 16px 28px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(22, 163, 74, 0.25);
+    z-index: 1000;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+  }
+
+  .success-popup.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .success-popup svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+
+  .success-popup span {
+    font-weight: 700;
+    font-size: 0.95rem;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* Total display */
+  .total-display {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 7px 14px;
+    text-align: center;
+    min-width: 68px;
+    display: inline-block;
+  }
+
+  /* ── Footer / Pagination ── */
+  .marks-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-info {
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pg-btn {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    transition: all .15s;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .pg-btn:hover {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+
+  .pg-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+  }
+
+  .pg-btn:disabled {
+    opacity: .38;
+    cursor: not-allowed;
+  }
+
+  .pg-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  @media (max-width: 800px) {
+
+    .marks-table thead th:nth-child(2),
+    .marks-table tbody td:nth-child(2) {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Success Popup -->
+<div id="successPopup" class="success-popup {% if saved_success %}show{% endif %}">
+    <svg viewBox="0 0 24 24">
+        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+    </svg>
+    <span>Marks saved successfully!</span>
+</div>
+
+<!-- ── Top Filters ── -->
+<div class="scheme-banner" style="margin-bottom: 10px; padding: 10px 20px;">
+    <div class="top-filters">
+        <div class="filter-group">
+            <label class="filter-label">Select Class & Subject</label>
+            <div class="filter-select-wrap">
+                <select class="filter-select" onchange="location = this.value;" style="min-width: 300px;">
+                    {% for cl in classes %}
+                        <option value="{% url 'add_marks' cl.id %}" >
+                            {{ cl.class_code.class_name }} - {{ cl.subject_code.subject_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <span class="filter-arrow">▼</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Marking Scheme Banner ── -->
+<div class="scheme-banner">
+  <div class="scheme-left">
+    <div class="scheme-icon">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
+      </svg>
+    </div>
+    <div class="scheme-text">
+      <div class="scheme-title">Marking Scheme ({{ selected_class_link.class_code.class_name }} - {{ selected_class_link.subject_code.subject_name }})</div>
+      <div class="scheme-formula">
+        Internal 1 <span>( / {{ max_internal1 }} )</span>
+        &nbsp;+&nbsp;
+        Internal 2 <span>( / {{ max_internal2 }} )</span>
+        &nbsp;=&nbsp;
+        Total <span>( / {{ max_total }} )</span>
+      </div>
+    </div>
+  </div>
+  <div class="scheme-right">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+    </svg>
+    <p>Enter Internal 1 first. Internal 2 will be revealed after.<br>Click "Save Marks" to save all changes.</p>
+  </div>
+</div>
+
+  <form method="POST" action="{% url 'add_marks' selected_class_link.id %}" id="marksForm">
+    {% csrf_token %}
+    <div class="marks-card">
+      <div class="marks-card-header">
+        <h3>Enter Marks</h3>
+        <div class="header-btns">
+          <button type="submit" class="btn-save-marks">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+            </svg>
+            Save Marks
+          </button>
+        </div>
+      </div>
+      <input type="hidden" name="class_section" value="{{ selected_class|default:'CLS-9GHD6A' }}" />
+    <input type="hidden" name="subject" value="{{ selected_subject|default:'CS201' }}" />
+    <input type="hidden" name="semester" value="{{ selected_semester|default:'VI' }}" />
+
+    <table class="marks-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>USN</th>
+          <th>Student Name</th>
+          <th>Internal 1 ( / {{ max_internal1|default:"30" }} )</th>
+          <th>Internal 2 ( / {{ max_internal2|default:"30" }} )</th>
+          <th class="th-center">Total ( / {{ max_total|default:"60" }} )</th>
+        </tr>
+      </thead>
+      <tbody id="marksBody">
+
+        {% for student in students %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td class="td-usn">{{ student.usn }}</td>
+          <td>
+            <div class="stu-name-cell">
+              <div class="stu-avatar av{{ forloop.counter|add:student.id|slugify|last }}">
+                {{ student.first_name|first }}{{ student.last_name|first }}
+              </div>
+              <span class="stu-name">{{ student.first_name }} {{ student.last_name }}</span>
+            </div>
+          </td>
+          <td>
+            <input type="number" class="mark-input int1" name="int1_{{ student.id }}" 
+              placeholder="Enter marks (0-{{ max_internal1 }})"
+              min="0" max="{{ max_internal1 }}" value="{{ student.int1 }}"
+              oninput="calcTotal(this)" data-row="{{ forloop.counter }}" />
+          </td>
+          <td>
+            <div class="int2-wrapper {% if not student.int1 %}int2-hidden{% endif %}">
+              <input type="number" class="mark-input int2" name="int2_{{ student.id }}" 
+                placeholder="Enter marks (0-{{ max_internal2 }})"
+                min="0" max="{{ max_internal2 }}" value="{{ student.int2 }}"
+                oninput="calcTotal(this)" data-row="{{ forloop.counter }}" />
+            </div>
+          </td>
+          <td class="th-center">
+            <span class="total-display" id="total-{{ forloop.counter }}">
+              {{ student.total }} / {{ max_total }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                No students found for this class.
+            </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="marks-footer">
+      <div class="footer-info">
+        Showing 1 to {{ students|length|default:"10" }}
+        of {{ total_students|default:"56" }} students
+      </div>
+      <div class="pagination">
+        <button type="button" class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <button type="button" class="pg-btn active" id="pg1" onclick="setPage(1)">1</button>
+        <button type="button" class="pg-btn" id="pg2" onclick="setPage(2)">2</button>
+        <button type="button" class="pg-btn" id="pg3" onclick="setPage(3)">3</button>
+        <button type="button" class="pg-btn" id="pg4" onclick="setPage(4)">4</button>
+        <button type="button" class="pg-btn" id="pg5" onclick="setPage(5)">5</button>
+        <button type="button" class="pg-btn" id="pg6" onclick="setPage(6)">6</button>
+        <button type="button" class="pg-btn" id="nextBtn" onclick="changePage(1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div><!-- /marks-card -->
+  </form>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+
+  /* Constants */
+  const MAX_TOTAL = {{ max_total|default:60 }};
+
+  /* Live total calculation and visibility toggle */
+  function calcTotal(input) {
+    const rowNum = input.dataset.row;
+    const tr = input.closest('tr');
+    const int1Input = tr.querySelector('.int1');
+    const int2Input = tr.querySelector('.int2');
+    const int2Wrapper = tr.querySelector('.int2-wrapper');
+    
+    // Toggle visibility of Internal 2
+    if (int1Input.value.trim() !== '') {
+        int2Wrapper.classList.remove('int2-hidden');
+    } else {
+        int2Wrapper.classList.add('int2-hidden');
+        int2Input.value = ''; // Reset int2 if int1 is cleared
+    }
+
+    const int1 = parseFloat(int1Input.value) || 0;
+    const int2 = parseFloat(int2Input.value) || 0;
+    const total = int1 + int2;
+    
+    const el = document.getElementById('total-' + rowNum);
+    if (el) {
+      el.textContent = total + ' / ' + MAX_TOTAL;
+      el.style.color = total > MAX_TOTAL ? '#dc2626' : '#2563eb';
+    }
+  }
+
+  /* Reset all inputs */
+  function resetAll() {
+    if (!confirm('Reset all marks? This cannot be undone.')) return;
+    document.querySelectorAll('.mark-input').forEach(i => { i.value = ''; });
+    document.querySelectorAll('.int2-wrapper').forEach(w => { w.classList.add('int2-hidden'); });
+    document.querySelectorAll('.total-display').forEach(el => {
+      el.textContent = '0 / ' + MAX_TOTAL;
+      el.style.color = '#2563eb';
+    });
+  }
+
+  /* Save marks — submit form */
+  function saveMarks() {
+    document.getElementById('marksForm').submit();
+  }
+
+  /* Auto-hide success popup */
+  window.addEventListener('DOMContentLoaded', () => {
+    const popup = document.getElementById('successPopup');
+    if (popup.classList.contains('show')) {
+      setTimeout(() => {
+        popup.classList.remove('show');
+        // Clean up URL
+        const url = new URL(window.location);
+        url.searchParams.delete('success');
+        window.history.replaceState({}, '', url);
+      }, 3000);
+    }
+  });
+
+  /* Pagination */
+  let currentPage = 1;
+  const totalPages = {{ total_pages }};
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    for (let i = 1; i <= totalPages; i++) {
+      const b = document.getElementById('pg' + i);
+      if (b) b.classList.toggle('active', i === p);
+    }
+    // Django: window.location = `?page=${p}&class=${...}&subject=${...}`;
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+</script>
+{% endblock %}

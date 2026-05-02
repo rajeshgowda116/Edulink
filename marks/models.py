@@ -10,7 +10,6 @@ class Marks(models.Model):
   subject = models.ForeignKey(Faculty, on_delete=models.CASCADE)
   internal1 = models.FloatField(default=0)
   internal2 = models.FloatField(default=0)
-  assignment = models.FloatField(default=0)
   total_marks = models.FloatField(default=0)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
