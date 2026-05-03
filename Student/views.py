@@ -6,7 +6,7 @@ from .models import Student
 from Class.models import Classes
 from marks.models import Marks
 from utils.attendence_calcu import class_attendance_pct, current_streak, best_streak
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 
    
 
@@ -196,7 +196,7 @@ def streak_maintainer(request):
         return redirect('student_info')
 
     class_code_str = student.class_code
-    classmates = Student.objects.filter(class_code=class_code_str).order_by('usn')
+    classmates = Student.objects.filter(class_code=class_code_str).select_related('username').order_by('usn')
 
     students_data = []
     streak_current_list = []
@@ -207,13 +207,19 @@ def streak_maintainer(request):
         att_qs = Attendence.objects.filter(usn_id=s.id, class_code__in=class_code_objs)
         attendance = class_attendance_pct(att_qs)
 
-        # Total internal marks across all subjects in class (sum, not avg)
+        # Average internal marks across ALL subjects assigned to this class
+        class_code_objs = Classroom.objects.filter(class_code=class_code_str)
+        total_subjects_count = Classes.objects.filter(class_code__in=class_code_objs).count()
+        
         marks_qs = Marks.objects.filter(student_id=s.id, class_code__in=class_code_objs)
-        total_int1 = marks_qs.aggregate(total=models.Sum('internal1'))['total__sum'] or 0
-        total_int2 = marks_qs.aggregate(total=models.Sum('internal2'))['total__sum'] or 0
-        total = round(total_int1 + total_int2, 1)
-        int1 = round(total_int1, 1)
-        int2 = round(total_int2, 1)
+        marks_sums = marks_qs.aggregate(s1=Sum('internal1'), s2=Sum('internal2'))
+        
+        sum1 = marks_sums['s1'] or 0
+        sum2 = marks_sums['s2'] or 0
+        
+        int1 = round(sum1 / total_subjects_count, 1) if total_subjects_count > 0 else 0
+        int2 = round(sum2 / total_subjects_count, 1) if total_subjects_count > 0 else 0
+        total = round(int1 + int2, 1)
 
         att_offset = round(106.8 * (1 - attendance / 100), 1)  # mini-circle
 
@@ -222,8 +228,8 @@ def streak_maintainer(request):
         trend = 'up'  # Simple placeholder
 
         students_data.append({
-            'first_name': s.usn.split('-')[0] if '-' in s.usn else s.usn[:3].title(),
-            'last_name': '',
+            'first_name': s.username.first_name if s.username else s.usn,
+            'last_name': s.username.last_name if s.username else '',
             'usn': s.usn,
             'attendance': attendance,
             'att_offset': att_offset,

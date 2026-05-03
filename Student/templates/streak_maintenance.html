@@ -768,9 +768,9 @@
           <th>Overall Attendance
             <span class="th-sub">ⓘ</span>
           </th>
-          <th class="th-center">Internal 1<span class="th-sub">/ 30</span></th>
-          <th class="th-center">Internal 2<span class="th-sub">/ 30</span></th>
-          <th class="th-center">Average Marks<span class="th-sub">/ 60</span></th>
+          <th class="th-center">Internal 1<span class="th-sub">/ 50</span></th>
+          <th class="th-center">Internal 2<span class="th-sub">/ 50</span></th>
+          <th class="th-center">Average Total<span class="th-sub">/ 100</span></th>
           <th class="th-center">Streak<span class="th-sub">(Current)</span></th>
           <th class="th-center">Streak<span class="th-sub">(Best)</span></th>
           <th class="th-center">Streak Status</th>
@@ -783,8 +783,7 @@
           <td>{{ forloop.counter }}</td>
           <td>
             <div class="stu-name-cell">
-              <div class="stu-avatar av{{ forloop.counter|modulo:10|add:1 }}">{{ s.first_name|first }}{{
-                s.last_name|first|default:"S" }}</div>
+              <div class="stu-avatar {% cycle 'av1' 'av2' 'av3' 'av4' 'av5' 'av6' 'av7' 'av8' 'av9' 'av10' %}">{{ s.first_name|first }}{{ s.last_name|first|default:"S" }}</div>
               <span class="stu-name">{{ s.first_name }} {{ s.last_name }}</span>
             </div>
           </td>
@@ -794,39 +793,27 @@
               <div class="mini-circle">
                 <svg viewBox="0 0 42 42" width="42" height="42">
                   <circle class="mc-track" cx="21" cy="21" r="17" />
-                  <circle
-                    class="mc-prog {% if s.attendance >= 80 %}mc-green{% elif s.attendance >= 60 %}mc-orange{% else %}mc-red{% endif %}"
-                    cx="21" cy="21" r="17" stroke-dasharray="106.8" stroke-dashoffset="{{ s.att_offset }}" />
+                  <circle class="mc-prog {% if s.attendance >= 80 %}mc-green{% elif s.attendance >= 60 %}mc-orange{% else %}mc-red{% endif %}" cx="21" cy="21" r="17" stroke-dasharray="106.8" stroke-dashoffset="{{ s.att_offset }}" />
                 </svg>
                 <div class="mini-pct">{{ s.attendance }}%</div>
               </div>
               <span class="att-pct-text">{{ s.attendance }}%</span>
             </div>
           </td>
-          <td class="td-center"><span
-              class="{% if s.int1 >= 20 %}mk-high{% elif s.int1 >= 14 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int1
-              }}</span></td>
-          <td class="td-center"><span
-              class="{% if s.int2 >= 20 %}mk-high{% elif s.int2 >= 14 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int2
-              }}</span></td>
-          <td class="td-center"><span
-              class="{% if s.total >= 40 %}tv-high{% elif s.total >= 28 %}tv-mid{% else %}tv-low{% endif %}">{{ s.total
-              }} / 60</span></td>
+          <td class="td-center"><span class="{% if s.int1 >= 35 %}mk-high{% elif s.int1 >= 20 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int1 }}</span></td>
+          <td class="td-center"><span class="{% if s.int2 >= 35 %}mk-high{% elif s.int2 >= 20 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int2 }}</span></td>
+          <td class="td-center"><span class="{% if s.total >= 70 %}tv-high{% elif s.total >= 40 %}tv-mid{% else %}tv-low{% endif %}">{{ s.total }} / 100</span></td>
           <td class="td-center">
-            <span
-              class="streak-current {% if s.streak_current >= 7 %}mk-high{% elif s.streak_current >= 4 %}mk-mid{% elif s.streak_current >= 1 %}mk-blue{% else %}mk-low{% endif %}">
+            <span class="streak-current {% if s.streak_current >= 7 %}mk-high{% elif s.streak_current >= 4 %}mk-mid{% elif s.streak_current >= 1 %}mk-blue{% else %}mk-low{% endif %}">
               {{ s.streak_current }} 🔥
             </span>
           </td>
           <td class="td-center"><span class="streak-best">{{ s.streak_best }}</span></td>
           <td class="td-center">
-            <span
-              class="streak-badge {% if s.streak_current >= 7 %}sb-excellent{% elif s.streak_current >= 4 %}sb-good{% elif s.streak_current >= 1 %}sb-average{% else %}sb-nostreak{% endif %}">
-              {% if s.streak_current >= 7 %}Excellent{% elif s.streak_current >= 4 %}Good{% elif s.streak_current >= 1
-              %}Average{% else %}No Streak{% endif %}
+            <span class="streak-badge {% if s.streak_current >= 7 %}sb-excellent{% elif s.streak_current >= 4 %}sb-good{% elif s.streak_current >= 1 %}sb-average{% else %}sb-nostreak{% endif %}">
+              {% if s.streak_current >= 7 %}Excellent{% elif s.streak_current >= 4 %}Good{% elif s.streak_current >= 1 %}Average{% else %}No Streak{% endif %}
             </span>
-            {% if s.trend == 'up' %}<span class="trend-up">↗</span>{% elif s.trend == 'down' %}<span
-              class="trend-down">↘</span>{% else %}<span class="trend-flat">—</span>{% endif %}
+            {% if s.trend == 'up' %}<span class="trend-up">↗</span>{% elif s.trend == 'down' %}<span class="trend-down">↘</span>{% else %}<span class="trend-flat">—</span>{% endif %}
           </td>
         </tr>
         {% empty %}
@@ -880,7 +867,6 @@
 {% block extra_js %}
 <script>
   let currentPage = 1;
-  const totalPages = {{ total_pages|default: "6" }};
 
   function setPage(p) {
     currentPage = p;
