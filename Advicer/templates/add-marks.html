@@ -619,7 +619,7 @@
   </div>
 </div>
 
-<form method="POST" action="{% url 'add_marks' selected_class_link.id %}" id="marksForm">
+<form method="POST" action="{% url 'add_marks_asadvisor' selected_class_link.id %}" id="marksForm">
   {% csrf_token %}
   <div class="marks-card">
     <div class="marks-card-header">
@@ -726,7 +726,6 @@
 <script>
 
   /* Constants */
-  const MAX_TOTAL = {{ max_total|default: 60 }};
 
   /* Live total calculation and visibility toggle */
   function calcTotal(input) {

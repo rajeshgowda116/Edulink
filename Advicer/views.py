@@ -1,3 +1,4 @@
+
 from django.shortcuts import render,redirect, get_object_or_404
 from django.urls import reverse
 from marks.models import Marks
@@ -513,7 +514,7 @@ def advicer_student_attendence_list(request, class_link_id=None):
     }
     return render(request, 'advicer_Student_attendence_list.html', context)
 
-def add_marks(request, class_link_id=None):
+def add_marks_asadvisor(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(
         subject_code__in=faculties
@@ -574,7 +575,7 @@ def add_marks(request, class_link_id=None):
                     'total_marks': int1 + int2
                 }
             )
-        return redirect(reverse('add_marks', kwargs={'class_link_id': class_link.id}) + '?success=true')
+        return redirect(reverse('add_marks_asadvisor', kwargs={'class_link_id': class_link.id}) + '?success=true')
 
     # Fetch existing marks records
     marks_records = Marks.objects.filter(
