@@ -1,0 +1,902 @@
+{% extends "student_base.html" %}
+
+{% block title %}EduLink – Streak Maintenance{% endblock %}
+{% block nav_faculty %}active{% endblock %}
+
+{% block page_title %}Streak Maintenance{% endblock %}
+
+{% block breadcrumb %}
+<a href="{% url 'advisor_dashboard' %}">Dashboard</a>
+<span class="sep">›</span>
+<span class="active">Streak Maintenance</span>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── topbar overrides ── */
+  .topbar {
+    height: auto;
+    padding: 14px 32px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .topbar-left {
+    flex-direction: column;
+  }
+
+  .page-subtitle {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  /* top-right filters */
+  .top-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .filter-label {
+    font-size: 0.70rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  .filter-select-wrap {
+    position: relative;
+  }
+
+  .filter-select {
+    appearance: none;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 34px 9px 36px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #1e293b;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .2s;
+    min-width: 180px;
+  }
+
+  .filter-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+  }
+
+  .filter-prefix-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 0.95rem;
+  }
+
+  .filter-arrow {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #94a3b8;
+    font-size: 0.68rem;
+  }
+
+  /* ── Stat Cards ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 8px rgba(37, 99, 235, .05);
+    transition: box-shadow .2s, transform .18s;
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 6px 20px rgba(37, 99, 235, .10);
+    transform: translateY(-2px);
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .si-blue {
+    background: #dbeafe;
+  }
+
+  .si-green {
+    background: #dcfce7;
+  }
+
+  .si-orange {
+    background: #fef3c7;
+  }
+
+  .si-purple {
+    background: #ede9fe;
+  }
+
+  .si-red {
+    background: #fee2e2;
+  }
+
+  .stat-info .stat-label {
+    font-size: 0.74rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .stat-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .sn-blue {
+    color: #2563eb;
+  }
+
+  .sn-green {
+    color: #16a34a;
+  }
+
+  .sn-orange {
+    color: #f59e0b;
+  }
+
+  .sn-purple {
+    color: #7c3aed;
+  }
+
+  .sn-red {
+    color: #dc2626;
+  }
+
+  .stat-sub {
+    font-size: 0.73rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  /* ── Table Card ── */
+  .streak-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 8px rgba(37, 99, 235, .05);
+  }
+
+  /* Card header */
+  .streak-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .streak-card-header h3 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 1.05rem;
+    color: #1e293b;
+  }
+
+  .header-legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .ld-green {
+    background: #16a34a;
+  }
+
+  .ld-orange {
+    background: #f59e0b;
+  }
+
+  .ld-blue {
+    background: #2563eb;
+  }
+
+  .ld-red {
+    background: #dc2626;
+  }
+
+  .btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: background .18s;
+  }
+
+  .btn-filter:hover {
+    background: #f1f5f9;
+  }
+
+  .btn-filter svg {
+    width: 13px;
+    height: 13px;
+    stroke: #475569;
+  }
+
+  /* ── Table ── */
+  .streak-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .streak-table thead tr {}
+
+  .streak-table thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+  }
+
+  .streak-table thead th .th-sub {
+    display: block;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    font-weight: 500;
+    margin-top: 1px;
+  }
+
+  .streak-table thead th.th-center {
+    text-align: center;
+  }
+
+  .streak-table thead th:first-child {
+    width: 44px;
+    text-align: center;
+  }
+
+  .streak-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background .15s;
+  }
+
+  .streak-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .streak-table tbody tr:hover {
+    background: #f8faff;
+  }
+
+  .streak-table tbody td {
+    padding: 13px 12px;
+    font-size: 0.86rem;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  .streak-table tbody td:first-child {
+    text-align: center;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+
+  .streak-table tbody td.td-center {
+    text-align: center;
+  }
+
+  /* Name cell */
+  .stu-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .stu-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 0.76rem;
+    color: white;
+    border: 2px solid #e2e8f0;
+  }
+
+  .av1 {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+  }
+
+  .av2 {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  }
+
+  .av3 {
+    background: linear-gradient(135deg, #0891b2, #22d3ee);
+  }
+
+  .av4 {
+    background: linear-gradient(135deg, #ec4899, #f9a8d4);
+  }
+
+  .av5 {
+    background: linear-gradient(135deg, #16a34a, #4ade80);
+  }
+
+  .av6 {
+    background: linear-gradient(135deg, #d97706, #fbbf24);
+  }
+
+  .av7 {
+    background: linear-gradient(135deg, #4f46e5, #818cf8);
+  }
+
+  .av8 {
+    background: linear-gradient(135deg, #db2777, #f472b6);
+  }
+
+  .av9 {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+  }
+
+  .av10 {
+    background: linear-gradient(135deg, #9333ea, #c084fc);
+  }
+
+  .stu-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #1e293b;
+  }
+
+  .td-usn {
+    color: #64748b !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Circular attendance mini */
+  .att-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mini-circle {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+  }
+
+  .mini-circle svg {
+    transform: rotate(-90deg);
+  }
+
+  .mini-circle .mc-track {
+    fill: none;
+    stroke: #f1f5f9;
+    stroke-width: 4;
+  }
+
+  .mini-circle .mc-prog {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  .mc-green {
+    stroke: #16a34a;
+  }
+
+  .mc-orange {
+    stroke: #f59e0b;
+  }
+
+  .mc-red {
+    stroke: #dc2626;
+  }
+
+  .mini-pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.62rem;
+    color: #1e293b;
+  }
+
+  .att-pct-text {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  /* Mark colours */
+  .mk-high {
+    color: #16a34a;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  .mk-mid {
+    color: #f59e0b;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  .mk-low {
+    color: #dc2626;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  /* Total */
+  .tv-high {
+    color: #16a34a;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  .tv-mid {
+    color: #f59e0b;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  .tv-low {
+    color: #dc2626;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+  }
+
+  /* Streak current */
+  .streak-current {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.88rem;
+  }
+
+  .streak-best {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #1e293b;
+  }
+
+  /* Streak status badge */
+  .streak-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .sb-excellent {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .sb-good {
+    background: #fef9c3;
+    color: #b45309;
+  }
+
+  .sb-average {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+
+  .sb-nostreak {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  /* Trend arrow */
+  .trend-up {
+    color: #16a34a;
+    font-size: 1rem;
+  }
+
+  .trend-down {
+    color: #dc2626;
+    font-size: 1rem;
+  }
+
+  .trend-flat {
+    color: #94a3b8;
+    font-size: 1rem;
+  }
+
+  /* ── Footer ── */
+  .streak-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 22px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-info {
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pg-btn {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    transition: all .15s;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .pg-btn:hover {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+
+  .pg-btn.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: white;
+  }
+
+  .pg-btn:disabled {
+    opacity: .38;
+    cursor: not-allowed;
+  }
+
+  .pg-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* ── Footer Note ── */
+  .footer-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.79rem;
+    color: #374151;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 11px 16px;
+    margin-top: 18px;
+  }
+
+  .footer-note svg {
+    width: 16px;
+    height: 16px;
+    fill: #2563eb;
+    flex-shrink: 0;
+  }
+
+  @media (max-width:1100px) {
+    .stat-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .streak-table thead th:nth-child(n+7),
+    .streak-table tbody td:nth-child(n+7) {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- ── Stat Cards ── -->
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon si-blue">👥</div>
+    <div class="stat-info">
+      <div class="stat-label">Total Students</div>
+      <div class="stat-num sn-blue">{{ total_students|default:"56" }}</div>
+      <div class="stat-sub">In this class</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon si-green">📈</div>
+    <div class="stat-info">
+      <div class="stat-label">Excellent Streak (≥7)</div>
+      <div class="stat-num sn-green">{{ excellent_count|default:"18" }}</div>
+      <div class="stat-sub">Students</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon si-orange">⭐</div>
+    <div class="stat-info">
+      <div class="stat-label">Good Streak (4-6)</div>
+      <div class="stat-num sn-orange">{{ good_count|default:"22" }}</div>
+      <div class="stat-sub">Students</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon si-purple">📊</div>
+    <div class="stat-info">
+      <div class="stat-label">Average Streak (1-3)</div>
+      <div class="stat-num sn-purple">{{ average_count|default:"10" }}</div>
+      <div class="stat-sub">Students</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon si-red">↘️</div>
+    <div class="stat-info">
+      <div class="stat-label">No Streak (0)</div>
+      <div class="stat-num sn-red">{{ nostreak_count|default:"6" }}</div>
+      <div class="stat-sub">Students</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Table Card ── -->
+<div class="streak-card">
+
+  <div class="streak-card-header">
+    <h3>Student Streak Overview – {{ class_section|default:"CLS-9GHD6A" }}</h3>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div class="header-legend">
+        <div class="legend-item">
+          <div class="legend-dot ld-green"></div> Excellent (≥7)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot ld-orange"></div> Good (4-6)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot ld-blue"></div> Average (1-3)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot ld-red"></div> No Streak (0)
+        </div>
+      </div>
+      <button class="btn-filter">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        Filter
+      </button>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table class="streak-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student Name</th>
+          <th>USN</th>
+          <th>Overall Attendance
+            <span class="th-sub">ⓘ</span>
+          </th>
+          <th class="th-center">Internal 1<span class="th-sub">/ 30</span></th>
+          <th class="th-center">Internal 2<span class="th-sub">/ 30</span></th>
+          <th class="th-center">Average Marks<span class="th-sub">/ 60</span></th>
+          <th class="th-center">Streak<span class="th-sub">(Current)</span></th>
+          <th class="th-center">Streak<span class="th-sub">(Best)</span></th>
+          <th class="th-center">Streak Status</th>
+        </tr>
+      </thead>
+      <tbody id="stuBody">
+
+        {% for s in students %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <div class="stu-name-cell">
+              <div class="stu-avatar av{{ forloop.counter|modulo:10|add:1 }}">{{ s.first_name|first }}{{
+                s.last_name|first|default:"S" }}</div>
+              <span class="stu-name">{{ s.first_name }} {{ s.last_name }}</span>
+            </div>
+          </td>
+          <td class="td-usn">{{ s.usn }}</td>
+          <td>
+            <div class="att-cell">
+              <div class="mini-circle">
+                <svg viewBox="0 0 42 42" width="42" height="42">
+                  <circle class="mc-track" cx="21" cy="21" r="17" />
+                  <circle
+                    class="mc-prog {% if s.attendance >= 80 %}mc-green{% elif s.attendance >= 60 %}mc-orange{% else %}mc-red{% endif %}"
+                    cx="21" cy="21" r="17" stroke-dasharray="106.8" stroke-dashoffset="{{ s.att_offset }}" />
+                </svg>
+                <div class="mini-pct">{{ s.attendance }}%</div>
+              </div>
+              <span class="att-pct-text">{{ s.attendance }}%</span>
+            </div>
+          </td>
+          <td class="td-center"><span
+              class="{% if s.int1 >= 20 %}mk-high{% elif s.int1 >= 14 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int1
+              }}</span></td>
+          <td class="td-center"><span
+              class="{% if s.int2 >= 20 %}mk-high{% elif s.int2 >= 14 %}mk-mid{% else %}mk-low{% endif %}">{{ s.int2
+              }}</span></td>
+          <td class="td-center"><span
+              class="{% if s.total >= 40 %}tv-high{% elif s.total >= 28 %}tv-mid{% else %}tv-low{% endif %}">{{ s.total
+              }} / 60</span></td>
+          <td class="td-center">
+            <span
+              class="streak-current {% if s.streak_current >= 7 %}mk-high{% elif s.streak_current >= 4 %}mk-mid{% elif s.streak_current >= 1 %}mk-blue{% else %}mk-low{% endif %}">
+              {{ s.streak_current }} 🔥
+            </span>
+          </td>
+          <td class="td-center"><span class="streak-best">{{ s.streak_best }}</span></td>
+          <td class="td-center">
+            <span
+              class="streak-badge {% if s.streak_current >= 7 %}sb-excellent{% elif s.streak_current >= 4 %}sb-good{% elif s.streak_current >= 1 %}sb-average{% else %}sb-nostreak{% endif %}">
+              {% if s.streak_current >= 7 %}Excellent{% elif s.streak_current >= 4 %}Good{% elif s.streak_current >= 1
+              %}Average{% else %}No Streak{% endif %}
+            </span>
+            {% if s.trend == 'up' %}<span class="trend-up">↗</span>{% elif s.trend == 'down' %}<span
+              class="trend-down">↘</span>{% else %}<span class="trend-flat">—</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10">No students or class data available. Ensure attendance and marks are recorded.</td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="streak-footer">
+    <div class="footer-info">
+      Showing 1 to {{ students|length|default:"10" }}
+      of {{ total_students|default:"56" }} students
+    </div>
+    <div class="pagination">
+      <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <button class="pg-btn active" id="pg1" onclick="setPage(1)">1</button>
+      <button class="pg-btn" id="pg2" onclick="setPage(2)">2</button>
+      <button class="pg-btn" id="pg3" onclick="setPage(3)">3</button>
+      <button class="pg-btn" id="pg6" onclick="setPage(6)">6</button>
+      <button class="pg-btn" id="nextBtn" onclick="changePage(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /streak-card -->
+
+<!-- Footer note -->
+<div class="footer-note">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+  </svg>
+  Streak is calculated based on consistent performance in attendance (≥75%) and internal marks (average ≥ 40/60) across
+  consecutive evaluations.
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  let currentPage = 1;
+  const totalPages = {{ total_pages|default: "6" }};
+
+  function setPage(p) {
+    currentPage = p;
+    document.getElementById('prevBtn').disabled = p <= 1;
+    document.getElementById('nextBtn').disabled = p >= totalPages;
+    ['pg1', 'pg2', 'pg3', 'pg6'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.classList.remove('active');
+    });
+    const a = document.getElementById('pg' + p);
+    if (a) a.classList.add('active');
+  }
+
+  function changePage(dir) {
+    const next = currentPage + dir;
+    if (next >= 1 && next <= totalPages) setPage(next);
+  }
+</script>
+{% endblock %}

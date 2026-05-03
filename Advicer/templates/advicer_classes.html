@@ -608,12 +608,28 @@
                 {% else %}
                 <button class="btn-students" disabled>Students</button>
                 {% endif %}
+                {% if cls.class_link_id %}
+                <a href="{% url 'show_marks' cls.class_link_id %}">
+                  <button class="btn-view">View Marks</button>
+                </a>
+                {% else %}
+                <button class="btn-view" disabled>View Marks</button>
+                {% endif %}
+                {% if cls.class_link_id %}
+                <a href="{% url 'add_marks' cls.class_link_id %}">
+                  <button class="btn-students">Add Marks</button>
+                </a>
+                {% else %}
+                <button class="btn-students" disabled>Add Marks</button>
+                {% endif %}
 
                 <button class="btn-more">⋮</button>
               </div>
             </td>
           </tr>
-                    {% empty %}
+          {% empty %}
+
+
           <tr>
             <td colspan="5" style="text-align:center;color:#64748b;">No classes found.</td>
           </tr>
@@ -701,4 +717,3 @@
   }
 </script>
 {% endblock %}
-

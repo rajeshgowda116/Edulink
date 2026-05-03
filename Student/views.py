@@ -5,6 +5,10 @@ from Attendence.models import Attendence
 from .models import Student
 from Class.models import Classes
 from marks.models import Marks
+from utils.attendence_calcu import class_attendance_pct, current_streak, best_streak
+from django.db.models import Avg
+
+   
 
 # Create your views here.
 @login_required
@@ -182,6 +186,74 @@ def Student_dashbord2(request):
     }
     
     return render(request, 'student_dashboard2.html', context)
+
+@login_required
+def streak_maintainer(request):
+   
+
+    student = Student.objects.filter(username=request.user).first()
+    if not student:
+        return redirect('student_info')
+
+    class_code_str = student.class_code
+    classmates = Student.objects.filter(class_code=class_code_str).order_by('usn')
+
+    students_data = []
+    streak_current_list = []
+
+    for s in classmates:
+        # All class attendance for this student (all subjects)
+        class_code_objs = Classroom.objects.filter(class_code=class_code_str)
+        att_qs = Attendence.objects.filter(usn_id=s.id, class_code__in=class_code_objs)
+        attendance = class_attendance_pct(att_qs)
+
+        # Total internal marks across all subjects in class (sum, not avg)
+        marks_qs = Marks.objects.filter(student_id=s.id, class_code__in=class_code_objs)
+        total_int1 = marks_qs.aggregate(total=models.Sum('internal1'))['total__sum'] or 0
+        total_int2 = marks_qs.aggregate(total=models.Sum('internal2'))['total__sum'] or 0
+        total = round(total_int1 + total_int2, 1)
+        int1 = round(total_int1, 1)
+        int2 = round(total_int2, 1)
+
+        att_offset = round(106.8 * (1 - attendance / 100), 1)  # mini-circle
+
+        streak_current = current_streak(att_qs)
+        streak_best = best_streak(att_qs)
+        trend = 'up'  # Simple placeholder
+
+        students_data.append({
+            'first_name': s.usn.split('-')[0] if '-' in s.usn else s.usn[:3].title(),
+            'last_name': '',
+            'usn': s.usn,
+            'attendance': attendance,
+            'att_offset': att_offset,
+            'int1': int1,
+            'int2': int2,
+            'total': total,
+            'streak_current': streak_current,
+            'streak_best': streak_best,
+            'trend': trend
+        })
+        streak_current_list.append(streak_current)
+
+    # Stats
+    excellent_count = len([s for s in students_data if s['streak_current'] >= 7])
+    good_count = len([s for s in students_data if 4 <= s['streak_current'] < 7])
+    average_count = len([s for s in students_data if 1 <= s['streak_current'] < 4])
+    nostreak_count = len([s for s in students_data if s['streak_current'] == 0])
+
+    context = {
+        'students': students_data,
+        'total_students': len(students_data),
+        'excellent_count': excellent_count,
+        'good_count': good_count,
+        'average_count': average_count,
+        'nostreak_count': nostreak_count,
+        'class_section': class_code_str,
+        'total_pages': max(1, (len(students_data) + 9) // 10)
+    }
+    return render(request, 'streak_maintenance.html', context)
+
 
 
 
