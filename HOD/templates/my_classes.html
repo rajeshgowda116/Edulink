@@ -612,6 +612,12 @@
                   <button class="btn-students">Students</button>
                 </a>
                 {% endif %}
+                <a href="{% url 'hod_add_marks' cls.class_link_id|default:'' %}">
+                  <button class="btn-students" style="background: #8b5cf6;">Add Marks</button>
+                </a>
+                <a href="{% url 'hod_show_marks' cls.class_link_id|default:'' %}">
+                  <button class="btn-view" style="background: #3b82f6;">View Marks</button>
+                </a>
                 <button class="btn-more">⋮</button>
               </div>
             </td>

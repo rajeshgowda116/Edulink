@@ -14,4 +14,8 @@ urlpatterns = [
     path('advicer_add_attendence/<int:class_link_id>/',views.advicer_add_attendence,name='advicer_add_attendence'),
     path('advicer_student_attendence_list/',views.advicer_student_attendence_list,name='advicer_student_attendence_list'),
     path('advicer_student_attendence_list/<int:class_link_id>/',views.advicer_student_attendence_list,name='advicer_student_attendence_list'),
+    path('add_marks/', views.add_marks, name='add_marks'),
+    path('add_marks/<int:class_link_id>/', views.add_marks, name='add_marks'),
+    path('show_marks/', views.show_marks, name='show_marks'),
+    path('show_marks/<int:class_link_id>/', views.show_marks, name='show_marks'),
     ]

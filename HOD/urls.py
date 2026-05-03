@@ -14,4 +14,9 @@ urlpatterns = [
   path('student_list_hod/',views.student_list_hod,name='student_list_hod'),
   path('student_list_hod/<int:class_link_id>/',views.student_list_hod,name='student_list_hod'),
   path('Chat/',views.Chat,name='Chat'),
+  path('hod_add_marks/', views.hod_add_marks, name='hod_add_marks'),
+  path('hod_add_marks/<int:class_link_id>/', views.hod_add_marks, name='hod_add_marks'),
+  path('hod_show_marks/', views.hod_show_marks, name='hod_show_marks'),
+  path('hod_show_marks/<int:class_link_id>/', views.hod_show_marks, name='hod_show_marks'),
 ]
+
