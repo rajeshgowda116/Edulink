@@ -14,6 +14,8 @@ import json
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from collections import defaultdict
+from django.db.models import Sum
+from utils.attendence_calcu import class_attendance_pct, current_streak, best_streak
 # Create your views here.
 
 @login_required
@@ -694,3 +696,84 @@ def show_marks(request, class_link_id=None):
     }
 
     return render(request, 'show_marks.html', context)
+
+@login_required
+def streak_maintainer(request, class_link_id=None):
+    faculties = Faculty.objects.filter(username=request.user)
+    class_links = Classes.objects.filter(
+        subject_code__in=faculties
+    ).select_related('class_code', 'subject_code')
+
+    if class_link_id:
+        class_link = get_object_or_404(class_links, id=class_link_id)
+    else:
+        class_link = class_links.first()
+
+    if not class_link:
+        context = {
+            'students': [],
+            'total_students': 0,
+            'excellent_count': 0,
+            'good_count': 0,
+            'average_count': 0,
+            'nostreak_count': 0,
+            'class_section': 'No class selected',
+            'total_pages': 1,
+        }
+        return render(request, 'streek_maintaner.html', context)
+
+    classroom = class_link.class_code
+    class_code_str = str(classroom.class_code).strip()
+    class_code_objs = Classroom.objects.filter(class_code__iexact=class_code_str)
+    classmates = Student.objects.filter(
+        class_code__iexact=class_code_str
+    ).select_related('username').order_by('usn')
+    total_subjects_count = Classes.objects.filter(class_code__in=class_code_objs).count()
+
+    students_data = []
+    for student in classmates:
+        att_qs = Attendence.objects.filter(
+            usn=student,
+            class_code__in=class_code_objs
+        )
+        attendance = class_attendance_pct(att_qs)
+
+        marks_sums = Marks.objects.filter(
+            student=student,
+            class_code__in=class_code_objs
+        ).aggregate(
+            s1=Sum('internal1'),
+            s2=Sum('internal2'),
+        )
+
+        int1 = round((marks_sums['s1'] or 0) / total_subjects_count, 1) if total_subjects_count else 0
+        int2 = round((marks_sums['s2'] or 0) / total_subjects_count, 1) if total_subjects_count else 0
+        total = round(int1 + int2, 1)
+        streak_current = current_streak(att_qs)
+        streak_best = best_streak(att_qs)
+
+        students_data.append({
+            'first_name': student.username.first_name if student.username else student.usn,
+            'last_name': student.username.last_name if student.username else '',
+            'usn': student.usn,
+            'attendance': attendance,
+            'att_offset': round(106.8 * (1 - attendance / 100), 1),
+            'int1': int1,
+            'int2': int2,
+            'total': total,
+            'streak_current': streak_current,
+            'streak_best': streak_best,
+            'trend': 'up' if streak_current else 'flat',
+        })
+
+    context = {
+        'students': students_data,
+        'total_students': len(students_data),
+        'excellent_count': len([s for s in students_data if s['streak_current'] >= 7]),
+        'good_count': len([s for s in students_data if 4 <= s['streak_current'] < 7]),
+        'average_count': len([s for s in students_data if 1 <= s['streak_current'] < 4]),
+        'nostreak_count': len([s for s in students_data if s['streak_current'] == 0]),
+        'class_section': f'{classroom.class_name} ({classroom.class_code})',
+        'total_pages': max(1, (len(students_data) + 9) // 10),
+    }
+    return render(request, 'streek_maintaner.html', context)

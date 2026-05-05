@@ -324,6 +324,9 @@
           <a href="{% url 'show_marks' %}">
             <button class="btn-attendance">Marks</button>
           </a>
+          <a href="{% url 'faculty_streak_maintainer' cls.id %}">
+            <button class="btn-attendance">Streak</button>
+          </a>
         </td>
       </tr>
       {% empty %}

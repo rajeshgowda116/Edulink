@@ -622,6 +622,13 @@
                 {% else %}
                 <button class="btn-students" disabled>Add Marks</button>
                 {% endif %}
+                {% if cls.class_link_id %}
+                <a href="{% url 'advicer_streak_maintainer' cls.class_link_id %}">
+                  <button class="btn-view">Streak</button>
+                </a>
+                {% else %}
+                <button class="btn-view" disabled>Streak</button>
+                {% endif %}
 
                 <button class="btn-more">⋮</button>
               </div>
@@ -700,6 +707,7 @@
 
   /* Pagination */
   let currentPage = 1;
+  const totalPages = 1;
 
   function setPage(p) {
     currentPage = p;

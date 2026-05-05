@@ -118,7 +118,7 @@ def Student_dashbord2(request):
         subject = link.subject_code
         if not subject:
             continue
-            
+
         # Attendance for this student in this subject
         attendance_records = Attendence.objects.filter(usn=student, subject_code=subject)
         total_count = attendance_records.count()

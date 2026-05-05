@@ -49,6 +49,10 @@ def login(requset):
         form.add_error(None, "Selected role does not match your account.")
       else:
         auth.login(requset,user)
+        if requset.POST.get('remember'):
+          requset.session.set_expiry(60 * 60 * 24 * 30)
+        else:
+          requset.session.set_expiry(0)
         role = user.role
         if role == 'advisor':
            return redirect('advisor_dashboard')

@@ -618,6 +618,9 @@
                 <a href="{% url 'hod_show_marks' cls.class_link_id|default:'' %}">
                   <button class="btn-view" style="background: #3b82f6;">View Marks</button>
                 </a>
+                <a href="{% url 'hod_streak_maintainer' cls.class_link_id|default:'' %}">
+                  <button class="btn-view" style="background: #0f766e;">Streak</button>
+                </a>
                 <button class="btn-more">⋮</button>
               </div>
             </td>
