@@ -15,6 +15,7 @@ from django.db.models import Sum
 from utils.attendence_calcu import class_attendance_pct, current_streak, best_streak
 
 # Create your views here.
+@login_required
 def faculty_info(request):
   error = None
   if request.method=="POST":

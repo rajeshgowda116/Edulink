@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .forms import ResgistrationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 def register(request):
     if request.method == "POST":
@@ -69,6 +70,7 @@ def login(requset):
       form=AuthenticationForm()
   return render(requset,'login.html',{'form':form})
 
+@login_required
 def logout(request):
     auth.logout(request)
     return redirect('login')

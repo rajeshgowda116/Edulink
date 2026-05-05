@@ -112,6 +112,7 @@ def students(request):
     return render(request,'students.html', context)
 
 
+@login_required
 def generate_class_code(request):
     classroom= Classroom.objects.filter(username=request.user).last()
     if request.method=='POST':
@@ -515,6 +516,7 @@ def advicer_student_attendence_list(request, class_link_id=None):
     }
     return render(request, 'advicer_Student_attendence_list.html', context)
 
+@login_required
 def add_marks_asadvisor(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(
@@ -612,6 +614,7 @@ def add_marks_asadvisor(request, class_link_id=None):
     }
     return render(request, 'add-marks.html', context)
 
+@login_required
 def show_marks(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(

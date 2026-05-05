@@ -764,6 +764,7 @@ def student_list_hod(request, class_link_id=None):
   }
   return render(request, 'faculty_student_attendence_list_ashod.html', context)
 
+@login_required
 def add_marks(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(
@@ -861,6 +862,7 @@ def add_marks(request, class_link_id=None):
     }
     return render(request, 'add-marks.html', context)
   
+@login_required
 def show_marks(request, class_link_id=None):
     faculties = Faculty.objects.filter(username=request.user)
     class_links = Classes.objects.filter(
