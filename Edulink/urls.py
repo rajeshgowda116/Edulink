@@ -28,3 +28,5 @@ urlpatterns = [
     path('faculty/',include('Faculty.urls')),
     path('class/',include('Class.urls')),
     ]
+
+handler404 = 'Edulink.views.page_not_found'
